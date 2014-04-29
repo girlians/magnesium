@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import br.com.lol.auxDisplays.DisplayPontuacao;
 import br.com.lol.core.Game;
 import br.com.lol.dao.DaoGame;
 import br.com.lol.entidade.EntidadePlataforma;
@@ -36,6 +37,10 @@ public class Stage1 extends Game{
 	private static final int EST_ATIRANDO = 7;
 	private static final int EST_NAO_ATIRANDO = 8;
 	private static final int EST_ABAIXADO = 10;
+	
+	//OBSERVADOR E SUJEITO PARA PLACAR
+	private DisplayPontuacao displayP;
+	private Tiro balistica;
 	
 	private DaoGame dao;
 	
@@ -138,7 +143,11 @@ public class Stage1 extends Game{
 		this.dao = new DaoGame();
 		this.estaVivo = true;        
 		this.tentativas = 1;
-		this.pontos = 0;
+		
+		this.balistica = new Tiro(0, 0, 0);
+		this.displayP = new DisplayPontuacao(balistica, 0);
+		
+		
 		this.score = 23300;
 		this.inimigos = new ArrayList<Inimigo>();
 		jogador = new Jogador(100,this.getHeight() - 100);
@@ -332,9 +341,7 @@ public class Stage1 extends Game{
 	}
 	
 	private void renderHUD(Graphics2D g){
-		g.setColor(Color.RED );
-		g.drawString("PONTOS", 650, 40);
-		g.drawString("" + this.pontos, 705, 40);
+		displayP.display(g);
 		g.drawString(this.tentativas + "  TENTATIVAS", 650, 60);
 		g.drawString("SCORE "+this.score, 30, 40);
 	}
@@ -350,9 +357,9 @@ public class Stage1 extends Game{
 						somZumbiMorto.play();
 						this.inimigos.remove(i);
 						if(i.getIdentificador().equals("fraco")){
-						this.pontos += 10;
+						balistica.setChanges(10);
 						}else if(i.getIdentificador().equals("forte")){
-							this.pontos += 15;
+							balistica.setChanges(20);
 						}
 						return true;
 					}

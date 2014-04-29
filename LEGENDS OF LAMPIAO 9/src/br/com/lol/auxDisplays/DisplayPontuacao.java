@@ -11,28 +11,16 @@ public class DisplayPontuacao implements Observer, Display{
 
 	private Sujeito sujeito;
 	private int pontos;
-	private int contador;
-	private boolean status;
 	
 	public DisplayPontuacao(Sujeito s, int pontos){
-		this.sujeito = s;
 		this.pontos = pontos;
-		this.status = false;
+		this.sujeito = s;
 		this.sujeito.addObserver(this);
 	}
 	
-	public void setChanges(){
-		if(status){
-			this.pontos += contador;
-			status = false;
-		}
-	}
-	
 	@Override
-	public void update(boolean status, int contador) {
-		this.status = status;
-		this.contador = contador;
-		setChanges();
+	public void update(int contador) {
+		this.pontos += contador;
 	}
 
 	@Override

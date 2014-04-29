@@ -10,13 +10,11 @@ public class DisplayRecord implements Observer, Display{
 
 	private int score;
 	private Sujeito sujeito;
-	private boolean status;
 	
 	public DisplayRecord(Sujeito s, int recorde){
 		this.score = recorde;
 		this.sujeito = s;
 		this.sujeito.addObserver(this);
-		this.status = false;
 	}
 	
 	@Override
@@ -25,17 +23,9 @@ public class DisplayRecord implements Observer, Display{
 	}
 
 	@Override
-	public void update(boolean status, int iterator) {
-		this.status = status;
-		setChanges(iterator);
+	public void update(int iterator) {
+		this.score = iterator;
 	}
-
-	public void setChanges(int iterator) {
-		if(status){
-			this.score = iterator;
-		}
-	}
-	
 	
 	public void setChanges(){
 		
