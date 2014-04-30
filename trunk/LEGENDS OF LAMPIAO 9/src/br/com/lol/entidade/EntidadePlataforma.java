@@ -4,15 +4,30 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 public class EntidadePlataforma extends Entidade {
 
     BufferedImage sprite;
     
-    private int largura;
+	private int largura;
     private int altura;
+    
+    public int getLargura() {
+		return largura;
+	}
+
+	public void setLargura(int largura) {
+		this.largura = largura;
+	}
+
+	public int getAltura() {
+		return altura;
+	}
+
+	public void setAltura(int altura) {
+		this.altura = altura;
+	}
 
     public EntidadePlataforma(int x, int y, int width, int height) {
     	pos = new Rectangle();
