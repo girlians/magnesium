@@ -45,6 +45,7 @@ public class Stage1 extends Game{
 	private DaoGame dao;
 	
 	// declaração das imagens do stagio
+	// Olá pião
 	private BufferedImage cenario;
 	private BufferedImage lampiao_normal;
 	private BufferedImage lampiao_invertido;
