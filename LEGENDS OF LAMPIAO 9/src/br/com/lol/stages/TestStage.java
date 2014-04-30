@@ -35,12 +35,6 @@ public class TestStage extends Game {
 	final private int ESTADOANDANDO = 3;
 	final private int ESTADOPARADO = 4;
 	/*
-	 *	Constantes de vivo e morto.
-	 * */
-	final private boolean MORTO = false;
-	final private boolean VIVO = true;
-	
-	/*
 	 *	Todas as imagens antes de serem inciadas
 	 * */
 	private BufferedImage cenarioPlataforma;
@@ -53,10 +47,7 @@ public class TestStage extends Game {
 	/*
 	 *	Atributos do jogo.
 	 * */
-	private int direcao;
-	private int estadoDoSalto;
 	private int chao;
-	private boolean vidaDeLampiao;
 	private Dimension dim;
 	private Point rolagem;
 	//	Jogador
@@ -65,7 +56,7 @@ public class TestStage extends Game {
 	private EntidadePlataforma plataforma1;
 	private EntidadePlataforma plataforma2;
 	private EntidadePlataforma plataforma3;
-	//	Atributo respinsavel por "DIZER" se a collisão.(ACREDITO QUE ESSA CLASSE PODERIA SER UM SIGLETON)
+	//	Atributo respinsavel por "DIZER" se a collisão.x
 	private CollisionDetector colisao;
 	/*
 	 *	Método que inicializa todas as imagens do jogo.
@@ -92,20 +83,20 @@ public class TestStage extends Game {
 	 * */
 	private void updateDimensionDireita(){
 		if(jogador.getX() > getWidth()*0.55 ){
-			rolagem.x += jogador.getSpeed();
+			rolagem.x += (int)jogador.getSpeed();
 			listaDePlataformas = colisao.getListaDeEntidades();
 			for(EntidadePlataforma i : listaDePlataformas){
-				i.setX(i.getX()-jogador.getSpeed());
+				i.setX(i.getX()-(int)jogador.getSpeed());
 			}
 		}
 	}
 	
 	private void updateDimensionEsquerda(){
 		if(jogador.getX() < getWidth()*0.45 ){
-			rolagem.x -= jogador.getSpeed();
+			rolagem.x -= (int)jogador.getSpeed();
 			listaDePlataformas = colisao.getListaDeEntidades();
 			for(EntidadePlataforma i : listaDePlataformas){
-				i.setX(i.getX()+jogador.getSpeed());
+				i.setX(i.getX()+(int)jogador.getSpeed());
 			}
 		}
 	}
@@ -143,16 +134,18 @@ public class TestStage extends Game {
 	 *	Método que ouve todos os sons do teclado e apartir disso seta os estados no personagem. 
 	 * */
 	private void runControleJogo(){
-		if(InputManager.getInstance().isPressed(KeyEvent.VK_UP)&&(estadoDoSalto!=ESTADODESCENDO)){
-			estadoDoSalto = ESTADOPULANDO;
+		if(InputManager.getInstance().isPressed(KeyEvent.VK_UP)&&(jogador.getEstadoDoSalto()!=ESTADODESCENDO)){
+			jogador.setEstadoDoSalto(ESTADOPULANDO);
 		}
 		if(InputManager.getInstance().isPressed(KeyEvent.VK_RIGHT)){
-			estado = ESTADOANDANDO;
-			direcao = DIREITA;
+			jogador.setEstado(ESTADOANDANDO);
+			jogador.setDirecao(DIREITA);
+			jogador.andar(jogador.getDirecao());
 		}
 		if(InputManager.getInstance().isPressed(KeyEvent.VK_LEFT)){
-			estado = ESTADOANDANDO;
-			direcao = ESQUERDA;
+			jogador.setEstado(ESTADOANDANDO);
+			jogador.setDirecao(ESQUERDA);
+			jogador.andar(jogador.getDirecao());
 		}
 		if(InputManager.getInstance().isPressed(KeyEvent.VK_DOWN)){
 			
@@ -164,19 +157,19 @@ public class TestStage extends Game {
 	 * */
 	private void runEstadoPulando(){
 		if(chao-100<jogador.getY()&&InputManager.getInstance().isPressed(KeyEvent.VK_UP)){
-			jogador.setY(jogador.getY()-jogador.getSpeed());
+			jogador.setY(jogador.getY()-(int)jogador.getSpeed());
 		} else {
-			estadoDoSalto = ESTADODESCENDO;
+			jogador.setEstadoDoSalto(ESTADODESCENDO);
 		}
 	}
 	private void runEstadoDescendo(){
-		jogador.setY(jogador.getY()+jogador.getSpeed());
+		jogador.setY(jogador.getY()+(int)jogador.getSpeed());
 	}
 	private void runEstadoMovendoDireita(){
-		jogador.setX((int)(jogador.getX()+(jogador.getSpeed()*1.1)));
+		jogador.setX(jogador.getX()+((int)jogador.getSpeed()));
 	}
 	private void runEstadoMovendoEsquerda(){
-		jogador.setX((int)(jogador.getX()-(jogador.getSpeed()*1.1)));
+		jogador.setX(jogador.getX()-((int)jogador.getSpeed()));
 	}
 	// ACABA AQUI OS METODOS DOS ESTADOS DE LAMPIÃO
 
@@ -190,9 +183,6 @@ public class TestStage extends Game {
 		rolagem.x = 0;
 		rolagem.y = 300;
 		jogador = new Jogador(100,this.getHeight() - 300);
-		vidaDeLampiao = true;
-		direcao = DIREITA;
-		estado = ESTADOREPOUSO;
 		listaDePlataformas = new ArrayList<>();
 		listaDePlataformas.add(plataforma1);
 		listaDePlataformas.add(plataforma2);
@@ -205,24 +195,26 @@ public class TestStage extends Game {
 	 *	Método que roda a cada tick.
 	 * */
 	public void onUpdate(int currentTick) {
+		jogador.getSpritesDireita().update(currentTick);
+		jogador.getSpritesEsquerda().update(currentTick);
 		runControleJogo();
-		if(estadoDoSalto==ESTADOPULANDO){
+		if(jogador.getEstadoDoSalto()==ESTADOPULANDO){
 			runEstadoPulando();
 		} else if(colisao.colisaoPlataforma(jogador)){
-			estadoDoSalto = ESTADOREPOUSO;
+			jogador.setEstadoDoSalto(ESTADOREPOUSO);
 			chao = jogador.getY();
 		} else {
-			estadoDoSalto = ESTADODESCENDO;
+			jogador.setEstadoDoSalto(ESTADODESCENDO);
 			runEstadoDescendo();
 		}
-		if(estado==ESTADOANDANDO){
-			if(direcao==DIREITA){
+		if(jogador.getEstado()==ESTADOANDANDO){
+			if(jogador.getDirecao()==DIREITA){
 				if(jogador.getX()<getWidth()*0.60){
 					runEstadoMovendoDireita();
 				}
 				updateDimensionDireita();
 				if(InputManager.getInstance().isReleased(KeyEvent.VK_RIGHT)){
-					estado = ESTADOPARADO;
+					jogador.setEstado(ESTADOPARADO);
 				}
 			} else {
 				if(jogador.getX()>getWidth()*0.40){
@@ -230,7 +222,7 @@ public class TestStage extends Game {
 				}
 				updateDimensionEsquerda();
 				if(InputManager.getInstance().isReleased(KeyEvent.VK_LEFT)){
-					estado = ESTADOPARADO;
+					jogador.setEstado(ESTADOPARADO);
 				}
 			}
 		} 
@@ -249,19 +241,7 @@ public class TestStage extends Game {
 		g.drawImage(plataforma1.getSprite(), plataforma1.getX(), plataforma1.getY(), null);
 		g.drawImage(plataforma2.getSprite(), plataforma2.getX(), plataforma2.getY(), null);
 		g.drawImage(plataforma3.getSprite(), plataforma3.getX(), plataforma3.getY(), null);
-		if(estadoDoSalto==ESTADOREPOUSO){
-			if (direcao == DIREITA) {
-				g.drawImage(lampiaoDireita, jogador.getX(), jogador.getY(), null);
-			} else {
-				g.drawImage(lampiaoEsquerda, jogador.getX(), jogador.getY(), null);
-			}
-		} else {
-			if(direcao == DIREITA){
-				g.drawImage(lampiaoPulandoDireita, jogador.getX(), jogador.getY(), null);
-			} else {
-				g.drawImage(lampiaoPulandoEsquerda, jogador.getX(), jogador.getY(), null);
-			}
-		}
+		g.drawImage(jogador.getImagem(), jogador.getX(), jogador.getY(),80, 80, null);
 	}
 	
 	public static void main(String[] args) {

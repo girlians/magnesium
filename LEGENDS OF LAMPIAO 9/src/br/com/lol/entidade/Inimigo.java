@@ -9,7 +9,7 @@ public class Inimigo extends Personagem{
 	public Inimigo(int x, int y, BufferedImage imagem, int direcao){
 		this.x = x;
 		this.y = y;
-		this.dir = direcao;
+		this.direcao = direcao;
 		this.speed = 3;
 		this.imagem = imagem;
 	}
