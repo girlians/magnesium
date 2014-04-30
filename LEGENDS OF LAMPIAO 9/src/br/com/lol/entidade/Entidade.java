@@ -1,5 +1,7 @@
 package br.com.lol.entidade;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
 public class Entidade {
@@ -64,7 +66,7 @@ public class Entidade {
 	}
 
 	public Rectangle getBounds() {
-		return new Rectangle(this.x , this.y, 80, 80);
+		return new Rectangle(this.x , this.y, 80, 90);
 	}
 	
 	

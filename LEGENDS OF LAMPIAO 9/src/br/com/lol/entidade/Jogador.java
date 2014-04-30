@@ -37,9 +37,9 @@ public class Jogador extends Personagem{
 	
 	public Rectangle getBounds(int direcao){
 		if(direcao > 0){
-		return new Rectangle(x + 20 , y, 20, 40);
+		return new Rectangle(x + 20 , y, 20, 60);
 		}else
-			return new Rectangle(x + 20 , y, 20, 40);
+			return new Rectangle(x + 20 , y, 20, 60);
 	}
 	
 	public void atirar(int dir, int currentTick){
