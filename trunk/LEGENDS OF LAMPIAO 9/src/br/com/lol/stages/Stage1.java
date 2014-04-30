@@ -211,15 +211,19 @@ public class Stage1 extends Game{
 		Random rnd = new Random();
 		if(rnd.nextBoolean()){
 			if(rnd.nextBoolean()){
-				this.inimigos.add(new InimigoForte(720, this.getHeight() - 100, zumbi_forte_invertido, -1));
+				this.inimigos.add(new InimigoForte(720, this.getHeight() - 100,
+						zumbi_forte_invertido, -1));
 			}else{
-				this.inimigos.add(new InimigoForte(10 , this.getHeight() - 100, zumbi_forte_normal, 1));
+				this.inimigos.add(new InimigoForte(10 , this.getHeight() - 100,
+						zumbi_forte_normal, 1));
 			}
 		}else{
 			if(rnd.nextBoolean()){
-				this.inimigos.add(new InimigoFraco(720, this.getHeight() - 100, zumbi_fraco_invertido, -1));
+				this.inimigos.add(new InimigoFraco(720, this.getHeight() - 100, 
+						zumbi_fraco_invertido, -1));
 			}else{
-				this.inimigos.add(new InimigoFraco(10, this.getHeight() - 100, zumbi_fraco_normal, 1));
+				this.inimigos.add(new InimigoFraco(10, this.getHeight() - 100,
+						zumbi_fraco_normal, 1));
 			}
 		}
 	}
