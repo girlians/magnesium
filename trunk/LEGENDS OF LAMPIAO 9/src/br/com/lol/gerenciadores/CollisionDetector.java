@@ -21,7 +21,7 @@ public class CollisionDetector {
 		for (int i = 0; i < listaDeEntidades.size(); i++) {
 			colisao = listaDeEntidades.get(i).getBounds()
 					.intersects(personagem.getBounds())
-					&& ((personagem.getY()+85) == listaDeEntidades.get(i).getY());
+					&& ((personagem.getY()+80) == listaDeEntidades.get(i).getY());
 			if (colisao) {
 				return true;
 			}

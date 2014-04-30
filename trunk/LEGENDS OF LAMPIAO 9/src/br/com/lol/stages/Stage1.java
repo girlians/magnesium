@@ -288,7 +288,7 @@ public class Stage1 extends Game{
 	private void runEstAndandoDireita(){
 		controleAltura();
 		if(jogador.getX()<720){
-			jogador.setX(jogador.getX() + jogador.getSpeed());
+			jogador.setX(jogador.getX() + (int)jogador.getSpeed());
 			direcao = 1;
 			jogador.andar(direcao);
 			somPasso.play();
@@ -302,7 +302,7 @@ public class Stage1 extends Game{
 	private void runEstAndandoEsquerda(){
 		controleAltura();
 		if(jogador.getX()> 5){
-		jogador.setX(jogador.getX() - jogador.getSpeed());
+		jogador.setX(jogador.getX() - (int)jogador.getSpeed());
 		direcao = -1;
 		jogador.andar(direcao);
 		somPasso.play();

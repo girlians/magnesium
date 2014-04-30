@@ -2,7 +2,6 @@ package br.com.lol.entidade;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import br.com.lol.gerenciadores.ImageManager;
@@ -51,11 +50,11 @@ public class InimigoForte extends Inimigo{
 	}
 	
 	public void seMexer(int currentTick){
-		if(this.dir > 0){
+		if(this.direcao > 0){
 			this.x += this.speed;
 			andarDireita(currentTick);
 			if(this.x > 720){
-				this.dir *= -1;
+				this.direcao *= -1;
 				try {
 					this.imagem = ImageManager.getInstance().loadImage("br/com/lol/imagens/zumbis/"
 							+ "sprite_zumbi_verde_invertido1.png");
@@ -68,7 +67,7 @@ public class InimigoForte extends Inimigo{
 			this.x -= this.speed;
 			andarEsquerda(currentTick);
 			if(this.x < 10){
-				this.dir *= -1;
+				this.direcao *= -1;
 				try {
 					this.imagem = ImageManager.getInstance().loadImage("br/com/lol/imagens/zumbis/"
 							+ "sprite_zumbi_verde_normal1.png");
@@ -78,5 +77,13 @@ public class InimigoForte extends Inimigo{
 				}
 			}
 		}
+	}
+
+	public List<BufferedImage> getImagens() {
+		return imagens;
+	}
+
+	public void setImagens(List<BufferedImage> imagens) {
+		this.imagens = imagens;
 	}
 }

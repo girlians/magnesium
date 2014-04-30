@@ -1,39 +1,31 @@
 package br.com.lol.entidade;
 
-import br.com.lol.gerenciadores.SpriteAnimation;
-
 public class Personagem extends Entidade{
+	
+	protected int estadoDoSalto;
 
-	protected int dir;
-	protected SpriteAnimation spritesDireita;
-	protected SpriteAnimation spritesEsquerda;
+	protected int direcao;
 
-	public SpriteAnimation getSpritesEsquerda() {
-		return spritesEsquerda;
+	
+
+	public int getDirecao() {
+		return direcao;
 	}
 
-	public void setSpritesEsquerda(SpriteAnimation spritesEsquerda) {
-		this.spritesEsquerda = spritesEsquerda;
-	}
-
-	public SpriteAnimation getSpritesDireita() {
-		return spritesDireita;
-	}
-
-	public void setSpritesDireita(SpriteAnimation spritesDireita) {
-		this.spritesDireita = spritesDireita;
-	}
-
-	public int getDir() {
-		return dir;
-	}
-
-	public void setDir(int dir) {
-		this.dir = dir;
+	public void setDirecao(int direcao) {
+		this.direcao = direcao;
 	}
 	
 	public void andar(){
 		
+	}
+
+	public int getEstadoDoSalto() {
+		return estadoDoSalto;
+	}
+
+	public void setEstadoDoSalto(int estadoDoSalto) {
+		this.estadoDoSalto = estadoDoSalto;
 	}
 	
 }

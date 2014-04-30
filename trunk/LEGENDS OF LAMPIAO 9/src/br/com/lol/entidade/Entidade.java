@@ -1,7 +1,5 @@
 package br.com.lol.entidade;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
 public class Entidade {
@@ -9,8 +7,9 @@ public class Entidade {
 	protected int energia;
 	protected int x;
 	protected int y;
-	protected int speed;
-	public Rectangle pos;
+	protected float speed;
+	protected Rectangle pos;
+	protected int estado;
 	
 	public Entidade(){
 		//Não faz nada, mas precisa ter
@@ -40,12 +39,12 @@ public class Entidade {
 	}
 
 
-	public int getSpeed() {
+	public float getSpeed() {
 		return speed;
 	}
 
 
-	public void setSpeed(int speed) {
+	public void setSpeed(float speed) {
 		this.speed = speed;
 	}
 
@@ -67,6 +66,14 @@ public class Entidade {
 
 	public Rectangle getBounds() {
 		return new Rectangle(this.x , this.y, 80, 90);
+	}
+
+	public int getEstado() {
+		return estado;
+	}
+
+	public void setEstado(int estado) {
+		this.estado = estado;
 	}
 	
 	
