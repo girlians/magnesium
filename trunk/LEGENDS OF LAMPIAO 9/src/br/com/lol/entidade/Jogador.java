@@ -1,5 +1,6 @@
 package br.com.lol.entidade;
 
+import java.applet.AudioClip;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -61,8 +62,9 @@ public class Jogador extends Personagem{
 			return new Rectangle(x + 20 , y, 20, 60);
 	}
 	
-	public void atirar(int dir, int currentTick) {
+	public void atirar(int dir, int currentTick, AudioClip somTiro) {
 		if (currentTick % 12 == 0) {
+			somTiro.play();
 			if (dir > 0) {
 				tiros.add(new Tiro(this.x + 78, this.y + 28, dir));
 			} else {

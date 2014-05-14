@@ -314,8 +314,7 @@ public class Stage1 extends Game{
 	}
 	
 	private void runAtirando(int currentTick) {
-		jogador.atirar(direcao, currentTick);
-		somTiro.play();
+		jogador.atirar(direcao, currentTick, somTiro);
 		if(InputManager.getInstance().isReleased(KeyEvent.VK_SPACE)){
 			somTiro.stop();
 		}

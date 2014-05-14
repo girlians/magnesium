@@ -60,6 +60,22 @@ public class ImageManager {
 		
 	}
 	
+	public SpriteAnimation loadSpriteAnimationVertical(String filename, int quantFrames) throws IOException{
+		BufferedImage sheet = loadImage(filename);
+		if(sheet.getHeight() % quantFrames != 0){
+			throw new RuntimeException("A imagem "+filename+" não possui "
+					+quantFrames+" sprites do mesmo tamanho");
+		}else{
+			SpriteAnimation anim = new SpriteAnimation();
+			int w = sheet.getWidth();
+			int h = sheet.getHeight() / quantFrames;
+			for(int i = 0; i < quantFrames; i++){
+				anim.addImage(sheet.getSubimage(0,i *h , w, h));
+			}
+			return anim;
+		}
+	}
+	
 	public BufferedImage loadImage(String filename, int x, int y, int w, int h) throws IOException{
 		BufferedImage sheet = loadImage(filename);
 		BufferedImage img = sheet.getSubimage(x, y, w, h);
