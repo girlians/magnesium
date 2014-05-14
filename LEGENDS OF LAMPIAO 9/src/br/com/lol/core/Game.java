@@ -52,10 +52,11 @@ public abstract class Game implements WindowListener{
 	}
 
 	public Game(){
-		this.mainWindow = new JFrame("Desenvolvimento de jogos - modulo 1");
+		this.mainWindow = new JFrame("LOL- Legends of Lampião");
 		this.mainWindow.addWindowListener(this);
 		this.mainWindow.setSize(800,600);
 		this.mainWindow.addKeyListener(InputManager.getInstance());
+		this.mainWindow.getContentPane().setLayout(null);
 		this.activity = false;
 	}
 		

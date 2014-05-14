@@ -14,10 +14,12 @@ public class InputManager implements KeyListener, MouseInputListener
     static protected int KEY_RELEASED = 0;
     static protected int KEY_JUST_PRESSED = 1;
     static protected int KEY_PRESSED = 2;
+    static protected int KEY_TYPED = 3;
     static private InputManager instance;
     private HashMap<Integer, Integer> keyCache;
     private ArrayList<Integer> pressedKeys;
     private ArrayList<Integer> releasedKeys;
+    private ArrayList<Integer> typedKeys;
     
     private boolean mouseButton1;
     private boolean mouseButton2;
@@ -28,6 +30,7 @@ public class InputManager implements KeyListener, MouseInputListener
         keyCache = new HashMap<Integer, Integer>();
         pressedKeys = new ArrayList<Integer>();
         releasedKeys = new ArrayList<Integer>();
+        typedKeys = new ArrayList<Integer>();
         mousePos = new Point();
     }
 
@@ -44,6 +47,11 @@ public class InputManager implements KeyListener, MouseInputListener
     {
         return keyCache.containsKey(keyId)
                 && !keyCache.get(keyId).equals(KEY_RELEASED);
+    }
+    
+    public boolean isTyped(int keyId){
+    	return keyCache.containsKey(keyId) 
+    			&& !keyCache.get(keyId).equals(KEY_RELEASED);
     }
 
     public boolean isJustPressed(int keyId)
@@ -81,13 +89,22 @@ public class InputManager implements KeyListener, MouseInputListener
                 keyCache.put(keyCode, KEY_PRESSED);
             }
         }
+        for(Integer keyCode: typedKeys){
+        	if(isReleased(keyCode)){
+        		keyCache.put(keyCode, KEY_RELEASED);
+        	}
+        	if(isTyped(keyCode)){
+        		keyCache.put(keyCode, KEY_TYPED);
+        	}
+        }
         pressedKeys.clear();
         releasedKeys.clear();
+        typedKeys.clear();
     }
 
     public void keyTyped(KeyEvent e)
     {
-        // Rotina não utilizada. Evento de tecla teclada.
+    	typedKeys.add(e.getKeyCode());
     }
 
     public void keyPressed(KeyEvent e)

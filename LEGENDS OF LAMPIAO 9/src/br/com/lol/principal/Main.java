@@ -1,3 +1,4 @@
+
 package br.com.lol.principal;
 
 import br.com.lol.core.Game;

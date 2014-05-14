@@ -6,7 +6,19 @@ public class Personagem extends Entidade{
 
 	protected int direcao;
 
+	protected UsaArma arma;
 	
+	public Personagem(){
+		this.arma = new Espingarda();
+	}
+	
+	public void atirarTest(){
+		arma.usar();
+	}
+	
+	public void setArma(UsaArma arma){
+		this.arma = arma;
+	}
 
 	public int getDirecao() {
 		return direcao;

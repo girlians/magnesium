@@ -16,7 +16,9 @@ public class Entidade {
 	}
 	
 	public Entidade(int x, int y){
-		pos = new Rectangle(x, y, 1, 1);
+		pos = new Rectangle(x, y, 30, 30);
+		this.x = x;
+		this.y = y;
 	}
 	
 	public int getX() {

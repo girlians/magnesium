@@ -47,4 +47,8 @@ public class SpriteAnimation {
 	public BufferedImage getImage(){
 		return this.images.get(currentImageIndex);
 	}
+	
+	public List<BufferedImage> getImagens(){
+		return this.images;
+	}
 }
