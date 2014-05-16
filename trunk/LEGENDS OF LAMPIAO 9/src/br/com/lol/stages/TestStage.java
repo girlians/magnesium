@@ -10,12 +10,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.lol.armas.Calibre12;
 import br.com.lol.auxDisplays.Inventario;
 import br.com.lol.core.Game;
 import br.com.lol.entidade.Entidade;
 import br.com.lol.entidade.EntidadePlataforma;
 import br.com.lol.entidade.Jogador;
-import br.com.lol.entidade.ShotGun;
 import br.com.lol.gerenciadores.CollisionDetector;
 import br.com.lol.gerenciadores.ImageManager;
 import br.com.lol.gerenciadores.InputManager;
@@ -206,8 +206,8 @@ public class TestStage extends Game {
 
 	private void colisaoArma() {
 		if (this.arma.getBounds().intersects(this.jogador.getBounds())) {
+			this.inventario.addArmaAoInventario(2);
 			this.colisaoArma = true;
-			this.inventario.addArmaAoInventario(1);
 		}
 	}
 
@@ -237,7 +237,7 @@ public class TestStage extends Game {
 		jogador.getSpritesDireita().update(currentTick);
 		jogador.getSpritesEsquerda().update(currentTick);
 		colisaoArma();
-		inventario.update(getWidth()/2, getHeight()/ 2);
+		//inventario.update(getWidth()/2, getHeight()/ 2);
 		if(this.estado != PAUSANOJOGO){
 		runControleJogo();
 		}else{
@@ -246,7 +246,7 @@ public class TestStage extends Game {
 				this.estado = ESTADOPARADO;
 			}
 			if(this.inventario.isSelecionarArmas()){
-				this.inventario.controleSelecaoArmas(currentTick);
+				this.inventario.controleSelecaoArmas(currentTick, this.jogador);
 			}
 		}
 		if (jogador.getEstadoDoSalto() == ESTADOPULANDO) {
@@ -304,8 +304,6 @@ public class TestStage extends Game {
 			g.fillRect(this.arma.getX() - 10, this.arma.getY()-30, 40 , 40);
 			g.setColor(Color.RED);
 			g.drawString("GUN", this.arma.getX(), this.arma.getY());
-		}else{
-			this.jogador.setArma(new ShotGun());
 		}
 		// Desenhando as plataformas
 		renderPlataformas(g);

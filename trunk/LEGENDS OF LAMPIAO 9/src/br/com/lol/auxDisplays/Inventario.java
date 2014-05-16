@@ -11,22 +11,33 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import br.com.lol.armas.Bazuca666;
+import br.com.lol.armas.Calibre12;
+import br.com.lol.armas.Calibre50;
+import br.com.lol.armas.Espingarda;
+import br.com.lol.armas.Facao;
+import br.com.lol.armas.Revolver38;
+import br.com.lol.armas.UsaArma;
 import br.com.lol.entidade.Display;
+import br.com.lol.entidade.Jogador;
 import br.com.lol.gerenciadores.ImageManager;
 import br.com.lol.gerenciadores.InputManager;
 import br.com.lol.gerenciadores.SpriteAnimation;
 
 public class Inventario implements Display{
 
-	static private final int FACAO = 0;
-	static private final int CALIBRE12 = 1;
-	static private final int CALIBRE50 = 2;
-	static private final int REVOLVER38 = 3;
-	static private final int BAZUCA666 = 4;
+	static private final int ESPINGARDA = 0;
+	static private final int FACAO = 1;
+	static private final int CALIBRE12 = 2;
+	static private final int CALIBRE50 = 3;
+	static private final int REVOLVER38 = 4;
+	static private final int BAZUCA666 = 5;
 	
 	private boolean desenharInventarioArmas;
 	private boolean selecionarArmas;
 	private boolean selecionarOpcoes;
+	
+	private int[][] locaisArmas;
 	
 	private int x, y;
 	private BufferedImage imagem;
@@ -39,8 +50,13 @@ public class Inventario implements Display{
 	private int selecionador2X;
 	private int selecionador2Y;
 	
+	private int localX;
+	private int localY;
+	
 	private int proxArmaX;
 	private int proxArmaY;
+	
+	private ArrayList<UsaArma> armas;
 	
 	private ArrayList<Boolean> armasPegas;
 	
@@ -50,19 +66,25 @@ public class Inventario implements Display{
 		this.selecionarOpcoes = false;
 		this.desenharInventarioArmas = false;
 		
-		this.x = x;
-		this.y = y;
+		this.x = 300;
+		this.y = 225;
 		this.selecionadorX = x;
 		this.selecionadorY = y;
 		
 		this.selecionador2X = x;
 		this.selecionador2Y = y;
 		
-		this.proxArmaX = this.x - 10; // pode ir até 270
-		this.proxArmaY = this.y + 95; // pode ir até 215
+		this.proxArmaX = x - 25; // pode ir até 270
+		this.proxArmaY = y + 100; // pode ir até 215
+		
+		this.localX = 1;
+		this.localY = 0;
 		
 		this.armasPegas = new ArrayList<Boolean>();
+		this.armas = new ArrayList<UsaArma>();
+		this.locaisArmas = new int[3][3];
 		inicializarArmas();
+		inicializaLocaisArmas();
 		try {
 			this.armasInventario = ImageManager.getInstance().loadSpriteAnimationVertical(
 					"br/com/lol/imagens/Armas - inventario.png", 5);
@@ -77,20 +99,50 @@ public class Inventario implements Display{
 		}
 	}
 	
+	private void inicializaLocaisArmas(){
+		for(int i = 0; i < 3; i++){
+			for(int j = 0; j < 3; j++){
+				this.locaisArmas[i][j] = -1;
+			}
+		}
+		this.locaisArmas[0][0] = 0; // SÓ INICIALIZANDO A PRIMAIRA POSIÇÃO DA MATRIZ COM A ESPINGARDA
+	}
+	
 	private void inicializarArmas(){
-		for(int i = 0; i < 5; i++){
+		for(int i = 0; i < 6; i++){
 			armasPegas.add(false);
 		}
+		this.armas.add(new Espingarda());
+		this.armas.add(new Facao());
+		this.armas.add(new Calibre12());
+		this.armas.add(new Calibre50());
+		this.armas.add(new Revolver38());
+		this.armas.add(new Bazuca666());
 	}
 	
 	public void addArmaAoInventario(int cod){
+		boolean contem = false;
 		this.armasPegas.set(cod, true);
+		
+		for(int i = 0; i < 3; i++){
+			for(int j = 0; j<3 ; j++){
+				if(this.locaisArmas[i][j] == cod)
+					contem = true;
+			}
+		}
+		if(!contem){
+		this.locaisArmas[localY][localX] = cod;
+		if(this.localX < 2){
+			this.localX++;
+		}else{
+			this.localX = 0;
+			if(this.localY < 2){
+				this.localY++;
+			}
+		}
+		}
 	}
 
-	public void update(int x, int y){
-		this.x = x - 80;
-		this.y = y - 80;
-	}
 	
 	public BufferedImage selecionarArma(int cod){
 			return this.armasInventario.getImagens().get(cod);
@@ -130,7 +182,7 @@ public class Inventario implements Display{
 	
 	public void andarSelecionadorEsquerda(int currentTick){
 		if(currentTick % 5 == 0){
-			if(this.selecionadorX > this.x + 80){
+			if(this.selecionadorX > this.x + 100){
 				this.selecionadorX -= 80;
 			}
 		}
@@ -144,7 +196,7 @@ public class Inventario implements Display{
 		}
 	}
 	
-	public void controleSelecaoArmas(int currentTick){
+	public void controleSelecaoArmas(int currentTick, Jogador jogador){
 		if(InputManager.getInstance().isPressed(KeyEvent.VK_RIGHT)){
 			andarSelecionador2Direita(currentTick);
 		}
@@ -160,6 +212,14 @@ public class Inventario implements Display{
 		if(InputManager.getInstance().isPressed(KeyEvent.VK_ESCAPE)){
 			this.selecionarArmas = false;
 		}
+		if(InputManager.getInstance().isPressed(KeyEvent.VK_ENTER)){
+			int placeY = (this.selecionador2X - 400) / 100;
+			int placeX = (this.selecionador2Y - 300) / 25;
+			int arma = this.locaisArmas[placeY][placeX];
+			if(arma >= 0){
+			jogador.setArma(this.armas.get(arma));
+			}
+		}		
 	}
 	
 	public void controleSelecaoOpcao(int currentTick){
@@ -179,10 +239,10 @@ public class Inventario implements Display{
 		}
 	}
 	private void controlePosicaoPonteiro(){
-		if(this.selecionadorX == this.x + 320){
+		if(this.selecionadorX == 640){
 			runSair();
 		}
-		if(this.selecionadorX == this.x + 80){
+		if(this.selecionadorX == 400){
 			this.selecionarArmas = true;
 		}
 	}
@@ -193,7 +253,7 @@ public class Inventario implements Display{
 	
 	public void displayInventarioArmas(Graphics2D g){
 		g.drawImage(this.inventarioArmas, this.x + 65, this.y + 140, null);
-		g.drawImage(this.selecionador2, this.selecionador2X - 10, this.selecionador2Y + 65, null);
+		g.drawImage(this.selecionador2, this.selecionador2X - 30, this.selecionador2Y + 70, null);
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
 		for(int i = 0; i< armasPegas.size(); i++){
 			if(armasPegas.get(i)){
@@ -206,7 +266,7 @@ public class Inventario implements Display{
 	public void display(Graphics2D g) {
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
 		g.drawImage(this.imagem, this.x, this.y, null);
-		g.drawImage(this.selecionador, this.selecionadorX , this.selecionadorY - 35, null);
+		g.drawImage(this.selecionador, this.selecionadorX - 25 , this.selecionadorY - 30, null);
 	}
 	
 	
