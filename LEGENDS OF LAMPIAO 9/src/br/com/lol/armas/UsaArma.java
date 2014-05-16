@@ -1,4 +1,4 @@
-package br.com.lol.entidade;
+package br.com.lol.armas;
 
 public interface UsaArma {
 
