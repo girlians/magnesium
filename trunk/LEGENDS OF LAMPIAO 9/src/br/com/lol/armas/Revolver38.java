@@ -9,7 +9,14 @@ public class Revolver38 extends Arma implements UsaArma {
 	}
 	
 	public Revolver38(){
+		super(500);
 		this.codigo = 4;
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

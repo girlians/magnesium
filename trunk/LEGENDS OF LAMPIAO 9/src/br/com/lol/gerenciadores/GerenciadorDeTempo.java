@@ -1,31 +1,32 @@
-package br.com.lol.armas;
+package br.com.lol.gerenciadores;
 
-public class Arma implements Runnable{
+public class GerenciadorDeTempo implements Runnable {
 
-	protected int codigo;
-	protected int tempo;
 	private boolean acesso;
-
-	public Arma(int tempo){
-		acesso = true;
+	private int tempo;
+	
+	
+	public GerenciadorDeTempo(int tempo){
 		this.tempo = tempo;
+		setAcesso(false);
+	
 	}
 	
-	public int getCodigo(){
-		return this.codigo;
-	}
+	
 
 	@Override
 	public void run() {
-		if(isAcesso()){
-			setAcesso(false);
+		if (!isAcesso()) {
+			setAcesso(true);
 			try {
 				Thread.sleep(tempo);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			setAcesso(true);
+			setAcesso(false);
 		}
+		
+	
 	}
 
 	public boolean isAcesso() {

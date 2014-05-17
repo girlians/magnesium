@@ -9,6 +9,7 @@ public class Bazuca666 extends Arma implements UsaArma{
 	}
 	
 	public Bazuca666(){
+		super(5000);
 		this.codigo = 5;
 	}
 

@@ -17,6 +17,7 @@ import br.com.lol.entidade.Entidade;
 import br.com.lol.entidade.EntidadePlataforma;
 import br.com.lol.entidade.Jogador;
 import br.com.lol.gerenciadores.CollisionDetector;
+import br.com.lol.gerenciadores.GerenciadorDeTempo;
 import br.com.lol.gerenciadores.ImageManager;
 import br.com.lol.gerenciadores.InputManager;
 
@@ -74,7 +75,7 @@ public class TestStage extends Game {
 	private void inicializarImagens() {
 		try {
 			this.cenarioPlataforma = ImageManager.getInstance().loadImage(
-					"br/com/lol/imagens/campoPlataformado1600x900.png");
+					"br/com/lol/imagens/cenario-LOL.png");
 
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
@@ -96,7 +97,7 @@ public class TestStage extends Game {
 	}
 
 	private void updateDimensionEsquerda() {
-		if (jogador.getX() < getWidth() * 0.45) {
+		if ((jogador.getX() < getWidth() * 0.45)||rolagem.x < getWidth()*0.45) {
 			rolagem.x -= (int) jogador.getSpeed();
 			listaDePlataformas = colisao.getListaDeEntidades();
 			for (EntidadePlataforma i : listaDePlataformas) {
@@ -126,7 +127,7 @@ public class TestStage extends Game {
 	 * Inicializa todas as plataformas
 	 */
 	private void inicializarPlataformas() {
-		plataforma1 = new EntidadePlataforma(0, this.getHeight() - 50, 1600, 20);
+		plataforma1 = new EntidadePlataforma(0, this.getHeight() - 50, 7500, 20);
 		plataforma2 = new EntidadePlataforma(150, this.getHeight() - 100, 100,
 				20);
 		plataforma3 = new EntidadePlataforma(300, this.getHeight() - 150, 100,
@@ -206,7 +207,7 @@ public class TestStage extends Game {
 
 	private void colisaoArma() {
 		if (this.arma.getBounds().intersects(this.jogador.getBounds())) {
-			this.inventario.addArmaAoInventario(2);
+			this.inventario.addArmaAoInventario(1);
 			this.colisaoArma = true;
 		}
 	}
@@ -291,7 +292,7 @@ public class TestStage extends Game {
 
 	public void onRender(Graphics2D g) {
 		// Desenhando o cenario
-		g.drawImage(cenarioPlataforma, -rolagem.x, -rolagem.y, null);
+		g.drawImage(cenarioPlataforma, -rolagem.x, -rolagem.y+300, null);
 		
 		if(this.estado == PAUSANOJOGO){
 			this.inventario.display(g);
