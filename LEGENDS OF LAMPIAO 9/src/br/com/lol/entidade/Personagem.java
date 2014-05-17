@@ -1,5 +1,6 @@
 package br.com.lol.entidade;
 
+import br.com.lol.armas.Espingarda;
 import br.com.lol.armas.UsaArma;
 
 public class Personagem extends Entidade{
@@ -9,6 +10,8 @@ public class Personagem extends Entidade{
 	protected int direcao;
 
 	protected UsaArma arma;
+
+	private Thread threadTempo;
 	
 	public Personagem(){
 		this.arma = new Espingarda();
@@ -16,6 +19,7 @@ public class Personagem extends Entidade{
 	
 	public void atirarTest(){
 		arma.usar();
+		new Thread(arma).start();
 	}
 	
 	public void setArma(UsaArma arma){

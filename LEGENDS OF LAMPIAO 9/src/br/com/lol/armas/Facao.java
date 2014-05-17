@@ -8,7 +8,14 @@ public class Facao extends Arma implements UsaArma{
 	}
 	
 	public Facao(){
+		super(1);
 		this.codigo = 1;
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
