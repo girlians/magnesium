@@ -22,7 +22,7 @@ public class Tiro extends Entidade{
 		this.x = x +10;
 		this.y = y + 125;
 		this.energia = -1;
-		this.speed = 10;
+		this.speed = 2;
 		this.setVisible(true);
 		this.direcao = direcao;
 	}

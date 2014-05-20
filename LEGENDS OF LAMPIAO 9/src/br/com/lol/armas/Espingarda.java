@@ -15,9 +15,9 @@ public class Espingarda extends Arma implements UsaArma {
 		if(isAcesso()){
 			verificaImagemBala(direcao);
 			if(direcao > 0){
-			this.balas.add(new Tiro(this.x + 78, this.y + 28, direcao, this.imagemTiro));
+			this.balas.add(new Tiro(this.x + 60, this.y - 95, direcao, this.imagemTiro));
 			}else{
-				this.balas.add(new Tiro(this.x - 6, this.y + 28, direcao, this.imagemTiro));
+				this.balas.add(new Tiro(this.x - 6, this.y - 95, direcao, this.imagemTiro));
 			}
 		}
 			
@@ -26,9 +26,9 @@ public class Espingarda extends Arma implements UsaArma {
 	private void verificaImagemBala(int direcao){
 		try{
 		if(direcao > 0){
-			this.imagemTiro = ImageManager.getInstance().loadImage("br/com/lol/imagens/bala.png");
-		}else{
 			this.imagemTiro = ImageManager.getInstance().loadImage("br/com/lol/imagens/bala_invertida.png");
+		}else{
+			this.imagemTiro = ImageManager.getInstance().loadImage("br/com/lol/imagens/bala.png");
 		}
 		}catch(IOException e){
 			e.getMessage();
