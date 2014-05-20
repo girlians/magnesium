@@ -15,6 +15,11 @@ public class Entidade {
 		//Não faz nada, mas precisa ter
 	}
 	
+	public void update(int x, int y){
+		this.x = x;
+		this.y = y;
+	}
+	
 	public Entidade(int x, int y){
 		pos = new Rectangle(x, y, 30, 30);
 		this.x = x;

@@ -261,6 +261,7 @@ public class TestStage extends Game {
 	 */
 	public void onUpdate(int currentTick) {
 		verificaRolagem();
+		this.armaAtual.update(this.jogador.getX(), this.jogador.getY());
 		jogador.getSpritesDireita().update(currentTick);
 		jogador.getSpritesEsquerda().update(currentTick);
 		colisaoArma();
