@@ -56,11 +56,15 @@ public class Inventario implements Display{
 	private int proxArmaX;
 	private int proxArmaY;
 	
+	private Jogador jogador;
+	
 	private ArrayList<UsaArma> armas;
 	
 	private ArrayList<Boolean> armasPegas;
 	
-	public Inventario(int x, int y){
+	public Inventario(int x, int y, Jogador j){
+		
+		this.jogador = j;
 		
 		this.selecionarArmas = false;
 		this.selecionarOpcoes = false;
@@ -112,12 +116,12 @@ public class Inventario implements Display{
 		for(int i = 0; i < 6; i++){
 			armasPegas.add(false);
 		}
-		this.armas.add(new Espingarda());
-		this.armas.add(new Facao());
-		this.armas.add(new Calibre12());
-		this.armas.add(new Calibre50());
-		this.armas.add(new Revolver38());
-		this.armas.add(new Bazuca666());
+		this.armas.add(new Espingarda(this.jogador));
+		this.armas.add(new Facao(this.jogador));
+		this.armas.add(new Calibre12(this.jogador));
+		this.armas.add(new Calibre50(this.jogador));
+		this.armas.add(new Revolver38(this.jogador));
+		this.armas.add(new Bazuca666(this.jogador));
 	}
 	
 	public void addArmaAoInventario(int cod){

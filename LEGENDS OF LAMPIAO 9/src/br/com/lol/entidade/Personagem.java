@@ -10,20 +10,9 @@ public class Personagem extends Entidade{
 	protected int direcao;
 
 	protected UsaArma arma;
-
-	private Thread threadTempo;
 	
 	public Personagem(){
-		this.arma = new Espingarda();
-	}
-	
-	public void atirarTest(){
-		arma.usar();
-		new Thread(arma).start();
-	}
-	
-	public void setArma(UsaArma arma){
-		this.arma = arma;
+		
 	}
 
 	public int getDirecao() {

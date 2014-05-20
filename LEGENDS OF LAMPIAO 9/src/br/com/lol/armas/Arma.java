@@ -1,12 +1,25 @@
 package br.com.lol.armas;
 
-public class Arma implements Runnable{
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
+
+import br.com.lol.entidade.Entidade;
+import br.com.lol.entidade.Jogador;
+import br.com.lol.entidade.Tiro;
+
+public class Arma extends Entidade implements Runnable{
 
 	protected int codigo;
 	protected int tempo;
 	private boolean acesso;
+	BufferedImage imagemTiro;
+	protected List<Tiro> balas;
 
-	public Arma(int tempo){
+	public Arma(int tempo, Jogador j){
+		this.x = j.getX();
+		this.y = j.getY();
+		this.balas = new ArrayList<Tiro>();
 		acesso = true;
 		this.tempo = tempo;
 	}
@@ -34,6 +47,10 @@ public class Arma implements Runnable{
 
 	public void setAcesso(boolean acesso) {
 		this.acesso = acesso;
+	}
+	
+	public List<Tiro> getBalas(){
+		return this.balas;
 	}
 
 	

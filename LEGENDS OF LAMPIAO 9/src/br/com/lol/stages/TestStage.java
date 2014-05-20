@@ -10,12 +10,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.lol.armas.Arma;
 import br.com.lol.armas.Calibre12;
 import br.com.lol.auxDisplays.Inventario;
 import br.com.lol.core.Game;
 import br.com.lol.entidade.Entidade;
 import br.com.lol.entidade.EntidadePlataforma;
 import br.com.lol.entidade.Jogador;
+import br.com.lol.entidade.Tiro;
 import br.com.lol.gerenciadores.CollisionDetector;
 import br.com.lol.gerenciadores.GerenciadorDeTempo;
 import br.com.lol.gerenciadores.ImageManager;
@@ -52,6 +54,9 @@ public class TestStage extends Game {
 	private int chao;
 	private Dimension dim;
 	private Point rolagem;
+	private boolean aindaRolandoEsquerda;
+	private boolean aindaRolandoDireita;
+	private Arma armaAtual;
 	// Jogador
 	private Jogador jogador;
 	// Plataformas
@@ -87,6 +92,7 @@ public class TestStage extends Game {
 	 */
 	private void updateDimensionDireita() {
 		if (jogador.getX() > getWidth() * 0.55) {
+			if(aindaRolandoDireita){
 			rolagem.x += (int) jogador.getSpeed();
 			listaDePlataformas = colisao.getListaDeEntidades();
 			for (EntidadePlataforma i : listaDePlataformas) {
@@ -94,16 +100,32 @@ public class TestStage extends Game {
 			}
 			this.arma.setX(this.arma.getX() - (int) jogador.getSpeed());
 		}
+		}
 	}
 
 	private void updateDimensionEsquerda() {
 		if ((jogador.getX() < getWidth() * 0.45)||rolagem.x < getWidth()*0.45) {
+			if(aindaRolandoEsquerda){
 			rolagem.x -= (int) jogador.getSpeed();
 			listaDePlataformas = colisao.getListaDeEntidades();
 			for (EntidadePlataforma i : listaDePlataformas) {
 				i.setX(i.getX() + (int) jogador.getSpeed());
 			}
 			this.arma.setX(arma.getX() + (int) jogador.getSpeed());
+		}
+		}
+	}
+	
+	public void verificaRolagem(){
+		if(this.rolagem.x >= 6700){
+			this.aindaRolandoDireita = false;
+		}else{
+			this.aindaRolandoDireita = true;
+		}
+		if(this.rolagem.x <= -100){
+			this.aindaRolandoEsquerda = false;
+		}else{
+			this.aindaRolandoEsquerda = true;
 		}
 	}
 
@@ -213,15 +235,18 @@ public class TestStage extends Game {
 	}
 
 	public void onLoad() {
+		
 		this.colisaoArma = false;
+		this.aindaRolandoDireita = true;
+		this.aindaRolandoEsquerda = true;
 		inicializarImagens();
 		inicializarPlataformas();
-		this.inventario = new Inventario(getWidth()/2, getHeight()/2);
 		rolagem = new Point(0, 300);
 		rolagem.x = 0;
 		rolagem.y = 300;
 		jogador = new Jogador(100, this.getHeight() - 300);
-		this.inventario = new Inventario(getWidth() / 2, getHeight()/2);
+		this.armaAtual = this.jogador.getArma();
+		this.inventario = new Inventario(getWidth() / 2, getHeight()/2, this.jogador);
 		listaDePlataformas = new ArrayList<>();
 		listaDePlataformas.add(plataforma1);
 		listaDePlataformas.add(plataforma2);
@@ -235,6 +260,7 @@ public class TestStage extends Game {
 	 * Método que roda a cada tick.
 	 */
 	public void onUpdate(int currentTick) {
+		verificaRolagem();
 		jogador.getSpritesDireita().update(currentTick);
 		jogador.getSpritesEsquerda().update(currentTick);
 		colisaoArma();
@@ -279,6 +305,15 @@ public class TestStage extends Game {
 			}
 		}
 	}
+	
+	public void desenharArma(Graphics2D g){
+		for(Tiro tiro: this.armaAtual.getBalas()){
+			if(tiro.isVisible()){
+				tiro.mover();
+				g.drawImage(tiro.getImagem(), tiro.getX(), tiro.getY(), null);
+			}
+		}
+	}
 
 	public void onUnLoad() {
 
@@ -292,6 +327,7 @@ public class TestStage extends Game {
 
 	public void onRender(Graphics2D g) {
 		// Desenhando o cenario
+		
 		g.drawImage(cenarioPlataforma, -rolagem.x, -rolagem.y+300, null);
 		
 		if(this.estado == PAUSANOJOGO){
@@ -310,6 +346,7 @@ public class TestStage extends Game {
 		renderPlataformas(g);
 		g.drawImage(jogador.getImagem(), jogador.getX(), jogador.getY(), 80,
 				80, null);
+		desenharArma(g);
 	}
 
 	public static void main(String[] args) {
