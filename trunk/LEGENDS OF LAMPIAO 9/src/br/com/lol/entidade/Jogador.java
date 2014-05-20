@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.lol.armas.Arma;
+import br.com.lol.armas.Espingarda;
+import br.com.lol.armas.UsaArma;
 import br.com.lol.gerenciadores.ImageManager;
 import br.com.lol.gerenciadores.SpriteAnimation;
 
@@ -32,6 +35,8 @@ public class Jogador extends Personagem{
 		this.estado = 4;
 		this.estadoDoSalto = 0;
 		this.direcao = 1;
+		
+		this.arma = new Espingarda(this);
 		
 		this.tiros = new ArrayList<Tiro>();
 		this.spritesDireita = new SpriteAnimation();
@@ -62,7 +67,7 @@ public class Jogador extends Personagem{
 			return new Rectangle(x + 20 , y, 20, 60);
 	}
 	
-	public void atirar(int dir, int currentTick, AudioClip somTiro) {
+	/*public void atirar(int dir, int currentTick, AudioClip somTiro) {
 		if (currentTick % 12 == 0) {
 			somTiro.play();
 			if (dir > 0) {
@@ -71,7 +76,7 @@ public class Jogador extends Personagem{
 				tiros.add(new Tiro(this.x - 6, this.y + 28, dir));
 			}
 		}
-	}
+	}*/
 
 	public void pular(int chao){
 		if(this.y > chao - Pulo.getAlturaMax()){
@@ -106,7 +111,20 @@ public class Jogador extends Personagem{
 			this.imagem = spritesEsquerda.getImage();
 		}
 	}
+	
+	public void atirarTest(){
+		arma.usar(this.direcao);
+		new Thread(arma).start();
+	}
+	
+	public void setArma(UsaArma arma){
+		this.arma = arma;
+	}
 
+	public Arma getArma(){
+		return (Arma)this.arma;
+	}
+	
 	public List<Tiro> getTiros() {
 		return tiros;
 	}

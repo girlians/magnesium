@@ -145,10 +145,6 @@ public class Stage1 extends Game{
 		this.estaVivo = true;        
 		this.tentativas = 1;
 		
-		this.balistica = new Tiro(0, 0, 0);
-		this.displayP = new DisplayPontuacao(balistica, 0);
-		
-		
 		this.score = 23300;
 		this.inimigos = new ArrayList<Inimigo>();
 		jogador = new Jogador(100,this.getHeight() - 100);
@@ -314,10 +310,10 @@ public class Stage1 extends Game{
 	}
 	
 	private void runAtirando(int currentTick) {
-		jogador.atirar(direcao, currentTick, somTiro);
+		/*jogador.atirar(direcao, currentTick, somTiro);
 		if(InputManager.getInstance().isReleased(KeyEvent.VK_SPACE)){
 			somTiro.stop();
-		}
+		}*/
 	}
 	
 	private void verificandoBalas(){
@@ -360,11 +356,6 @@ public class Stage1 extends Game{
 						tiro.setVisible(false);
 						somZumbiMorto.play();
 						this.inimigos.remove(i);
-						if(i.getIdentificador().equals("fraco")){
-						balistica.setChanges(10);
-						}else if(i.getIdentificador().equals("forte")){
-							balistica.setChanges(20);
-						}
 						return true;
 					}
 				}

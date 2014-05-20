@@ -1,19 +1,22 @@
 package br.com.lol.armas;
 
-public class Facao extends Arma implements UsaArma{
+import br.com.lol.entidade.Jogador;
 
-	@Override
-	public void usar() {
-		System.out.println("SLASH");
-	}
+public class Facao extends Arma implements UsaArma{
 	
-	public Facao(){
-		super(1);
+	public Facao(Jogador j){
+		super(1, j);
 		this.codigo = 1;
 	}
 
 	@Override
 	public void run() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void usar(int direcao) {
 		// TODO Auto-generated method stub
 		
 	}
