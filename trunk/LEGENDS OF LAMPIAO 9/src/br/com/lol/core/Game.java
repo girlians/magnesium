@@ -17,6 +17,7 @@ public abstract class Game implements WindowListener{
 	
 	private JFrame mainWindow;
 	private boolean activity;
+	private boolean pausaNoJogo;
 	private BufferStrategy bufferStrategy;
 	private GameSpeedTracker speedTracker;
 	private int expectedTPS;
@@ -58,6 +59,7 @@ public abstract class Game implements WindowListener{
 		this.mainWindow.addKeyListener(InputManager.getInstance());
 		this.mainWindow.getContentPane().setLayout(null);
 		this.activity = false;
+		this.pausaNoJogo = false;
 	}
 		
 	public void terminate(){
@@ -72,18 +74,23 @@ public abstract class Game implements WindowListener{
 		maxSkippedFrames = 10;
 		int skippedFrames = 0;
 		long nanoTimeAtNextTick = System.nanoTime();
+		
 		while(this.activity){
+			
 			speedTracker.update();
 			if(System.nanoTime() > nanoTimeAtNextTick && skippedFrames < maxSkippedFrames){
 				nanoTimeAtNextTick += expectedNanosPerTick;
 				InputManager.getInstance().update();
+				if(!pausaNoJogo){
 				update();
+				}
 				skippedFrames++;
 			}else{
 				render();
 				skippedFrames = 0;
 			}
 		}
+		
 		unLoad();
 	}
 	
@@ -115,7 +122,7 @@ public abstract class Game implements WindowListener{
 		Graphics2D g = (Graphics2D) this.bufferStrategy.getDrawGraphics();
 		g.setColor(Color.black);
 		g.fillRect(0, 0, this.mainWindow.getWidth(), this.mainWindow.getHeight());
-		onRender(g);
+		onRender(g, speedTracker.getTotalTicks());
 		
 		g.setColor(Color.black);
 		g.fillRect(0, 0, 200, 16);
@@ -125,6 +132,14 @@ public abstract class Game implements WindowListener{
 		
 		g.dispose();
 		this.bufferStrategy.show();
+	}
+	
+	public void setPausaNoJogo(boolean valor){
+		this.pausaNoJogo = valor;
+	}
+	
+	public boolean isPausaNoJogo(){
+		return this.pausaNoJogo;
 	}
 	
 	public int getWidth(){
@@ -142,7 +157,7 @@ public abstract class Game implements WindowListener{
 	abstract public void onLoad();
 	abstract public void onUpdate(int currentTick);
 	abstract public void onUnLoad();
-	abstract public void onRender(Graphics2D g);
+	abstract public void onRender(Graphics2D g, int currentTick);
 	
 	@Override
 	public void windowActivated(WindowEvent arg0) {
