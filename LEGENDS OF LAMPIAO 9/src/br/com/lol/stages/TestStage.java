@@ -54,9 +54,12 @@ public class TestStage extends Game {
 	private int chao;
 	private Dimension dim;
 	private Point rolagem;
+
 	private boolean aindaRolandoEsquerda;
 	private boolean aindaRolandoDireita;
+
 	private Arma armaAtual;
+
 	// Jogador
 	private Jogador jogador;
 	// Plataformas
@@ -67,7 +70,9 @@ public class TestStage extends Game {
 	// ESSAS AQUI SÃO DE TESTE
 	
 	private boolean colisaoArma;
+	private boolean colisaoArma2;
 	private Entidade arma;
+	private Entidade arma2;
 	private Inventario inventario;
 	
 	final private int PAUSANOJOGO = 99;
@@ -99,9 +104,11 @@ public class TestStage extends Game {
 				i.setX(i.getX() - (int) jogador.getSpeed());
 			}
 			this.arma.setX(this.arma.getX() - (int) jogador.getSpeed());
+			this.arma2.setX(this.arma2.getX() - (int) jogador.getSpeed());
 		}
 		}
 	}
+	
 
 	private void updateDimensionEsquerda() {
 		if ((jogador.getX() < getWidth() * 0.45)||rolagem.x < getWidth()*0.45) {
@@ -112,6 +119,7 @@ public class TestStage extends Game {
 				i.setX(i.getX() + (int) jogador.getSpeed());
 			}
 			this.arma.setX(arma.getX() + (int) jogador.getSpeed());
+			this.arma2.setX(arma2.getX() + (int) jogador.getSpeed());
 		}
 		}
 	}
@@ -156,6 +164,7 @@ public class TestStage extends Game {
 				20);
 
 		arma = new Entidade(1200, getHeight() - 100);
+		arma2 = new Entidade(5000, getHeight() - 65);
 
 		plataforma1.init();
 		plataforma2.init();
@@ -228,17 +237,26 @@ public class TestStage extends Game {
 	 */
 
 	private void colisaoArma() {
+		if(colisaoArma == false){
 		if (this.arma.getBounds().intersects(this.jogador.getBounds())) {
 			this.inventario.addArmaAoInventario(1);
 			this.colisaoArma = true;
+		}
+		}
+		if(colisaoArma2 == false){
+		if (this.arma2.getBounds().intersects(this.jogador.getBounds())) {
+			this.inventario.addArmaAoInventario(0);
+			this.colisaoArma2 = true;
+		}
 		}
 	}
 
 	public void onLoad() {
 		
 		this.colisaoArma = false;
-		this.aindaRolandoDireita = true;
+
 		this.aindaRolandoEsquerda = true;
+		this.aindaRolandoDireita = true;
 		inicializarImagens();
 		inicializarPlataformas();
 		rolagem = new Point(0, 300);
@@ -260,8 +278,8 @@ public class TestStage extends Game {
 	 * Método que roda a cada tick.
 	 */
 	public void onUpdate(int currentTick) {
+		this.armaAtual.update(jogador.getX(), jogador.getY());
 		verificaRolagem();
-		this.armaAtual.update(this.jogador.getX(), this.jogador.getY());
 		jogador.getSpritesDireita().update(currentTick);
 		jogador.getSpritesEsquerda().update(currentTick);
 		colisaoArma();
@@ -342,6 +360,12 @@ public class TestStage extends Game {
 			g.fillRect(this.arma.getX() - 10, this.arma.getY()-30, 40 , 40);
 			g.setColor(Color.RED);
 			g.drawString("GUN", this.arma.getX(), this.arma.getY());
+		}
+		if (!colisaoArma2) {
+			g.setColor(Color.WHITE);
+			g.fillRect(this.arma2.getX() - 10, this.arma2.getY()-30, 40 , 40);
+			g.setColor(Color.RED);
+			g.drawString("FACÃO", this.arma2.getX(), this.arma2.getY());
 		}
 		// Desenhando as plataformas
 		renderPlataformas(g);

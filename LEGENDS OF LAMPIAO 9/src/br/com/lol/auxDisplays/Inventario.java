@@ -10,6 +10,8 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import br.com.lol.armas.Bazuca666;
 import br.com.lol.armas.Calibre12;
@@ -55,15 +57,17 @@ public class Inventario implements Display{
 	
 	private int proxArmaX;
 	private int proxArmaY;
+	private int contador;
 	
 	private Jogador jogador;
 	
-	private ArrayList<UsaArma> armas;
-	
-	private ArrayList<Boolean> armasPegas;
+	private List<UsaArma> armas;
+	private List<Boolean> armasDesenhar;
+	private List<Integer> armasPegas;
 	
 	public Inventario(int x, int y, Jogador j){
 		
+		this.contador = 0;
 		this.jogador = j;
 		
 		this.selecionarArmas = false;
@@ -78,13 +82,14 @@ public class Inventario implements Display{
 		this.selecionador2X = x;
 		this.selecionador2Y = y;
 		
-		this.proxArmaX = x - 25; // pode ir até 270
-		this.proxArmaY = y + 100; // pode ir até 215
+		this.proxArmaX = x - 25; // pode ir até 575
+		this.proxArmaY = y + 100; // pode ir até 450
 		
 		this.localX = 1;
 		this.localY = 0;
 		
-		this.armasPegas = new ArrayList<Boolean>();
+		this.armasDesenhar = new ArrayList<Boolean>();
+		this.armasPegas = new ArrayList<Integer>();
 		this.armas = new ArrayList<UsaArma>();
 		this.locaisArmas = new int[3][3];
 		inicializarArmas();
@@ -113,9 +118,15 @@ public class Inventario implements Display{
 	}
 	
 	private void inicializarArmas(){
-		for(int i = 0; i < 6; i++){
-			armasPegas.add(false);
+		
+		for(int i = 0; i< 5; i++){
+			this.armasDesenhar.add(false);
 		}
+		
+		for(int i =0; i< 5; i++){
+			this.armasPegas.add(-1);
+		}
+		
 		this.armas.add(new Espingarda(this.jogador));
 		this.armas.add(new Facao(this.jogador));
 		this.armas.add(new Calibre12(this.jogador));
@@ -126,7 +137,10 @@ public class Inventario implements Display{
 	
 	public void addArmaAoInventario(int cod){
 		boolean contem = false;
-		this.armasPegas.set(cod, true);
+	
+		this.armasPegas.set(this.contador, cod);
+		this.contador++;
+		this.armasDesenhar.set(cod, true);
 		
 		for(int i = 0; i < 3; i++){
 			for(int j = 0; j<3 ; j++){
@@ -260,12 +274,23 @@ public class Inventario implements Display{
 		g.drawImage(this.selecionador2, this.selecionador2X - 30, this.selecionador2Y + 70, null);
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
 		for(int i = 0; i< armasPegas.size(); i++){
-			if(armasPegas.get(i)){
-				g.drawImage(selecionarArma(i), proxArmaX, proxArmaY, null);
+			if(armasPegas.get(i) >= 0){
+				g.drawImage(selecionarArma(this.armasPegas.get(i)), proxArmaX, proxArmaY, null);
+				if(this.proxArmaY < 450){
+					this.proxArmaY += 25;
+				}else{
+					this.proxArmaY = 375;
+					if(this.proxArmaX < 575){
+						this.proxArmaX += 100;
+					}
+				}
 			}
 		}
+		this.proxArmaX = 375;
+		this.proxArmaY = 400;
 	}
 	
+
 	@Override
 	public void display(Graphics2D g) {
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
@@ -320,6 +345,22 @@ public class Inventario implements Display{
 
 	public void setSelecionarOpcoes(boolean selecionarOpcoes) {
 		this.selecionarOpcoes = selecionarOpcoes;
+	}
+
+	public int getProxArmaX() {
+		return proxArmaX;
+	}
+
+	public void setProxArmaX(int proxArmaX) {
+		this.proxArmaX = proxArmaX;
+	}
+
+	public int getProxArmaY() {
+		return proxArmaY;
+	}
+
+	public void setProxArmaY(int proxArmaY) {
+		this.proxArmaY = proxArmaY;
 	}
 
 }
