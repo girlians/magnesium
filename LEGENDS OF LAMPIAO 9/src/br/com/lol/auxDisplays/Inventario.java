@@ -27,26 +27,20 @@ import br.com.lol.gerenciadores.InputManager;
 import br.com.lol.gerenciadores.SpriteAnimation;
 
 public class Inventario implements Display{
-
-	static private final int ESPINGARDA = 0;
-	static private final int FACAO = 1;
-	static private final int CALIBRE12 = 2;
-	static private final int CALIBRE50 = 3;
-	static private final int REVOLVER38 = 4;
-	static private final int BAZUCA666 = 5;
 	
-	private boolean desenharInventarioArmas;
 	private boolean selecionarArmas;
 	private boolean selecionarOpcoes;
+	private boolean selecionarInventario;
 	
 	private int[][] locaisArmas;
 	
 	private int x, y;
 	private BufferedImage imagem;
-	private BufferedImage selecionador;
-	private BufferedImage selecionador2;
-	private SpriteAnimation armasInventario;
+	private BufferedImage selecionadorVermelho;
+	private BufferedImage selecionadorArma;
+	private SpriteAnimation escolhasOpcoes;
 	private BufferedImage inventarioArmas;
+	
 	private int selecionadorX;
 	private int selecionadorY;
 	private int selecionador2X;
@@ -72,7 +66,8 @@ public class Inventario implements Display{
 		
 		this.selecionarArmas = false;
 		this.selecionarOpcoes = false;
-		this.desenharInventarioArmas = false;
+		
+		this.selecionarInventario = false;
 		
 		this.x = 300;
 		this.y = 225;
@@ -95,13 +90,13 @@ public class Inventario implements Display{
 		inicializarArmas();
 		inicializaLocaisArmas();
 		try {
-			this.armasInventario = ImageManager.getInstance().loadSpriteAnimationVertical(
-					"br/com/lol/imagens/Armas - inventario.png", 5);
+			this.escolhasOpcoes = ImageManager.getInstance().loadSpriteAnimationVertical(
+					"br/com/lol/imagens/inventario/escolha_opções.png", 5);
 		
-			this.inventarioArmas = ImageManager.getInstance().loadImage("br/com/lol/imagens/inventario-armas.png");
-			this.imagem = ImageManager.getInstance().loadImage("br/com/lol/imagens/inventário.png");
-			this.selecionador = ImageManager.getInstance().loadImage("br/com/lol/imagens/selecionador.png");
-			this.selecionador2 = ImageManager.getInstance().loadImage("br/com/lol/imagens/selecionador2.png");
+			
+			this.imagem = ImageManager.getInstance().loadImage("br/com/lol/imagens/inventario/inventario.png");
+			this.selecionadorVermelho = ImageManager.getInstance().loadImage("br/com/lol/imagens/inventario/selecionador_vermelho.png");
+			this.selecionadorArma = ImageManager.getInstance().loadImage("br/com/lol/imagens/inventario/selecionador_Amarelo.png");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -160,99 +155,38 @@ public class Inventario implements Display{
 		}
 		}
 	}
+	
+	public void runControleInventario(int currentTick, Jogador jogador){
+		
+	}
 
 	
 	public BufferedImage selecionarArma(int cod){
-			return this.armasInventario.getImagens().get(cod);
+			return this.escolhasOpcoes.getImagens().get(cod);
 	}
 	
-	public void andarSelecionador2Esquerda(int currentTick){
-		if(currentTick % 5 == 0){
-			if(this.selecionador2X > this.x + 170){
-				this.selecionador2X -= 100;
-			}
-		}
-	}
 	
-	public void andarSelecionador2Direita(int currentTick){
-		if(currentTick % 5 == 0){
-			if(this.selecionador2X < this.x + 270){
-				this.selecionador2X += 100;
-			}
-		}
-	}
-	
-	public void andarSelecionador2Baixo(int currentTick){
-		if(currentTick % 5 == 0){
-			if(this.selecionador2Y < this.y + 120){
-				this.selecionador2Y += 25;
-			}
-		}
-	}
-	
-	public void andarSelecionador2Cima(int currentTick){
-		if(currentTick % 5 == 0){
-			if(this.selecionador2Y > this.y + 95){
-				this.selecionador2Y -= 25;
-			}
-		}
-	}
-	
-	public void andarSelecionadorEsquerda(int currentTick){
-		if(currentTick % 5 == 0){
-			if(this.selecionadorX > this.x + 100){
-				this.selecionadorX -= 80;
-			}
-		}
-	}
-	
-	public void andarSelecionadorDireita(int currentTick){
-		if(currentTick % 5 == 0){
-			if(this.selecionadorX < this.x + 320){
-				this.selecionadorX += 80;
-			}
-		}
-	}
-	
-	public void controleSelecaoArmas(int currentTick, Jogador jogador){
-		if(InputManager.getInstance().isPressed(KeyEvent.VK_RIGHT)){
-			andarSelecionador2Direita(currentTick);
-		}
-		if(InputManager.getInstance().isPressed(KeyEvent.VK_DOWN)){
-			andarSelecionador2Baixo(currentTick);
-		}
-		if(InputManager.getInstance().isPressed(KeyEvent.VK_UP)){
-			andarSelecionador2Cima(currentTick);
-		}
-		if(InputManager.getInstance().isPressed(KeyEvent.VK_LEFT)){
-			andarSelecionador2Esquerda(currentTick);
-		}
-		if(InputManager.getInstance().isPressed(KeyEvent.VK_ESCAPE)){
-			this.selecionarArmas = false;
-		}
-		if(InputManager.getInstance().isPressed(KeyEvent.VK_ENTER)){
+		/*if(InputManager.getInstance().isPressed(KeyEvent.VK_ENTER)){
 			int placeY = (this.selecionador2X - 400) / 100;
 			int placeX = (this.selecionador2Y - 300) / 25;
 			int arma = this.locaisArmas[placeY][placeX];
 			if(arma >= 0){
 			jogador.setArma(this.armas.get(arma));
-			}
-		}		
-	}
+			}*/
 	
 	public void controleSelecaoOpcao(int currentTick){
 		if(!isSelecionarArmas()){
 		if(InputManager.getInstance().isPressed(KeyEvent.VK_RIGHT)){
-			andarSelecionadorDireita(currentTick);
+			
 		}
 		if(InputManager.getInstance().isPressed(KeyEvent.VK_LEFT)){
-			andarSelecionadorEsquerda(currentTick);
+			
 		}
 		if(InputManager.getInstance().isPressed(KeyEvent.VK_U)){
 			this.selecionarOpcoes = false;
 		}
 		if(InputManager.getInstance().isTyped(KeyEvent.VK_ENTER)){
-			controlePosicaoPonteiro();
+			
 		}
 		}
 	}
@@ -270,10 +204,8 @@ public class Inventario implements Display{
 	}
 	
 	public void displayInventarioArmas(Graphics2D g){
-		g.drawImage(this.inventarioArmas, this.x + 65, this.y + 140, null);
-		g.drawImage(this.selecionador2, this.selecionador2X - 30, this.selecionador2Y + 70, null);
-		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
-		for(int i = 0; i< armasPegas.size(); i++){
+		
+		/*for(int i = 0; i< armasPegas.size(); i++){
 			if(armasPegas.get(i) >= 0){
 				g.drawImage(selecionarArma(this.armasPegas.get(i)), proxArmaX, proxArmaY, null);
 				if(this.proxArmaY < 450){
@@ -285,17 +217,15 @@ public class Inventario implements Display{
 					}
 				}
 			}
-		}
+		}*/
 		this.proxArmaX = 375;
 		this.proxArmaY = 400;
 	}
-	
 
-	@Override
-	public void display(Graphics2D g) {
+	public void displayInventario(Graphics2D g, int currentTick) {
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
-		g.drawImage(this.imagem, this.x, this.y, null);
-		g.drawImage(this.selecionador, this.selecionadorX - 25 , this.selecionadorY - 30, null);
+		g.drawImage(this.imagem, 0, 0, null);
+		runControleInventario(currentTick, this.jogador);
 	}
 	
 	
@@ -361,6 +291,12 @@ public class Inventario implements Display{
 
 	public void setProxArmaY(int proxArmaY) {
 		this.proxArmaY = proxArmaY;
+	}
+
+	@Override
+	public void display(Graphics2D g) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

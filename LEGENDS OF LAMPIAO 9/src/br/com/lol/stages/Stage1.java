@@ -415,7 +415,7 @@ public class Stage1 extends Game{
 	}
 	
 	@Override
-	public void onRender(Graphics2D g) {
+	public void onRender(Graphics2D g, int currentTick) {
 		
 		g.drawImage(cenario, 0, 0, null);
 		

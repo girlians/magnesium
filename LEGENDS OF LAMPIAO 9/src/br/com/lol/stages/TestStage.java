@@ -292,7 +292,7 @@ public class TestStage extends Game {
 				this.estado = ESTADOPARADO;
 			}
 			if(this.inventario.isSelecionarArmas()){
-				this.inventario.controleSelecaoArmas(currentTick, this.jogador);
+				
 			}
 		}
 		if (jogador.getEstadoDoSalto() == ESTADOPULANDO) {
@@ -344,7 +344,7 @@ public class TestStage extends Game {
 		}
 	}
 
-	public void onRender(Graphics2D g) {
+	public void onRender(Graphics2D g, int currentTick) {
 		// Desenhando o cenario
 		
 		g.drawImage(cenarioPlataforma, -rolagem.x, -rolagem.y+300, null);
