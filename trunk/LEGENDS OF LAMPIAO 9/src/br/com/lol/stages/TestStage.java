@@ -351,7 +351,12 @@ public class TestStage extends Game {
 		g.drawImage(cenarioPlataforma, -rolagem.x, -rolagem.y+300, null);
 		
 		if(this.estado == PAUSANOJOGO){
-			this.inventario.displayInventario(g, currentTick);
+			try {
+				this.inventario.displayInventario(g, currentTick);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}else{
 		if (!colisaoArma) {
 			g.setColor(Color.BLACK);
