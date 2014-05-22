@@ -41,6 +41,8 @@ public class TestStage extends Game {
 	 */
 	final private int ESTADOANDANDO = 3;
 	final private int ESTADOPARADO = 4;
+	
+	private int estadoAnterior;
 	/*
 	 * Todas as imagens antes de serem inciadas
 	 */
@@ -176,10 +178,12 @@ public class TestStage extends Game {
 	 * Método que ouve todos os sons do teclado e apartir disso seta os estados
 	 * no personagem.
 	 */
-	private void runControleJogo() {
+	private void runControleJogo(int currentTick) {
 		if(InputManager.getInstance().isTyped(KeyEvent.VK_U)){
+			this.estadoAnterior = estado;
 			this.estado = PAUSANOJOGO;
-			this.inventario.setSelecionarOpcoes(true);
+			this.inventario.setActive(true);
+			this.inventario.setSelecionarInventario(true);
 		}
 		if (InputManager.getInstance().isPressed(KeyEvent.VK_UP)
 				&& (jogador.getEstadoDoSalto() != ESTADODESCENDO)) {
@@ -199,7 +203,9 @@ public class TestStage extends Game {
 
 		}
 		if (InputManager.getInstance().isPressed(KeyEvent.VK_ESCAPE)) {
+			if(currentTick % 10 == 0){
 			terminate();
+			}
 		}
 		if(InputManager.getInstance().isPressed(KeyEvent.VK_SPACE)){
 			this.jogador.atirarTest();
@@ -283,18 +289,8 @@ public class TestStage extends Game {
 		jogador.getSpritesDireita().update(currentTick);
 		jogador.getSpritesEsquerda().update(currentTick);
 		colisaoArma();
-		//inventario.update(getWidth()/2, getHeight()/ 2);
 		if(this.estado != PAUSANOJOGO){
-		runControleJogo();
-		}else{
-			this.inventario.controleSelecaoOpcao(currentTick);
-			if(!this.inventario.isSelecionarOpcoes()){
-				this.estado = ESTADOPARADO;
-			}
-			if(this.inventario.isSelecionarArmas()){
-				
-			}
-		}
+		runControleJogo(currentTick);
 		if (jogador.getEstadoDoSalto() == ESTADOPULANDO) {
 			runEstadoPulando();
 		} else if (colisao.colisaoPlataforma(jogador)) {
@@ -321,6 +317,11 @@ public class TestStage extends Game {
 				if (InputManager.getInstance().isReleased(KeyEvent.VK_LEFT)) {
 					jogador.setEstado(ESTADOPARADO);
 				}
+			}
+		}
+		}else{
+			if(!this.inventario.isActive()){
+				this.estado = this.estadoAnterior;
 			}
 		}
 	}
@@ -350,11 +351,8 @@ public class TestStage extends Game {
 		g.drawImage(cenarioPlataforma, -rolagem.x, -rolagem.y+300, null);
 		
 		if(this.estado == PAUSANOJOGO){
-			this.inventario.display(g);
-			if(this.inventario.isSelecionarArmas()){
-				this.inventario.displayInventarioArmas(g);
-			}
-		}
+			this.inventario.displayInventario(g, currentTick);
+		}else{
 		if (!colisaoArma) {
 			g.setColor(Color.BLACK);
 			g.fillRect(this.arma.getX() - 10, this.arma.getY()-30, 40 , 40);
@@ -366,6 +364,7 @@ public class TestStage extends Game {
 			g.fillRect(this.arma2.getX() - 10, this.arma2.getY()-30, 40 , 40);
 			g.setColor(Color.RED);
 			g.drawString("FACÃO", this.arma2.getX(), this.arma2.getY());
+		}
 		}
 		// Desenhando as plataformas
 		renderPlataformas(g);
