@@ -370,12 +370,12 @@ public class TestStage extends Game {
 			g.setColor(Color.RED);
 			g.drawString("FACÃO", this.arma2.getX(), this.arma2.getY());
 		}
-		}
 		// Desenhando as plataformas
 		renderPlataformas(g);
 		g.drawImage(jogador.getImagem(), jogador.getX(), jogador.getY(), 80,
 				80, null);
 		desenharArma(g);
+		}
 	}
 
 	public static void main(String[] args) {
