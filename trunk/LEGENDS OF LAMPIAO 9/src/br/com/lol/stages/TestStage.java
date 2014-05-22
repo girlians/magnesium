@@ -245,13 +245,11 @@ public class TestStage extends Game {
 	private void colisaoArma() {
 		if(colisaoArma == false){
 		if (this.arma.getBounds().intersects(this.jogador.getBounds())) {
-			this.inventario.addArmaAoInventario(1);
 			this.colisaoArma = true;
 		}
 		}
 		if(colisaoArma2 == false){
 		if (this.arma2.getBounds().intersects(this.jogador.getBounds())) {
-			this.inventario.addArmaAoInventario(0);
 			this.colisaoArma2 = true;
 		}
 		}
@@ -270,7 +268,7 @@ public class TestStage extends Game {
 		rolagem.y = 300;
 		jogador = new Jogador(100, this.getHeight() - 300);
 		this.armaAtual = this.jogador.getArma();
-		this.inventario = new Inventario(getWidth() / 2, getHeight()/2, this.jogador);
+		this.inventario = new Inventario(getWidth() / 2, getHeight()/2, this.jogador, this);
 		listaDePlataformas = new ArrayList<>();
 		listaDePlataformas.add(plataforma1);
 		listaDePlataformas.add(plataforma2);

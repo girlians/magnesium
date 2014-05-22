@@ -20,6 +20,8 @@ import br.com.lol.armas.Espingarda;
 import br.com.lol.armas.Facao;
 import br.com.lol.armas.Revolver38;
 import br.com.lol.armas.UsaArma;
+import br.com.lol.core.Game;
+import br.com.lol.dao.DaoGame;
 import br.com.lol.entidade.Display;
 import br.com.lol.entidade.Jogador;
 import br.com.lol.gerenciadores.ImageManager;
@@ -28,6 +30,10 @@ import br.com.lol.gerenciadores.SpriteAnimation;
 
 public class Inventario implements Display{
 	
+	private DaoGame dao;
+	
+	private Game stage;
+	
 	private boolean selecionarArmas;
 	private boolean selecionarOpcoes;
 	private boolean selecionarInventario;
@@ -35,8 +41,6 @@ public class Inventario implements Display{
 	private boolean selecionandoUmaOpcaoDoInventario;
 	private boolean selecionandoUmaArma;
 	private boolean active;
-	
-	private int[][] locaisArmas;
 	
 	private int x, y;
 	private BufferedImage inventario;
@@ -53,9 +57,6 @@ public class Inventario implements Display{
 	private int selecionadorArmaY;
 	private int selecionadorInventarioX;
 	
-	private int localX;
-	private int localY;
-	
 	private int proxArmaY;
 	
 	private Jogador jogador;
@@ -64,8 +65,10 @@ public class Inventario implements Display{
 	private List<Boolean> armasDesenhar;
 	private List<Integer> armasPegas;
 	
-	public Inventario(int x, int y, Jogador j){
+	public Inventario(int x, int y, Jogador j, Game g){
 	
+		this.stage = g;
+		
 		this.jogador = j;
 		
 		this.indiceImagemOpcoes = 0;
@@ -89,14 +92,11 @@ public class Inventario implements Display{
 		
 		this.proxArmaY = y + 100; // pode ir até 450
 		
-		this.localY = 0;
-		
 		this.armasDesenhar = new ArrayList<Boolean>();
 		this.armasPegas = new ArrayList<Integer>();
 		this.armas = new ArrayList<UsaArma>();
-		this.locaisArmas = new int[3][3];
-		inicializarArmas();
-		inicializaLocaisArmas();
+		
+		this.dao = new DaoGame();
 		try {
 			this.escolhasOpcoes = ImageManager.getInstance().loadSpriteAnimationVertical(
 					"br/com/lol/imagens/inventario/escolha_opcoes.png", 5);
@@ -110,57 +110,6 @@ public class Inventario implements Display{
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-	}
-	
-	private void inicializaLocaisArmas(){
-		for(int i = 0; i < 3; i++){
-			for(int j = 0; j < 3; j++){
-				this.locaisArmas[i][j] = -1;
-			}
-		}
-		this.locaisArmas[0][0] = 0; // SÓ INICIALIZANDO A PRIMAIRA POSIÇÃO DA MATRIZ COM A ESPINGARDA
-	}
-	
-	private void inicializarArmas(){
-		
-		for(int i = 0; i< 5; i++){
-			this.armasDesenhar.add(false);
-		}
-		
-		for(int i =0; i< 5; i++){
-			this.armasPegas.add(-1);
-		}
-		
-		this.armas.add(new Espingarda(this.jogador));
-		this.armas.add(new Facao(this.jogador));
-		this.armas.add(new Calibre12(this.jogador));
-		this.armas.add(new Calibre50(this.jogador));
-		this.armas.add(new Revolver38(this.jogador));
-		this.armas.add(new Bazuca666(this.jogador));
-	}
-	
-	public void addArmaAoInventario(int cod){
-		boolean contem = false;
-	
-		this.armasDesenhar.set(cod, true);
-		
-		for(int i = 0; i < 3; i++){
-			for(int j = 0; j<3 ; j++){
-				if(this.locaisArmas[i][j] == cod)
-					contem = true;
-			}
-		}
-		if(!contem){
-		this.locaisArmas[localY][localX] = cod;
-		if(this.localX < 2){
-			this.localX++;
-		}else{
-			this.localX = 0;
-			if(this.localY < 2){
-				this.localY++;
-			}
-		}
 		}
 	}
 	
@@ -210,7 +159,13 @@ public class Inventario implements Display{
 			this.selecionandoUmaOpcao = false;
 			this.selecionarOpcoes = true;
 			this.indiceImagemOpcoes = 0;
+			this.selecionadorOpcaoY = 126;
 			Thread.sleep(1000/20);
+		}
+		if(InputManager.getInstance().isPressed(KeyEvent.VK_ENTER)){
+			if(this.indiceImagemOpcoes == 1){
+				salvar();
+			}
 		}
 		}
 	
@@ -261,7 +216,6 @@ public class Inventario implements Display{
 		}
 	}
 
-	
 	public BufferedImage selecionarArma(int cod){
 			return this.escolhasOpcoes.getImagens().get(cod);
 	}
@@ -290,6 +244,11 @@ public class Inventario implements Display{
 				this.selecionarInventario = true;
 				Thread.sleep(1000/20);
 		}
+	}
+	
+	public void salvar(){
+		this.dao.salvar(this.jogador.getY(), this.jogador.getX(), this.stage.getPontos(), this.stage.getTentativas());
+		System.out.println("PASSEI NO INVENTARIO");
 	}
 	
 	private void runSair(){

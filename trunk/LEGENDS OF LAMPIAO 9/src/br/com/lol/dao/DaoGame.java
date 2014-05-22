@@ -1,6 +1,7 @@
 package br.com.lol.dao;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 import br.com.lol.gerenciadores.DataManager;
 
@@ -10,9 +11,11 @@ public class DaoGame{
 	
 	public DaoGame(){
 		try {
-			this.dm = new DataManager("br/com/lol/files/save.txt");
+			this.dm = new DataManager("/br/com/lol/files/save.txt");
 		} catch (IOException e) {
 			e.getMessage();
+		}catch(URISyntaxException u){
+			u.getMessage();
 		}
 	}
 	
@@ -21,6 +24,13 @@ public class DaoGame{
 		dm.write("jogadorY", jogadorY);
 		dm.write("pontos", pontos);
 		dm.write("tentativas", tentativas);
+		try {
+			dm.save();
+			System.out.println("PASSEI NO DAOgAME");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void load(int jogadorY, int jogadorX, int pontos, int tentativas){
