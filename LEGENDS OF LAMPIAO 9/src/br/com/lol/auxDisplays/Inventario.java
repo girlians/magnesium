@@ -32,6 +32,8 @@ public class Inventario implements Display{
 	private boolean selecionarOpcoes;
 	private boolean selecionarInventario;
 	private boolean selecionandoUmaOpcao;
+	private boolean selecionandoUmaOpcaoDoInventario;
+	private boolean selecionandoUmaArma;
 	private boolean active;
 	
 	private int[][] locaisArmas;
@@ -45,7 +47,11 @@ public class Inventario implements Display{
 	private BufferedImage inventarioArmas;
 	
 	private int indiceImagemOpcoes;
-	private int selecionadorY;
+	private int indiceImagemInventario;
+	
+	private int selecionadorOpcaoY;
+	private int selecionadorArmaY;
+	private int selecionadorInventarioX;
 	
 	private int localX;
 	private int localY;
@@ -63,11 +69,17 @@ public class Inventario implements Display{
 		this.jogador = j;
 		
 		this.indiceImagemOpcoes = 0;
-		this.selecionadorY = 128;
+		this.indiceImagemInventario = 0;
+		
+		this.selecionadorOpcaoY = 126;
+		this.selecionadorArmaY = 0;
+		this.selecionadorInventarioX = 16;
 		
 		this.selecionarArmas = false;
 		this.selecionarOpcoes = false;
 		this.selecionandoUmaOpcao = false;
+		this.selecionandoUmaOpcaoDoInventario = false;
+		this.selecionandoUmaArma = false;
 		this.active = false;
 		
 		this.selecionarInventario = false;
@@ -94,6 +106,7 @@ public class Inventario implements Display{
 			this.opcoes = ImageManager.getInstance().loadImage("br/com/lol/imagens/inventario/opções.png");
 			this.selecionadorVermelho = ImageManager.getInstance().loadImage("br/com/lol/imagens/inventario/selecionador_vermelho.png");
 			this.selecionadorArma = ImageManager.getInstance().loadImage("br/com/lol/imagens/inventario/selecionador_Amarelo.png");
+			this.inventarioArmas = ImageManager.getInstance().loadImage("br/com/lol/imagens/inventario/escolha.png");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -151,52 +164,86 @@ public class Inventario implements Display{
 		}
 	}
 	
-	private void runControleEscolhaArma(int currentTick, Graphics2D g){
-		
+	private void runControleEscolhaArma(int currentTick, Graphics2D g) throws InterruptedException{
+		int selecionadorX = 17;
+		g.drawImage(this.inventarioArmas, 18, 260, null);
+		g.drawImage(this.selecionadorArma, selecionadorX, this.selecionadorArmaY, null);
+		if(InputManager.getInstance().isPressed(KeyEvent.VK_UP)){
+			if(this.selecionadorArmaY >  346 ){
+				this.selecionadorArmaY -= 64;
+				Thread.sleep(1000/20);
+			}
+		}
+		if(InputManager.getInstance().isPressed(KeyEvent.VK_DOWN)){
+			//if(this.selecionadorArmaY < )
+		}
 	}
 	
-	private void runControleEscolhaOpcoes(int currentTick, Graphics2D g){
-		int selecionadorX = 235;
-		g.drawImage(this.escolhasOpcoes.getImagens().get(this.indiceImagemOpcoes), selecionadorX, this.selecionadorY, null);
+	private void runControleEscolhaOpcoes(int currentTick, Graphics2D g) throws InterruptedException{
+		int selecionadorX = 233;
+		g.drawImage(this.escolhasOpcoes.getImagens().get(this.indiceImagemOpcoes), selecionadorX, this.selecionadorOpcaoY, null);
 		
 		if(InputManager.getInstance().isPressed(KeyEvent.VK_DOWN)){
-			if(currentTick % 10 == 0){
-				if(this.selecionadorY < 300){
-					this.selecionadorY += 82;
+				if(this.selecionadorOpcaoY < 400){
+					this.selecionadorOpcaoY += 82;
 					this.indiceImagemOpcoes++;
+						Thread.sleep(1000/10);
 				}
 			}
-		}
 		if(InputManager.getInstance().isPressed(KeyEvent.VK_UP)){
-			if(currentTick % 10 == 0){
-				if(this.selecionadorY > 128){
-					this.selecionadorY -= 82;
+				if(this.selecionadorOpcaoY > 126){
+					this.selecionadorOpcaoY -= 82;
 					this.indiceImagemOpcoes --;
+					Thread.sleep(1000/10);
 				}
 			}
-		}
 		if(InputManager.getInstance().isPressed(KeyEvent.VK_ESCAPE)){
 			this.selecionandoUmaOpcao = false;
 			this.selecionarOpcoes = true;
 			this.indiceImagemOpcoes = 0;
+			Thread.sleep(1000/20);
 		}
 		}
 	
-	private void runControleInventario(int currentTick, Graphics2D g){
+	private void runControleInventario(int currentTick, Graphics2D g) throws InterruptedException{
 		if(InputManager.getInstance().isPressed(KeyEvent.VK_ENTER)){
-			if(currentTick % 5 == 0){
-				runControleEscolhaArma(currentTick, g);
-			}
+				this.selecionandoUmaOpcaoDoInventario = true;
+				Thread.sleep(1000/20);
 		}
 		if(InputManager.getInstance().isPressed(KeyEvent.VK_ESCAPE)){
-			if(currentTick % 5 == 0){
 				this.selecionarInventario = false;
 				this.active = false;
-			}
+				Thread.sleep(1000/20);
 		}
 		if(InputManager.getInstance().isPressed(KeyEvent.VK_RIGHT)){
 			this.selecionarInventario = false;
 			this.selecionarOpcoes = true;
+				Thread.sleep(1000/20);
+		}
+	}
+	
+	private void runControleOpcaoDoInventario(Graphics2D g) throws InterruptedException{
+		int selecionadorY = 93;
+		g.drawImage(this.selecionadorVermelho, this.selecionadorInventarioX, selecionadorY, null);
+		if(InputManager.getInstance().isPressed(KeyEvent.VK_RIGHT)){
+			if(this.selecionadorInventarioX < 626){
+				this.selecionadorInventarioX += 180;
+				this.indiceImagemInventario++;
+				Thread.sleep(1000/20);
+			}
+		}
+		if(InputManager.getInstance().isPressed(KeyEvent.VK_LEFT)){
+			if(this.selecionadorInventarioX > 16){
+				this.selecionadorInventarioX -= 180;
+				this.indiceImagemInventario --;
+				Thread.sleep(1000/20);
+			}
+		}
+		if(InputManager.getInstance().isPressed(KeyEvent.VK_ENTER)){
+			if(this.indiceImagemInventario == 0){
+				this.selecionandoUmaArma = true;
+				Thread.sleep(1000/20);
+			}
 		}
 	}
 
@@ -214,23 +261,20 @@ public class Inventario implements Display{
 			jogador.setArma(this.armas.get(arma));
 			}*/
 	
-	public void runControleOpcoes(int currentTick,Graphics2D g){
+	public void runControleOpcoes(int currentTick,Graphics2D g) throws InterruptedException{
 		if(InputManager.getInstance().isPressed(KeyEvent.VK_ENTER)){
-			if(currentTick % 5 == 0){
 				this.selecionandoUmaOpcao = true;
+				Thread.sleep(1000/20);
 			}
-		}
 		if(InputManager.getInstance().isPressed(KeyEvent.VK_ESCAPE)){
-			if(currentTick % 5 == 0){
 				this.selecionarOpcoes = false;
 				this.active = false;
-			}
+				Thread.sleep(1000/20);
 		}
 		if(InputManager.getInstance().isPressed(KeyEvent.VK_LEFT)){
-			if(currentTick % 5 == 0){
 				this.selecionarOpcoes = false;
 				this.selecionarInventario = true;
-			}
+				Thread.sleep(1000/20);
 		}
 	}
 	
@@ -256,13 +300,20 @@ public class Inventario implements Display{
 		this.proxArmaY = 400;
 	}
 
-	public void displayInventario(Graphics2D g, int currentTick) {
+	public void displayInventario(Graphics2D g, int currentTick) throws InterruptedException {
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
 		if(this.selecionarInventario){
 			this.selecionarOpcoes = false;
 		g.drawImage(this.inventario, 0, 0, null);
+		if(selecionandoUmaArma){
+			runControleEscolhaArma(currentTick, g);
+		}else if(selecionandoUmaOpcaoDoInventario){
+			runControleOpcaoDoInventario(g);
+		}else{
 		runControleInventario(currentTick, g);
 		}
+		}
+		
 		if(this.selecionarOpcoes){
 			this.selecionarInventario = false;
 			g.drawImage(this.opcoes, 0, 0, null);
