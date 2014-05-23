@@ -248,11 +248,6 @@ public class Inventario implements Display{
 	
 	public void salvar(){
 		this.dao.salvar(this.jogador.getY(), this.jogador.getX(), this.stage.getPontos(), this.stage.getTentativas());
-		System.out.println("PASSEI NO INVENTARIO");
-	}
-	
-	private void runSair(){
-		this.selecionarOpcoes = false;
 	}
 	
 	public void displayInventarioArmas(Graphics2D g){
