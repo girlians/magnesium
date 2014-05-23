@@ -176,12 +176,13 @@ public class TestStage extends Game {
 	 * Método que ouve todos os sons do teclado e apartir disso seta os estados
 	 * no personagem.
 	 */
-	private void runControleJogo(int currentTick) {
-		if(InputManager.getInstance().isTyped(KeyEvent.VK_U) && jogador.isModoVoador()){
+	private void runControleJogo(int currentTick) throws InterruptedException {
+		if(InputManager.getInstance().isTyped(KeyEvent.VK_U)){
 			this.estadoAnterior = estado;
 			this.estado = PAUSANOJOGO;
 			this.inventario.setActive(true);
 			this.inventario.setSelecionarInventario(true);
+			Thread.sleep(1000/20);
 		}
 		if (InputManager.getInstance().isPressed(KeyEvent.VK_UP)
 				&& (jogador.isModoVoador()) ) {
@@ -205,9 +206,8 @@ public class TestStage extends Game {
 			
 		}
 		if (InputManager.getInstance().isPressed(KeyEvent.VK_ESCAPE)) {
-			if(currentTick % 10 == 0){
 			terminate();
-			}
+			Thread.sleep(1000/20);
 		}
 		if(InputManager.getInstance().isPressed(KeyEvent.VK_SPACE)){
 			this.jogador.atirarTest();
@@ -306,7 +306,12 @@ public class TestStage extends Game {
 		jogador.getSpritesVoandoEsquerda().update(currentTick);
 		colisaoArma();
 		if (this.estado != PAUSANOJOGO) {
-			runControleJogo(currentTick);
+			try {
+				runControleJogo(currentTick);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			if (jogador.getEstadoDoSalto() == ESTADOPULANDO) {
 				runEstadoPulando();
 			} else if (colisao.colisaoPlataforma(jogador)) {
@@ -375,7 +380,7 @@ public class TestStage extends Game {
 				e.printStackTrace();
 			}
 		}else{
-		if (!colisaoArma) {
+		if (!colisaoArma){
 			g.setColor(Color.BLACK);
 			g.fillRect(this.arma.getX() - 10, this.arma.getY()-30, 40 , 40);
 			g.setColor(Color.RED);
