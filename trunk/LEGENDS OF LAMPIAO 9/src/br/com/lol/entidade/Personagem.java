@@ -1,6 +1,5 @@
 package br.com.lol.entidade;
 
-import br.com.lol.armas.Espingarda;
 import br.com.lol.armas.UsaArma;
 
 public class Personagem extends Entidade{

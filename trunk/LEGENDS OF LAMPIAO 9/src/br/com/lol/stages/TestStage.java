@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.com.lol.armas.Arma;
-import br.com.lol.armas.Calibre12;
 import br.com.lol.auxDisplays.Inventario;
 import br.com.lol.core.Game;
 import br.com.lol.entidade.Entidade;
@@ -19,7 +18,6 @@ import br.com.lol.entidade.EntidadePlataforma;
 import br.com.lol.entidade.Jogador;
 import br.com.lol.entidade.Tiro;
 import br.com.lol.gerenciadores.CollisionDetector;
-import br.com.lol.gerenciadores.GerenciadorDeTempo;
 import br.com.lol.gerenciadores.ImageManager;
 import br.com.lol.gerenciadores.InputManager;
 
@@ -179,14 +177,18 @@ public class TestStage extends Game {
 	 * no personagem.
 	 */
 	private void runControleJogo(int currentTick) {
-		if(InputManager.getInstance().isTyped(KeyEvent.VK_U)){
+		if(InputManager.getInstance().isTyped(KeyEvent.VK_U) && jogador.isModoVoador()){
 			this.estadoAnterior = estado;
 			this.estado = PAUSANOJOGO;
 			this.inventario.setActive(true);
 			this.inventario.setSelecionarInventario(true);
 		}
 		if (InputManager.getInstance().isPressed(KeyEvent.VK_UP)
-				&& (jogador.getEstadoDoSalto() != ESTADODESCENDO)) {
+				&& (jogador.isModoVoador()) ) {
+			jogador.setEstadoDoSalto(ESTADOPULANDO);
+		}
+		if (InputManager.getInstance().isPressed(KeyEvent.VK_UP)
+				&& (jogador.getEstadoDoSalto() != ESTADODESCENDO) ) {
 			jogador.setEstadoDoSalto(ESTADOPULANDO);
 		}
 		if (InputManager.getInstance().isPressed(KeyEvent.VK_RIGHT)) {
@@ -200,7 +202,7 @@ public class TestStage extends Game {
 			jogador.andar(jogador.getDirecao());
 		}
 		if (InputManager.getInstance().isPressed(KeyEvent.VK_DOWN)) {
-
+			
 		}
 		if (InputManager.getInstance().isPressed(KeyEvent.VK_ESCAPE)) {
 			if(currentTick % 10 == 0){
@@ -209,6 +211,13 @@ public class TestStage extends Game {
 		}
 		if(InputManager.getInstance().isPressed(KeyEvent.VK_SPACE)){
 			this.jogador.atirarTest();
+		}
+		if(InputManager.getInstance().isPressed(KeyEvent.VK_V)){
+			if(jogador.isModoVoador()){
+				jogador.desativarModoVoador();
+			} else {
+				jogador.ativarModoVoador();
+			}
 		}
 	}
 	
@@ -219,8 +228,15 @@ public class TestStage extends Game {
 		if (chao - 100 < jogador.getY()
 				&& InputManager.getInstance().isPressed(KeyEvent.VK_UP)) {
 			jogador.setY(jogador.getY() - (int) jogador.getSpeed());
+		} else if (jogador.isModoVoador()
+				&& InputManager.getInstance().isPressed(KeyEvent.VK_UP)) {
+			jogador.setY(jogador.getY() - (int) jogador.getSpeed());
 		} else {
-			jogador.setEstadoDoSalto(ESTADODESCENDO);
+			if (!jogador.isModoVoador())
+				jogador.setEstadoDoSalto(ESTADODESCENDO);
+			else if (InputManager.getInstance().isReleased(KeyEvent.VK_UP)) {
+				jogador.setEstadoDoSalto(ESTADODESCENDO);
+			}
 		}
 	}
 
@@ -243,20 +259,19 @@ public class TestStage extends Game {
 	 */
 
 	private void colisaoArma() {
-		if(colisaoArma == false){
-		if (this.arma.getBounds().intersects(this.jogador.getBounds())) {
-			this.colisaoArma = true;
+		if (colisaoArma == false) {
+			if (this.arma.getBounds().intersects(this.jogador.getBounds())) {
+				this.colisaoArma = true;
+			}
 		}
-		}
-		if(colisaoArma2 == false){
-		if (this.arma2.getBounds().intersects(this.jogador.getBounds())) {
-			this.colisaoArma2 = true;
-		}
+		if (colisaoArma2 == false) {
+			if (this.arma2.getBounds().intersects(this.jogador.getBounds())) {
+				this.colisaoArma2 = true;
+			}
 		}
 	}
 
 	public void onLoad() {
-		
 		this.colisaoArma = false;
 
 		this.aindaRolandoEsquerda = true;
@@ -282,43 +297,47 @@ public class TestStage extends Game {
 	 * Método que roda a cada tick.
 	 */
 	public void onUpdate(int currentTick) {
+		jogador.updateFly();
 		this.armaAtual.update(jogador.getX(), jogador.getY());
 		verificaRolagem();
 		jogador.getSpritesDireita().update(currentTick);
 		jogador.getSpritesEsquerda().update(currentTick);
+		jogador.getSpritesVoandoDireita().update(currentTick);
+		jogador.getSpritesVoandoEsquerda().update(currentTick);
 		colisaoArma();
-		if(this.estado != PAUSANOJOGO){
-		runControleJogo(currentTick);
-		if (jogador.getEstadoDoSalto() == ESTADOPULANDO) {
-			runEstadoPulando();
-		} else if (colisao.colisaoPlataforma(jogador)) {
-			jogador.setEstadoDoSalto(ESTADOREPOUSO);
-			chao = jogador.getY();
-		} else {
-			jogador.setEstadoDoSalto(ESTADODESCENDO);
-			runEstadoDescendo();
-		}
-		if (jogador.getEstado() == ESTADOANDANDO) {
-			if (jogador.getDirecao() == DIREITA) {
-				if (jogador.getX() < getWidth() * 0.60) {
-					runEstadoMovendoDireita();
-				}
-				updateDimensionDireita();
-				if (InputManager.getInstance().isReleased(KeyEvent.VK_RIGHT)) {
-					jogador.setEstado(ESTADOPARADO);
-				}
+		if (this.estado != PAUSANOJOGO) {
+			runControleJogo(currentTick);
+			if (jogador.getEstadoDoSalto() == ESTADOPULANDO) {
+				runEstadoPulando();
+			} else if (colisao.colisaoPlataforma(jogador)) {
+				jogador.setEstadoDoSalto(ESTADOREPOUSO);
+				chao = jogador.getY();
 			} else {
-				if (jogador.getX() > getWidth() * 0.40) {
-					runEstadoMovendoEsquerda();
-				}
-				updateDimensionEsquerda();
-				if (InputManager.getInstance().isReleased(KeyEvent.VK_LEFT)) {
-					jogador.setEstado(ESTADOPARADO);
+				jogador.setEstadoDoSalto(ESTADODESCENDO);
+				runEstadoDescendo();
+			}
+			if (jogador.getEstado() == ESTADOANDANDO) {
+				if (jogador.getDirecao() == DIREITA) {
+					if (jogador.getX() < getWidth() * 0.60) {
+						runEstadoMovendoDireita();
+					}
+					updateDimensionDireita();
+					if (InputManager.getInstance()
+							.isReleased(KeyEvent.VK_RIGHT)) {
+						jogador.setEstado(ESTADOPARADO);
+					}
+				} else {
+					if (jogador.getX() > getWidth() * 0.40) {
+						runEstadoMovendoEsquerda();
+					}
+					updateDimensionEsquerda();
+					if (InputManager.getInstance().isReleased(KeyEvent.VK_LEFT)) {
+						jogador.setEstado(ESTADOPARADO);
+					}
 				}
 			}
-		}
-		}else{
-			if(!this.inventario.isActive()){
+		} else {
+			if (!this.inventario.isActive()) {
 				this.estado = this.estadoAnterior;
 			}
 		}
@@ -370,8 +389,8 @@ public class TestStage extends Game {
 		}
 		// Desenhando as plataformas
 		renderPlataformas(g);
-		g.drawImage(jogador.getImagem(), jogador.getX(), jogador.getY(), 80,
-				80, null);
+		g.drawImage(jogador.getImagem(), jogador.getX(), jogador.getY(), jogador.getLargura(),
+				jogador.getAltura(), null);
 		desenharArma(g);
 		}
 	}

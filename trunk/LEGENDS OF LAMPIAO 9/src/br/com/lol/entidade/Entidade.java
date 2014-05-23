@@ -10,9 +10,11 @@ public class Entidade {
 	protected float speed;
 	protected Rectangle pos;
 	protected int estado;
+	protected int altura;
+	protected int largura;
 	
 	public Entidade(){
-		//Não faz nada, mas precisa ter
+		//Não faz nada.
 	}
 	
 	public void update(int x, int y){
@@ -72,7 +74,7 @@ public class Entidade {
 	}
 
 	public Rectangle getBounds() {
-		return new Rectangle(this.x , this.y, 80, 90);
+		return new Rectangle(this.x , this.y, 50, 50);
 	}
 
 	public int getEstado() {
@@ -81,6 +83,22 @@ public class Entidade {
 
 	public void setEstado(int estado) {
 		this.estado = estado;
+	}
+
+	public int getAltura() {
+		return altura;
+	}
+
+	public void setAltura(int altura) {
+		this.altura = altura;
+	}
+
+	public int getLargura() {
+		return largura;
+	}
+
+	public void setLargura(int largura) {
+		this.largura = largura;
 	}
 	
 	
