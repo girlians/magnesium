@@ -6,7 +6,7 @@ public class Inimigo extends Personagem{
 	
 	protected String identificador;
 	
-	public Inimigo(int x, int y, BufferedImage imagem, int direcao){
+	public Inimigo(int x, int y, int direcao){
 		this.x = x;
 		this.y = y;
 		this.direcao = direcao;

@@ -17,7 +17,7 @@ public class InimigoFraco extends Inimigo{
 	private List<BufferedImage> imagensEsquerda;
 	
 	public InimigoFraco(int x, int y, BufferedImage imagem, int direcao){
-		super(x,y, imagem, direcao);
+		super(x,y, direcao);
 		this.identificador = "fraco";
 		this.energia = 1;
 		this.speed = 1;

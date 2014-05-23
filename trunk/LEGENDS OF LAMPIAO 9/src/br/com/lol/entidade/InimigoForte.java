@@ -14,8 +14,8 @@ public class InimigoForte extends Inimigo{
 	private BufferedImage imagemInvertida2;
 	private List<BufferedImage> imagens;
 	
-	public InimigoForte(int x, int y, BufferedImage imagem, int direcao){
-		super(x, y, imagem, direcao);
+	public InimigoForte(int x, int y, BufferedImage image, int direcao){
+		super(x, y, direcao);
 		this.identificador = "forte";
 		this.energia = 3;
 		this.speed = 3;

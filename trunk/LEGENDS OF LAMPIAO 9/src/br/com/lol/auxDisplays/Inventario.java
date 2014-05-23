@@ -120,20 +120,20 @@ public class Inventario implements Display{
 		if(InputManager.getInstance().isPressed(KeyEvent.VK_UP)){
 			if(this.selecionadorArmaY >  330 ){
 				this.selecionadorArmaY -= 60;
-				Thread.sleep(1000/20);
+				Thread.sleep(1000/10);
 			}
 		}
 		if(InputManager.getInstance().isPressed(KeyEvent.VK_DOWN)){
 			if(this.selecionadorArmaY < 460 ){
 				this.selecionadorArmaY += 60;
-				Thread.sleep(1000/20);
+				Thread.sleep(1000/10);
 			}
 		}
 		
 		if(InputManager.getInstance().isPressed(KeyEvent.VK_ESCAPE)){
 			this.selecionandoUmaArma = false;
 			this.selecionandoUmaOpcaoDoInventario = true;
-			Thread.sleep(1000/20);
+			Thread.sleep(1000/10);
 		}
 	}
 	
@@ -193,14 +193,14 @@ public class Inventario implements Display{
 			if(this.selecionadorInventarioX < 600){
 				this.selecionadorInventarioX += 197;
 				this.indiceImagemInventario++;
-				Thread.sleep(1000/20);
+				Thread.sleep(1000/10);
 			}
 		}
 		if(InputManager.getInstance().isPressed(KeyEvent.VK_LEFT)){
 			if(this.selecionadorInventarioX > 16){
 				this.selecionadorInventarioX -= 197;
 				this.indiceImagemInventario --;
-				Thread.sleep(1000/20);
+				Thread.sleep(1000/10);
 			}
 		}
 		if(InputManager.getInstance().isPressed(KeyEvent.VK_ENTER)){
