@@ -1,6 +1,5 @@
 package br.com.lol.entidade;
 
-import java.applet.AudioClip;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -25,46 +24,80 @@ public class Jogador extends Personagem{
 	protected BufferedImage pulandoDireita;
 	protected BufferedImage pulandoEsquerda;
 	protected BufferedImage abaixado;
+	private SpriteAnimation spritesVoandoDireita;
+	private SpriteAnimation spritesVoandoEsquerda;
+	private BufferedImage imgVoando;
+	private boolean modoVoador;
 	
-	public Jogador(int x, int y){
+	
+	public boolean isModoVoador() {
+		return modoVoador;
+	}
+
+	public SpriteAnimation getSpritesVoandoDireita() {
+		return spritesVoandoDireita;
+	}
+
+	public void setSpritesVoandoDireita(SpriteAnimation spritesVoandoDireita) {
+		this.spritesVoandoDireita = spritesVoandoDireita;
+	}
+
+	public SpriteAnimation getSpritesVoandoEsquerda() {
+		return spritesVoandoEsquerda;
+	}
+
+	public void setSpritesVoandoEsquerda(SpriteAnimation spritesVoandoEsquerda) {
+		this.spritesVoandoEsquerda = spritesVoandoEsquerda;
+	}
+
+	public Jogador(int x, int y) {
 		this.energia = 5;
 		this.x = x;
 		this.y = y;
 		this.speed = 5;
-		
+
 		this.estado = 4;
 		this.estadoDoSalto = 0;
 		this.direcao = 1;
-		
+		this.modoVoador = false;
+		altura = 80;
+		largura = 90;
+
 		this.arma = new Espingarda(this);
-		
+
 		this.tiros = new ArrayList<Tiro>();
 		this.spritesDireita = new SpriteAnimation();
 		this.spritesEsquerda = new SpriteAnimation();
+		this.spritesVoandoDireita = new SpriteAnimation();
+		this.spritesVoandoEsquerda = new SpriteAnimation();
 		try {
-			this.spritesDireita = ImageManager.getInstance().loadSpriteAnimation(
-					"br/com/lol/imagens/spriteDireita1.png", 8);
-			this.spritesEsquerda = ImageManager.getInstance().loadSpriteAnimation(
-					"br/com/lol/imagens/spriteEsquerda1.png", 8);
-			this.pulandoDireita = ImageManager.getInstance().
-					loadImage("br/com/lol/imagens/lampia_pulando_normal.png");
-			this.pulandoEsquerda = ImageManager.getInstance().
-					loadImage("br/com/lol/imagens/lampia_pulando_invertido.png");
-			this.paradoEsquerda = ImageManager.getInstance().
-					loadImage("br/com/lol/imagens/lampiao_invertida.png");
-			this.paradoDireita = ImageManager.getInstance().
-					loadImage("br/com/lol/imagens/lampiao_normal.png");
+			this.spritesDireita = ImageManager.getInstance()
+					.loadSpriteAnimation(
+							"br/com/lol/imagens/spriteDireita1.png", 8);
+			this.spritesEsquerda = ImageManager.getInstance()
+					.loadSpriteAnimation(
+							"br/com/lol/imagens/spriteEsquerda1.png", 8);
+			this.pulandoDireita = ImageManager.getInstance().loadImage(
+					"br/com/lol/imagens/lampia_pulando_normal.png");
+			this.pulandoEsquerda = ImageManager.getInstance().loadImage(
+					"br/com/lol/imagens/lampia_pulando_invertido.png");
+			this.paradoEsquerda = ImageManager.getInstance().loadImage(
+					"br/com/lol/imagens/lampiao_invertida.png");
+			this.paradoDireita = ImageManager.getInstance().loadImage(
+					"br/com/lol/imagens/lampiao_normal.png");
+			this.spritesVoandoEsquerda = ImageManager
+					.getInstance()
+					.loadSpriteAnimation(
+							"br/com/lol/imagens/spriteCarcaraAtt.png",
+							8);
+			this.spritesVoandoDireita = ImageManager
+					.getInstance()
+					.loadSpriteAnimation(
+							"br/com/lol/imagens/spriteCompletoCarcaraDireita1.png",
+							8);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-	
-	public Rectangle getBounds(int direcao){
-		if(direcao > 0){
-		return new Rectangle(x + 20 , y, 20, 60);
-		}else
-			return new Rectangle(x + 20 , y, 20, 60);
 	}
 	
 	/*public void atirar(int dir, int currentTick, AudioClip somTiro) {
@@ -86,13 +119,14 @@ public class Jogador extends Personagem{
 	}
 	
 	public BufferedImage getImagem(){
+		if(modoVoador==true)
+			return this.imgVoando;
 		if((this.estadoDoSalto==1)||this.estadoDoSalto==2)
 			if(this.direcao == 1)
 				return this.pulandoDireita;
 			else
 				return this.pulandoEsquerda;
-			
-		else 
+		 else
 			if(this.estado == 3)
 				return this.imagem;
 			else
@@ -109,6 +143,19 @@ public class Jogador extends Personagem{
 		} else {
 			spritesEsquerda.setLoop(true);
 			this.imagem = spritesEsquerda.getImage();
+			
+		}
+	}
+	
+	public void updateFly() {
+		if (isModoVoador()) {
+			if(direcao > 0){
+				spritesVoandoDireita.setLoop(true);
+				this.imgVoando = spritesVoandoDireita.getImage();
+			} else {
+				spritesVoandoEsquerda.setLoop(true);
+				this.imgVoando = spritesVoandoEsquerda.getImage();
+			}
 		}
 	}
 	
@@ -147,5 +194,22 @@ public class Jogador extends Personagem{
 
 	public void setSpritesDireita(SpriteAnimation spritesDireita) {
 		this.spritesDireita = spritesDireita;
+	}
+
+	public void ativarModoVoador() {
+		y = y - 35;
+		this.altura = 125;
+		this.largura = 135;
+		this.modoVoador = true;
+	}
+	public void desativarModoVoador(){
+		
+		this.altura = 80;
+		this.largura = 90;
+		this.modoVoador = false;
+	}
+	
+	public Rectangle getBounds() {
+		return new Rectangle(this.x , this.y, this.largura, this.largura);
 	}
 }

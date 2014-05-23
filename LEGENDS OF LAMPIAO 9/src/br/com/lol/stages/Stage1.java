@@ -347,7 +347,7 @@ public class Stage1 extends Game{
 	}
 	
 	private boolean colisionDetector(){
-		Rectangle rectLampiao = jogador.getBounds(direcao);
+		Rectangle rectLampiao = jogador.getBounds();
 		
 		List<Tiro> balas = jogador.getTiros();
 		for (Tiro tiro : balas) {
