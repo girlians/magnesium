@@ -78,6 +78,9 @@ public class TestStage extends Game {
 	final private int PAUSANOJOGO = 99;
 	// Atributo respinsavel por "DIZER" se a collisão.x
 	private CollisionDetector colisao;
+	private boolean pararDimensioEsquerda;
+	private boolean pararDimensionDireita;
+	private boolean controleUpdate;
 
 	/*
 	 * Método que inicializa todas as imagens do jogo.
@@ -95,8 +98,9 @@ public class TestStage extends Game {
 	/*
 	 * Todas as atualizações das plataformas e outras coisas estão aqui
 	 */
+	
 	private void updateDimensionDireita() {
-		if (jogador.getX() > getWidth() * 0.55) {
+		if (jogador.getX() > getWidth() * 0.59) {
 			if(aindaRolandoDireita){
 			rolagem.x += (int) jogador.getSpeed();
 			listaDePlataformas = colisao.getListaDeEntidades();
@@ -109,18 +113,43 @@ public class TestStage extends Game {
 		}
 	}
 	
+	private void pararUpdate(){
+		if (controleUpdate) {
+			if (jogador.getX() < 330 && rolagem.x <= 0) {
+				pararDimensioEsquerda = true;
+			} else
+				pararDimensioEsquerda = false;
+			if (jogador.getX() > 390 && rolagem.x >= 6700)
+				pararDimensionDireita = true;
+			else
+				pararDimensionDireita = false;
+		}
+	}
+	
+	private void pararAqui(){
+		if(!pararDimensioEsquerda && !pararDimensionDireita){
+			pararDimensioEsquerda = true;
+			pararDimensionDireita = true;
+		} else {
+			pararDimensioEsquerda = false;
+			pararDimensionDireita = false;
+		}
+		
+		System.out.println("Esquerda: "+pararDimensioEsquerda+"            Direita: "+pararDimensionDireita);
+	}
 
 	private void updateDimensionEsquerda() {
-		if ((jogador.getX() < getWidth() * 0.45)||rolagem.x < getWidth()*0.45) {
-			if(aindaRolandoEsquerda){
-			rolagem.x -= (int) jogador.getSpeed();
-			listaDePlataformas = colisao.getListaDeEntidades();
-			for (EntidadePlataforma i : listaDePlataformas) {
-				i.setX(i.getX() + (int) jogador.getSpeed());
-			}
-			this.arma.setX(arma.getX() + (int) jogador.getSpeed());
-			this.arma2.setX(arma2.getX() + (int) jogador.getSpeed());
-		}
+		if (((jogador.getX() < getWidth() * 0.41)
+				|| rolagem.x < getWidth() * 0.41) && rolagem.x>0) {
+				rolagem.x -= (int) jogador.getSpeed();
+				listaDePlataformas = colisao.getListaDeEntidades();
+				for (EntidadePlataforma i : listaDePlataformas) {
+					i.setX(i.getX() + (int) jogador.getSpeed());
+				}
+				this.arma.setX(arma.getX() + (int) jogador.getSpeed());
+				this.arma2.setX(arma2.getX() + (int) jogador.getSpeed());
+		} else {
+			
 		}
 	}
 	
@@ -176,13 +205,12 @@ public class TestStage extends Game {
 	 * Método que ouve todos os sons do teclado e apartir disso seta os estados
 	 * no personagem.
 	 */
-	private void runControleJogo(int currentTick) throws InterruptedException {
+	private void runControleJogo(int currentTick) {
 		if(InputManager.getInstance().isTyped(KeyEvent.VK_U)){
 			this.estadoAnterior = estado;
 			this.estado = PAUSANOJOGO;
 			this.inventario.setActive(true);
 			this.inventario.setSelecionarInventario(true);
-			Thread.sleep(1000/20);
 		}
 		if (InputManager.getInstance().isPressed(KeyEvent.VK_UP)
 				&& (jogador.isModoVoador()) ) {
@@ -206,8 +234,9 @@ public class TestStage extends Game {
 			
 		}
 		if (InputManager.getInstance().isPressed(KeyEvent.VK_ESCAPE)) {
+			if(currentTick % 10 == 0){
 			terminate();
-			Thread.sleep(1000/20);
+			}
 		}
 		if(InputManager.getInstance().isPressed(KeyEvent.VK_SPACE)){
 			this.jogador.atirarTest();
@@ -218,6 +247,10 @@ public class TestStage extends Game {
 			} else {
 				jogador.ativarModoVoador();
 			}
+		}
+		if(InputManager.getInstance().isPressed(KeyEvent.VK_P)){
+			controleUpdate = false;
+			pararAqui();
 		}
 	}
 	
@@ -243,13 +276,13 @@ public class TestStage extends Game {
 	private void runEstadoDescendo() {
 		jogador.setY(jogador.getY() + (int) jogador.getSpeed());
 	}
-
 	private void runEstadoMovendoDireita() {
-		jogador.setX(jogador.getX() + ((int) jogador.getSpeed()));
+		if(jogador.getX()<710)
+			jogador.setX(jogador.getX() + ((int) jogador.getSpeed()));
 	}
-
 	private void runEstadoMovendoEsquerda() {
-		jogador.setX(jogador.getX() - ((int) jogador.getSpeed()));
+		if(jogador.getX()>0)
+			jogador.setX(jogador.getX() - ((int) jogador.getSpeed()));
 	}
 
 	// ACABA AQUI OS METODOS DOS ESTADOS DE LAMPIÃO
@@ -273,6 +306,7 @@ public class TestStage extends Game {
 
 	public void onLoad() {
 		this.colisaoArma = false;
+		controleUpdate = true;
 
 		this.aindaRolandoEsquerda = true;
 		this.aindaRolandoDireita = true;
@@ -297,6 +331,7 @@ public class TestStage extends Game {
 	 * Método que roda a cada tick.
 	 */
 	public void onUpdate(int currentTick) {
+		pararUpdate();
 		jogador.updateFly();
 		this.armaAtual.update(jogador.getX(), jogador.getY());
 		verificaRolagem();
@@ -306,12 +341,7 @@ public class TestStage extends Game {
 		jogador.getSpritesVoandoEsquerda().update(currentTick);
 		colisaoArma();
 		if (this.estado != PAUSANOJOGO) {
-			try {
-				runControleJogo(currentTick);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			runControleJogo(currentTick);
 			if (jogador.getEstadoDoSalto() == ESTADOPULANDO) {
 				runEstadoPulando();
 			} else if (colisao.colisaoPlataforma(jogador)) {
@@ -325,8 +355,10 @@ public class TestStage extends Game {
 				if (jogador.getDirecao() == DIREITA) {
 					if (jogador.getX() < getWidth() * 0.60) {
 						runEstadoMovendoDireita();
-					}
-					updateDimensionDireita();
+					} else if(!pararDimensionDireita)
+						updateDimensionDireita();
+					else
+						runEstadoMovendoDireita();
 					if (InputManager.getInstance()
 							.isReleased(KeyEvent.VK_RIGHT)) {
 						jogador.setEstado(ESTADOPARADO);
@@ -334,8 +366,10 @@ public class TestStage extends Game {
 				} else {
 					if (jogador.getX() > getWidth() * 0.40) {
 						runEstadoMovendoEsquerda();
-					}
-					updateDimensionEsquerda();
+					} else if(!pararDimensioEsquerda)
+						updateDimensionEsquerda();
+					else
+						runEstadoMovendoEsquerda();
 					if (InputManager.getInstance().isReleased(KeyEvent.VK_LEFT)) {
 						jogador.setEstado(ESTADOPARADO);
 					}
@@ -380,7 +414,7 @@ public class TestStage extends Game {
 				e.printStackTrace();
 			}
 		}else{
-		if (!colisaoArma){
+		if (!colisaoArma) {
 			g.setColor(Color.BLACK);
 			g.fillRect(this.arma.getX() - 10, this.arma.getY()-30, 40 , 40);
 			g.setColor(Color.RED);
