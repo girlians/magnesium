@@ -10,14 +10,14 @@ import br.com.lol.gerenciadores.ImageManager;
 import br.com.lol.observador.Observer;
 import br.com.lol.observador.Sujeito;
 
-public class Tiro extends Entidade{
+public class Projetil extends Entidade{
 
 	private boolean visible;
 	private boolean status;
 	private int direcao;
 	private BufferedImage imagem;
 	
-	public Tiro(int x, int y, int direcao, BufferedImage imagem){
+	public Projetil(int x, int y, int direcao, BufferedImage imagem){
 		this.imagem = imagem;
 		this.x = x +10;
 		this.y = y + 125;

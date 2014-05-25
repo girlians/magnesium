@@ -19,7 +19,7 @@ import br.com.lol.entidade.Inimigo;
 import br.com.lol.entidade.InimigoForte;
 import br.com.lol.entidade.InimigoFraco;
 import br.com.lol.entidade.Jogador;
-import br.com.lol.entidade.Tiro;
+import br.com.lol.entidade.Projetil;
 import br.com.lol.gerenciadores.AudioManager;
 import br.com.lol.gerenciadores.ImageManager;
 import br.com.lol.gerenciadores.InputManager;
@@ -40,7 +40,7 @@ public class Stage1 extends Game{
 	
 	//OBSERVADOR E SUJEITO PARA PLACAR
 	private DisplayPontuacao displayP;
-	private Tiro balistica;
+	private Projetil balistica;
 	
 	private DaoGame dao;
 	
@@ -317,9 +317,9 @@ public class Stage1 extends Game{
 	}
 	
 	private void verificandoBalas(){
-		List<Tiro> balas = jogador.getTiros();
+		List<Projetil> balas = jogador.getTiros();
 		for (int i = 0; i < balas.size(); i++) {
-			Tiro tiro = balas.get(i);
+			Projetil tiro = balas.get(i);
 			if(tiro.isVisible()){
 				tiro.mover();
 			} else {
@@ -349,8 +349,8 @@ public class Stage1 extends Game{
 	private boolean colisionDetector(){
 		Rectangle rectLampiao = jogador.getBounds();
 		
-		List<Tiro> balas = jogador.getTiros();
-		for (Tiro tiro : balas) {
+		List<Projetil> balas = jogador.getTiros();
+		for (Projetil tiro : balas) {
 				for(Inimigo i: inimigos){
 					if(tiro.getBounds().intersects(i.getBounds())){
 						tiro.setVisible(false);
@@ -433,8 +433,8 @@ public class Stage1 extends Game{
 			g.drawImage(gameOver, 0, 0, null);
 		}
 		if(estaVivo){
-			List<Tiro> balas = jogador.getTiros();
-			for (Tiro tiro : balas) {
+			List<Projetil> balas = jogador.getTiros();
+			for (Projetil tiro : balas) {
 				if(tiro.isVisible()){
 					g.drawImage(tiro.getImagem(), tiro.getX(), tiro.getY(), null);
 				}
