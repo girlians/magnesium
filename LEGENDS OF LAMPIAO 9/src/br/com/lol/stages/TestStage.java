@@ -16,7 +16,8 @@ import br.com.lol.core.Game;
 import br.com.lol.entidade.Entidade;
 import br.com.lol.entidade.EntidadePlataforma;
 import br.com.lol.entidade.Jogador;
-import br.com.lol.entidade.Tiro;
+import br.com.lol.entidade.MestreStage1;
+import br.com.lol.entidade.Projetil;
 import br.com.lol.gerenciadores.CollisionDetector;
 import br.com.lol.gerenciadores.ImageManager;
 import br.com.lol.gerenciadores.InputManager;
@@ -57,11 +58,14 @@ public class TestStage extends Game {
 
 	private boolean aindaRolandoEsquerda;
 	private boolean aindaRolandoDireita;
+	
+	private boolean noChefe;
 
 	private Arma armaAtual;
 
 	// Jogador
 	private Jogador jogador;
+	private MestreStage1 mestre;
 	// Plataformas
 	private EntidadePlataforma plataforma1;
 	private EntidadePlataforma plataforma2;
@@ -94,6 +98,37 @@ public class TestStage extends Game {
 			System.err.println(e.getMessage());
 		}
 	}
+	
+	public void onLoad() {
+		this.colisaoArma = false;
+		controleUpdate = true;
+
+		this.aindaRolandoEsquerda = true;
+		this.aindaRolandoDireita = true;
+		this.noChefe = false;
+		inicializarImagens();
+		inicializarPlataformas();
+		rolagem = new Point(0, 300);
+		rolagem.x = 0;
+		rolagem.y = 300;
+		jogador = new Jogador(100, this.getHeight() - 300);
+		try {
+			this.mestre = new MestreStage1(7000, getHeight() - 140, ImageManager.getInstance().
+					loadImage("br/com/lol/imagens/chefe1_invertido.png"), -1, this.jogador);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		this.armaAtual = this.jogador.getArma();
+		this.inventario = new Inventario(getWidth() / 2, getHeight()/2, this.jogador, this);
+		listaDePlataformas = new ArrayList<>();
+		listaDePlataformas.add(plataforma1);
+		listaDePlataformas.add(plataforma2);
+		listaDePlataformas.add(plataforma3);
+
+		colisao = new CollisionDetector(listaDePlataformas);
+		inicializarDimension();
+	}
 
 	/*
 	 * Todas as atualizações das plataformas e outras coisas estão aqui
@@ -109,6 +144,7 @@ public class TestStage extends Game {
 			}
 			this.arma.setX(this.arma.getX() - (int) jogador.getSpeed());
 			this.arma2.setX(this.arma2.getX() - (int) jogador.getSpeed());
+			this.mestre.setX(this.mestre.getX() - (int) jogador.getSpeed());
 		}
 		}
 	}
@@ -148,6 +184,7 @@ public class TestStage extends Game {
 				}
 				this.arma.setX(arma.getX() + (int) jogador.getSpeed());
 				this.arma2.setX(arma2.getX() + (int) jogador.getSpeed());
+				this.mestre.setX(this.mestre.getX() + (int) jogador.getSpeed());
 		} else {
 			
 		}
@@ -199,6 +236,13 @@ public class TestStage extends Game {
 		plataforma2.init();
 		plataforma3.init();
 
+	}
+	
+	private void verificaLocalChefe(){
+		if(this.rolagem.x >= 6600){
+			pararAqui();
+			this.noChefe = true;
+		}
 	}
 
 	/*
@@ -303,35 +347,18 @@ public class TestStage extends Game {
 			}
 		}
 	}
-
-	public void onLoad() {
-		this.colisaoArma = false;
-		controleUpdate = true;
-
-		this.aindaRolandoEsquerda = true;
-		this.aindaRolandoDireita = true;
-		inicializarImagens();
-		inicializarPlataformas();
-		rolagem = new Point(0, 300);
-		rolagem.x = 0;
-		rolagem.y = 300;
-		jogador = new Jogador(100, this.getHeight() - 300);
-		this.armaAtual = this.jogador.getArma();
-		this.inventario = new Inventario(getWidth() / 2, getHeight()/2, this.jogador, this);
-		listaDePlataformas = new ArrayList<>();
-		listaDePlataformas.add(plataforma1);
-		listaDePlataformas.add(plataforma2);
-		listaDePlataformas.add(plataforma3);
-
-		colisao = new CollisionDetector(listaDePlataformas);
-		inicializarDimension();
-	}
-
 	/*
 	 * Método que roda a cada tick.
 	 */
 	public void onUpdate(int currentTick) {
+		System.out.println(rolagem.x);
 		pararUpdate();
+		verificaLocalChefe();
+		if(noChefe){
+			if(!this.mestre.isExecutando()){
+				this.mestre.runIA();
+			}
+		}
 		jogador.updateFly();
 		this.armaAtual.update(jogador.getX(), jogador.getY());
 		verificaRolagem();
@@ -382,11 +409,17 @@ public class TestStage extends Game {
 		}
 	}
 	
-	public void desenharArma(Graphics2D g){
-		for(Tiro tiro: this.armaAtual.getBalas()){
+	public void renderProjeteis(Graphics2D g){
+		for(Projetil tiro: this.armaAtual.getBalas()){
 			if(tiro.isVisible()){
 				tiro.mover();
 				g.drawImage(tiro.getImagem(), tiro.getX(), tiro.getY(), null);
+			}
+		}
+		for(Projetil faca: this.mestre.getArma().getBalas()){
+			if(faca.isVisible()){
+				faca.mover();
+				g.drawImage(faca.getImagem(), faca.getX(), faca.getY(), 30, 10, null);
 			}
 		}
 	}
@@ -430,7 +463,8 @@ public class TestStage extends Game {
 		renderPlataformas(g);
 		g.drawImage(jogador.getImagem(), jogador.getX(), jogador.getY(), jogador.getLargura(),
 				jogador.getAltura(), null);
-		desenharArma(g);
+		g.drawImage(this.mestre.getImagem(), this.mestre.getX(), this.mestre.getY(),80,80, null);
+		renderProjeteis(g);
 		}
 	}
 

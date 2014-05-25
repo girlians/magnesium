@@ -1,23 +1,49 @@
 package br.com.lol.entidade;
 
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 import br.com.lol.armas.Arma;
 import br.com.lol.armas.Faca;
+import br.com.lol.gerenciadores.ImageManager;
 
 public class MestreStage1 extends Mestre {
 
-	private List<Arma> facas;
-
+	private Faca arma;
+	private BufferedImage normal;
+	private BufferedImage invertido;
+	private boolean executando;
+	
 	public MestreStage1(int x, int y, BufferedImage imagem, int direcao,
 			Jogador j) {
 		super(x, y, imagem, direcao, j);
+		this.executando = false;
 		this.energia = 8;
-		this.facas = new ArrayList<Arma>();
 		this.speed = 5;
+		this.arma = new Faca(500, j);
+		this.imagem = imagem;
+		try{
+		this.normal =  ImageManager.getInstance().loadImage("br/com/lol/imagens/chefe1.png");
+		this.invertido =  ImageManager.getInstance().loadImage("br/com/lol/imagens/chefe1_invertido.png");
+		}catch(IOException e){
+			e.getMessage();
+		}
+	}
+	
+	private void atualizarImagem(){
+		if(this.direcao >0){
+			this.imagem = normal;
+		}else{
+			this.imagem = invertido;
+		}
+	}
+	
+	public BufferedImage getImagem(){
+		atualizarImagem();
+		return this.imagem;
 	}
 
 	public void andar() {
@@ -34,16 +60,34 @@ public class MestreStage1 extends Mestre {
 				this.x += speedX;
 				this.y -= speedY;
 			}
+			for (int i = 0; i < 10; i++) {
+				this.x += speedX;
+				this.y += speedY;
+			}
 		} else {
 			for (int i = 0; i < 10; i++) {
 				this.x -= speedX;
 				this.y -= speedY;
 			}
+			for (int i = 0; i < 10; i++) {
+				this.x -= speedX;
+				this.y += speedY;
+			}
 		}
 	}
 
 	private void jogarFacas() {
-		this.facas.add(new Faca(0, this.jogador));
+		this.arma.usar(this.direcao);
+		new Thread(arma).start();
+	}
+	
+	private void atualizarPosicao(){
+		if(this.x >= 7500){
+			this.direcao *= -1;
+		}
+		if(this.x <= 6000){
+			this.direcao *= -1;
+		}
 	}
 
 	private void runModeNormal() {
@@ -53,15 +97,20 @@ public class MestreStage1 extends Mestre {
 		Random rnd = new Random();
 		if (rnd.nextBoolean()) {
 			andar();
+			atualizarPosicao();
 		} else {
 			jump(x, y);
+			atualizarPosicao();
 		}
 		if (rnd.nextBoolean()) {
 			//for(int i = 0; i< numFacas; i++){
 			jogarFacas();
 			//}
 		}
+		this.executando = false;
 	}
+	
+	
 
 	private void runModeArretado() {
 		int x = new Aleatorio(5, 10).sorteio();
@@ -77,6 +126,24 @@ public class MestreStage1 extends Mestre {
 			for(int i = 0; i< numFacas; i++){
 			jogarFacas();
 			}
+		}
+		this.executando = false;
+	}
+	
+	public void runIA(){
+		if(!executando){
+		this.executando = true;
+		}
+		if(executando){
+		if(this.energia > 0){
+			if(this.energia > 5){
+				runModeNormal();
+			}else if(this.energia > 2){
+				runModeArretado();
+			}else if(this.energia >= 1){
+				runModeCaoNosCoro();
+			}
+		}
 		}
 	}
 
@@ -95,7 +162,27 @@ public class MestreStage1 extends Mestre {
 			jogarFacas();
 			}
 		}
+		this.executando = false;
 	}
+
+	public Faca getArma() {
+		return arma;
+	}
+
+	public void setArma(Faca arma) {
+		this.arma = arma;
+	}
+
+	public boolean isExecutando() {
+		return executando;
+	}
+
+	public void setExecutando(boolean executando) {
+		this.executando = executando;
+	}
+	
+	
+	
 }
 
 class Aleatorio {

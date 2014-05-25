@@ -14,7 +14,7 @@ import br.com.lol.gerenciadores.SpriteAnimation;
 
 public class Jogador extends Personagem{
 	
-	private List<Tiro> tiros;
+	private List<Projetil> tiros;
 	private BufferedImage imagem;
 	private Pulo pulo;
 	protected SpriteAnimation spritesDireita;
@@ -65,7 +65,7 @@ public class Jogador extends Personagem{
 
 		this.arma = new Espingarda(this);
 
-		this.tiros = new ArrayList<Tiro>();
+		this.tiros = new ArrayList<Projetil>();
 		this.spritesDireita = new SpriteAnimation();
 		this.spritesEsquerda = new SpriteAnimation();
 		this.spritesVoandoDireita = new SpriteAnimation();
@@ -172,11 +172,11 @@ public class Jogador extends Personagem{
 		return (Arma)this.arma;
 	}
 	
-	public List<Tiro> getTiros() {
+	public List<Projetil> getTiros() {
 		return tiros;
 	}
 
-	public void setTiros(List<Tiro> tiros) {
+	public void setTiros(List<Projetil> tiros) {
 		this.tiros = tiros;
 	}
 	

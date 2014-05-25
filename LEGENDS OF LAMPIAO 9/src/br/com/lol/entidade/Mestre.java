@@ -29,7 +29,7 @@ public class Mestre extends InimigoForte {
 		
 	}
 	
-	public void runIA(){
+	public void runIA() throws InterruptedException{
 		if(this.energia > 0){
 			if(this.energia > 5){
 				runModeNormal();
