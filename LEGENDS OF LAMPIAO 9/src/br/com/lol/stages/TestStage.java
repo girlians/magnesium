@@ -7,9 +7,11 @@ import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.lang.Thread.State;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.lol.IA.IaChefe;
 import br.com.lol.armas.Arma;
 import br.com.lol.auxDisplays.Inventario;
 import br.com.lol.core.Game;
@@ -42,6 +44,8 @@ public class TestStage extends Game {
 	final private int ESTADOPARADO = 4;
 	
 	private int estadoAnterior;
+	
+	Thread threadDoChefe;
 	/*
 	 * Todas as imagens antes de serem inciadas
 	 */
@@ -60,6 +64,8 @@ public class TestStage extends Game {
 	private boolean aindaRolandoDireita;
 	
 	private boolean noChefe;
+	
+	private IaChefe iaChefe;
 
 	private Arma armaAtual;
 
@@ -106,6 +112,7 @@ public class TestStage extends Game {
 		this.aindaRolandoEsquerda = true;
 		this.aindaRolandoDireita = true;
 		this.noChefe = false;
+		
 		inicializarImagens();
 		inicializarPlataformas();
 		rolagem = new Point(0, 300);
@@ -113,12 +120,14 @@ public class TestStage extends Game {
 		rolagem.y = 300;
 		jogador = new Jogador(100, this.getHeight() - 300);
 		try {
-			this.mestre = new MestreStage1(7000, getHeight() - 140, ImageManager.getInstance().
+			this.mestre = new MestreStage1(700, getHeight() - 140, ImageManager.getInstance().
 					loadImage("br/com/lol/imagens/chefe1_invertido.png"), -1, this.jogador);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		this.iaChefe = new IaChefe(this.mestre);
+		this.threadDoChefe = new Thread(iaChefe);
 		this.armaAtual = this.jogador.getArma();
 		this.inventario = new Inventario(getWidth() / 2, getHeight()/2, this.jogador, this);
 		listaDePlataformas = new ArrayList<>();
@@ -239,7 +248,7 @@ public class TestStage extends Game {
 	}
 	
 	private void verificaLocalChefe(){
-		if(this.rolagem.x >= 6600){
+		if(this.rolagem.x >= 1){
 			pararAqui();
 			this.noChefe = true;
 		}
@@ -351,13 +360,16 @@ public class TestStage extends Game {
 	 * Método que roda a cada tick.
 	 */
 	public void onUpdate(int currentTick) {
-		System.out.println(rolagem.x);
+		System.out.println("POSICAO DO MESTRE");
+		System.out.println(this.mestre.getPulo().getX());
+		System.out.println(this.mestre.getPulo().getY());
 		pararUpdate();
 		verificaLocalChefe();
 		if(noChefe){
-			if(!this.mestre.isExecutando()){
-				this.mestre.runIA();
-			}
+			if(this.threadDoChefe.getState() == Thread.State.NEW)
+				this.threadDoChefe.start();
+			if(this.threadDoChefe.getState() == Thread.State.TERMINATED)
+				this.threadDoChefe = new Thread(this.iaChefe);
 		}
 		jogador.updateFly();
 		this.armaAtual.update(jogador.getX(), jogador.getY());
@@ -463,7 +475,7 @@ public class TestStage extends Game {
 		renderPlataformas(g);
 		g.drawImage(jogador.getImagem(), jogador.getX(), jogador.getY(), jogador.getLargura(),
 				jogador.getAltura(), null);
-		g.drawImage(this.mestre.getImagem(), this.mestre.getX(), this.mestre.getY(),80,80, null);
+		g.drawImage(this.mestre.getImagem(1), this.mestre.getPulo().getX(), this.mestre.getPulo().getY(),80,80, null);
 		renderProjeteis(g);
 		}
 	}

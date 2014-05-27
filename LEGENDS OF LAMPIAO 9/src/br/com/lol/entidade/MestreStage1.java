@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import br.com.lol.IA.PuloIA;
 import br.com.lol.armas.Arma;
 import br.com.lol.armas.Faca;
 import br.com.lol.gerenciadores.ImageManager;
@@ -16,15 +17,20 @@ public class MestreStage1 extends Mestre {
 	private BufferedImage normal;
 	private BufferedImage invertido;
 	private boolean executando;
+	private PuloIA pulo;
 	
 	public MestreStage1(int x, int y, BufferedImage imagem, int direcao,
 			Jogador j) {
 		super(x, y, imagem, direcao, j);
 		this.executando = false;
 		this.energia = 8;
-		this.speed = 5;
+		this.speed = 15;
 		this.arma = new Faca(500, j);
 		this.imagem = imagem;
+		this.pulo = new PuloIA();
+		this.pulo.setY(y);
+		this.pulo.setX(x);
+		this.pulo.setMestre(this);
 		try{
 		this.normal =  ImageManager.getInstance().loadImage("br/com/lol/imagens/chefe1.png");
 		this.invertido =  ImageManager.getInstance().loadImage("br/com/lol/imagens/chefe1_invertido.png");
@@ -41,73 +47,61 @@ public class MestreStage1 extends Mestre {
 		}
 	}
 	
-	public BufferedImage getImagem(){
+	public BufferedImage getImagem(int dir){
 		atualizarImagem();
 		return this.imagem;
 	}
 
-	public void andar() {
-		if (this.direcao > 0) {
-			this.x += this.speed;
-		} else {
-			this.x -= this.speed;
-		}
+	public void andar(int speedX) {
+		this.pulo.setSpeedX(speedX);
+		this.pulo.setStatus(true);
+		new Thread(pulo).start();
+		atualizarPosicao();
 	}
 
-	private void jump(int speedX, int speedY) {
-		if (this.direcao > 0) {
-			for (int i = 0; i < 10; i++) {
-				this.x += speedX;
-				this.y -= speedY;
-			}
-			for (int i = 0; i < 10; i++) {
-				this.x += speedX;
-				this.y += speedY;
-			}
-		} else {
-			for (int i = 0; i < 10; i++) {
-				this.x -= speedX;
-				this.y -= speedY;
-			}
-			for (int i = 0; i < 10; i++) {
-				this.x -= speedX;
-				this.y += speedY;
-			}
-		}
+	public void jump(int speedX, int speedY) {
+		this.pulo.setSpeedX(speedX);
+		this.pulo.setSpeedY(speedY);
+		this.pulo.setStatusAndar(true);
+		new Thread(pulo).start();
+		atualizarPosicao();
 	}
 
-	private void jogarFacas() {
+	public void jogarFacas() {
 		this.arma.usar(this.direcao);
 		new Thread(arma).start();
 	}
 	
-	private void atualizarPosicao(){
-		if(this.x >= 7500){
-			this.direcao *= -1;
-		}
-		if(this.x <= 6000){
-			this.direcao *= -1;
+	public void atualizarPosicao(){
+		if(getPulo().getX() >= 740){
+			this.direcao = -1;
+		}else if(getPulo().getX() <= 0){
+			this.direcao = 1;
 		}
 	}
 
-	private void runModeNormal() {
+	public void runModeNormal() {
 		int x = new Aleatorio(0, 5).sorteio();
 		int y = new Aleatorio(0, 5).sorteio();
 		//int numFacas = new Aleatorio(1, 1).sorteio();
 		Random rnd = new Random();
 		if (rnd.nextBoolean()) {
-			andar();
+			andar(x);
 			atualizarPosicao();
+			System.out.println("ANDEI");
 		} else {
 			jump(x, y);
+			System.out.println("PULEI");
 			atualizarPosicao();
 		}
-		if (rnd.nextBoolean()) {
+		
+		//if (rnd.nextBoolean()) {
 			//for(int i = 0; i< numFacas; i++){
-			jogarFacas();
+			//jogarFacas();
+			//System.out.println("JOGUEI FACA");
 			//}
-		}
-		this.executando = false;
+		//}
+		
 	}
 	
 	
@@ -118,7 +112,7 @@ public class MestreStage1 extends Mestre {
 		int numFacas = new Aleatorio(1, 3).sorteio();
 		Random rnd = new Random();
 		if (rnd.nextBoolean()) {
-			andar();
+			andar(x);
 		} else {
 			jump(x, y);
 		}
@@ -133,7 +127,6 @@ public class MestreStage1 extends Mestre {
 	public void runIA(){
 		if(!executando){
 		this.executando = true;
-		}
 		if(executando){
 		if(this.energia > 0){
 			if(this.energia > 5){
@@ -144,6 +137,9 @@ public class MestreStage1 extends Mestre {
 				runModeCaoNosCoro();
 			}
 		}
+		this.executando = false;
+		atualizarPosicao();
+		}
 		}
 	}
 
@@ -153,7 +149,7 @@ public class MestreStage1 extends Mestre {
 		int numFacas = new Aleatorio(1, 5).sorteio();
 		Random rnd = new Random();
 		if (rnd.nextBoolean()) {
-			andar();
+			andar(x);
 		} else {
 			jump(x, y);
 		}
@@ -180,6 +176,16 @@ public class MestreStage1 extends Mestre {
 	public void setExecutando(boolean executando) {
 		this.executando = executando;
 	}
+
+	public PuloIA getPulo() {
+		return pulo;
+	}
+
+	public void setPulo(PuloIA pulo) {
+		this.pulo = pulo;
+	}
+	
+	
 	
 	
 	
