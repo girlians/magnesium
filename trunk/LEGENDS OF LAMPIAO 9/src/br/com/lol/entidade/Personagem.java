@@ -21,10 +21,6 @@ public class Personagem extends Entidade{
 	public void setDirecao(int direcao) {
 		this.direcao = direcao;
 	}
-	
-	public void andar(){
-		
-	}
 
 	public int getEstadoDoSalto() {
 		return estadoDoSalto;

@@ -17,28 +17,5 @@ public class Mestre extends InimigoForte {
 		this.direcao = direcao;
 	}
 	
-	private void runModeNormal(){
-		
-	}
-
-	private void runModeArretado(){
-		
-	}
-	
-	private void runModeCaoNosCouro(){
-		
-	}
-	
-	public void runIA() throws InterruptedException{
-		if(this.energia > 0){
-			if(this.energia > 5){
-				runModeNormal();
-			}else if(this.energia > 2){
-				runModeArretado();
-			}else if(this.energia >= 1){
-				runModeCaoNosCouro();
-			}
-		}
-	}
 	
 }
