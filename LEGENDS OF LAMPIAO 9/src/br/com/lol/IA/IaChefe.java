@@ -6,19 +6,52 @@ import br.com.lol.entidade.MestreStage1;
 
 public class IaChefe implements Runnable{
 	
-	private PuloIA pulo;
 	private MestreStage1 mestre;
-	private boolean status;
 	
 	public IaChefe(MestreStage1 mestre){
 		this.mestre = mestre;
 	}
 	
-	@Override
-	public void run() {
+	public void runIA(){
+		this.mestre.setEnergia(6);
+		if(this.mestre.getEnergia() > 5){
+			runModeNormal();
+		}else if(this.mestre.getEnergia() > 2){
+			runModeArretado();
+		}else if(this.mestre.getEnergia() >1){
+			runModeCaoNosCoro();
+		}
+	}
+	
+	private void runModeArretado(){
+		int x = new Aleatorio(5, 10).sorteio();
+		int y = new Aleatorio(5, 10).sorteio();
+		Random rnd = new Random();
+		if (rnd.nextBoolean()) {
+			this.mestre.andar(x);
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			this.mestre.jump(x, y);
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private void runModeNormal(){
+		int x = new Aleatorio(0, 5).sorteio();
+		int y = new Aleatorio(0, 5).sorteio();
 		Random rnd = new Random();
 		if(rnd.nextBoolean()){
-			this.mestre.andar(10);
+			this.mestre.andar(x);
 		try {
 			Thread.sleep(500);
 		} catch (InterruptedException e) {
@@ -26,18 +59,45 @@ public class IaChefe implements Runnable{
 			e.printStackTrace();
 		}
 		}else{
-			this.mestre.jump(10, 10);
+			this.mestre.jump(x, y);
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+	}
+	
+	private void runModeCaoNosCoro() {
+		int x = new Aleatorio(10, 15).sorteio();
+		int y = new Aleatorio(10, 15).sorteio();
+		Random rnd = new Random();
+		if (rnd.nextBoolean()) {
+			this.mestre.andar(x);
 			try {
 				Thread.sleep(500);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		} else {
+			this.mestre.jump(x, y);
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-		if(rnd.nextBoolean()){
-			this.mestre.jogarFacas();
-		}
+	}
+	
+	@Override
+	public void run() {
+		runIA();
 	}
 
 }
+
 

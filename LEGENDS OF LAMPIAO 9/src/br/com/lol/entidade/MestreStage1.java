@@ -25,12 +25,12 @@ public class MestreStage1 extends Mestre {
 		this.executando = false;
 		this.energia = 8;
 		this.speed = 15;
-		this.arma = new Faca(500, j);
 		this.imagem = imagem;
 		this.pulo = new PuloIA();
 		this.pulo.setY(y);
 		this.pulo.setX(x);
 		this.pulo.setMestre(this);
+		this.arma = new Faca(500, j, this.pulo.getX(), this.pulo.getY());
 		try{
 		this.normal =  ImageManager.getInstance().loadImage("br/com/lol/imagens/chefe1.png");
 		this.invertido =  ImageManager.getInstance().loadImage("br/com/lol/imagens/chefe1_invertido.png");
@@ -69,7 +69,7 @@ public class MestreStage1 extends Mestre {
 
 	public void jogarFacas() {
 		this.arma.usar(this.direcao);
-		new Thread(arma).start();
+		//new Thread(arma).start();
 	}
 	
 	public void atualizarPosicao(){
@@ -162,7 +162,7 @@ public class MestreStage1 extends Mestre {
 	}
 
 	public Faca getArma() {
-		return arma;
+		return this.arma;
 	}
 
 	public void setArma(Faca arma) {
