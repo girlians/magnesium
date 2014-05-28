@@ -1,5 +1,7 @@
 package br.com.lol.IA;
 
+import java.util.Random;
+
 import br.com.lol.entidade.Mestre;
 import br.com.lol.entidade.MestreStage1;
 
@@ -27,6 +29,10 @@ public class PuloIA implements Runnable {
 					e.printStackTrace();
 				}
 			}
+			if(new Random().nextBoolean()){
+				this.mestre.getArma().update(this.getX(), this.getY());
+				this.mestre.jogarFacas();
+			}
 			for (int i = 0; i < 10; i++) {
 				this.setY(this.getY() + this.speedY);
 				this.setX(this.getX() + this.speedX);
@@ -49,6 +55,10 @@ public class PuloIA implements Runnable {
 					System.out.println("Erro na Thread");
 					e.printStackTrace();
 				}
+			}
+			if(new Random().nextBoolean()){
+				this.mestre.getArma().update(this.getX(), this.getY());
+				this.mestre.jogarFacas();
 			}
 			for (int i = 0; i < 10; i++) {
 				this.setY(this.getY() + this.speedY);
@@ -76,6 +86,10 @@ public class PuloIA implements Runnable {
 					e.printStackTrace();
 				}
 				}
+				if(new Random().nextBoolean()){
+					this.mestre.getArma().update(this.getX(), this.getY());
+					this.mestre.jogarFacas();
+				}
 				this.status = false;
 				this.statusAndar = false;
 			}else{
@@ -87,6 +101,10 @@ public class PuloIA implements Runnable {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				}
+				if(new Random().nextBoolean()){
+					this.mestre.getArma().update(this.getX(), this.getY());
+					this.mestre.jogarFacas();
 				}
 				this.statusAndar = false;
 				this.status = false;

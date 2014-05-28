@@ -2,18 +2,10 @@ package br.com.lol.entidade;
 
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import br.com.lol.gerenciadores.ImageManager;
-import br.com.lol.observador.Observer;
-import br.com.lol.observador.Sujeito;
 
 public class Projetil extends Entidade{
 
 	private boolean visible;
-	private boolean status;
 	private int direcao;
 	private BufferedImage imagem;
 	
@@ -48,7 +40,7 @@ public class Projetil extends Entidade{
 		}
 		else{
 			this.x -= speed;
-			if(this.x<5){
+			if(this.x <5){
 				this.setVisible(false);				
 			}
 		}
@@ -61,10 +53,5 @@ public class Projetil extends Entidade{
 	public void setVisible(boolean visible) {
 		this.visible = visible;
 	}
-	
-	private void setStatus(){
-		this.status = true;
-	}
-	
 
 }
