@@ -11,12 +11,15 @@ import java.lang.Thread.State;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.lol.IA.BasicIA;
 import br.com.lol.IA.IaChefe;
 import br.com.lol.armas.Arma;
 import br.com.lol.auxDisplays.Inventario;
 import br.com.lol.core.Game;
+import br.com.lol.entidade.Corvo;
 import br.com.lol.entidade.Entidade;
 import br.com.lol.entidade.EntidadePlataforma;
+import br.com.lol.entidade.Inimigo;
 import br.com.lol.entidade.Jogador;
 import br.com.lol.entidade.MestreStage1;
 import br.com.lol.entidade.Projetil;
@@ -52,7 +55,10 @@ public class TestStage extends Game {
 	private BufferedImage cenarioPlataforma;
 
 	List<EntidadePlataforma> listaDePlataformas;
-
+	
+	private List<Corvo> corvos;
+	private List<Inimigo> inimigos;
+	private BasicIA ia;
 	/*
 	 * Atributos do jogo.
 	 */
@@ -113,12 +119,16 @@ public class TestStage extends Game {
 		this.aindaRolandoDireita = true;
 		this.noChefe = false;
 		
+		this.ia = new BasicIA(0, 0);
+		
 		inicializarImagens();
 		inicializarPlataformas();
 		rolagem = new Point(0, 300);
 		rolagem.x = 0;
 		rolagem.y = 300;
 		jogador = new Jogador(100, this.getHeight() - 300);
+		this.inimigos = new ArrayList<Inimigo>();
+		this.corvos = new ArrayList<Corvo>();
 		try {
 			this.mestre = new MestreStage1(700, getHeight() - 140, ImageManager.getInstance().
 					loadImage("br/com/lol/imagens/chefe1_invertido.png"), -1, this.jogador);
@@ -371,6 +381,9 @@ public class TestStage extends Game {
 			if(this.threadDoChefe.getState() == Thread.State.TERMINATED)
 				this.threadDoChefe = new Thread(this.iaChefe);
 		}
+		if(currentTick % 50 == 0){
+			this.ia.adicionarCorvos(corvos);
+		}
 		jogador.updateFly();
 		this.armaAtual.update(jogador.getX(), jogador.getY());
 		verificaRolagem();
@@ -435,6 +448,15 @@ public class TestStage extends Game {
 			}
 		}
 	}
+	
+	public void renderInimigos(Graphics2D g){
+		for(Corvo c: this.corvos){
+			if(c.isVisible()){
+				c.seMexer();
+				g.drawImage(c.getImagem(), c.getX(), c.getY(), null);
+			}
+		}
+	}
 
 	public void onUnLoad() {
 
@@ -465,6 +487,7 @@ public class TestStage extends Game {
 			g.setColor(Color.RED);
 			g.drawString("GUN", this.arma.getX(), this.arma.getY());
 		}
+		renderInimigos(g);
 		if (!colisaoArma2) {
 			g.setColor(Color.WHITE);
 			g.fillRect(this.arma2.getX() - 10, this.arma2.getY()-30, 40 , 40);

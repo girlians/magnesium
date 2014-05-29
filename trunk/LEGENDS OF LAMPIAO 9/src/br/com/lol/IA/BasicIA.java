@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 import br.com.lol.core.Game;
+import br.com.lol.entidade.Corvo;
 import br.com.lol.entidade.Inimigo;
 import br.com.lol.entidade.InimigoForte;
 import br.com.lol.entidade.InimigoFraco;
@@ -65,6 +66,15 @@ public class BasicIA {
 				}
 			}
 			contador++;
+		}
+	}
+	
+	public void adicionarCorvos(List<Corvo> corvos){
+		Random rnd = new Random();
+		if(rnd.nextBoolean()){
+			corvos.add(new Corvo(0, 0, 1));
+		}else{
+			corvos.add(new Corvo(800, 0, -1));
 		}
 	}
 	
