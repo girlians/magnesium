@@ -81,9 +81,12 @@ public class TestStage extends Game {
 	private Jogador jogador;
 	private MestreStage1 mestre;
 	// Plataformas
+	private EntidadePlataforma plataforma0;
 	private EntidadePlataforma plataforma1;
 	private EntidadePlataforma plataforma2;
 	private EntidadePlataforma plataforma3;
+	private EntidadePlataforma plataforma4;
+	private EntidadePlataforma plataforma5;
 
 	// ESSAS AQUI SÃO DE TESTE
 	
@@ -143,11 +146,13 @@ public class TestStage extends Game {
 		this.armaAtual = this.jogador.getArma();
 		this.inventario = new Inventario(getWidth() / 2, getHeight()/2, this.jogador, this);
 		listaDePlataformas = new ArrayList<>();
+		
+		listaDePlataformas.add(plataforma5);
+		listaDePlataformas.add(plataforma4);
 		listaDePlataformas.add(plataforma3);
 		listaDePlataformas.add(plataforma2);
 		listaDePlataformas.add(plataforma1);
-		
-		
+		listaDePlataformas.add(plataforma0);
 		
 		desenharPlataformas = new DesenharPlataformas(listaDePlataformas);
 
@@ -204,7 +209,20 @@ public class TestStage extends Game {
 				|| rolagem.x < getWidth() * 0.41) && rolagem.x>0) {
 				rolagem.x -= (int) jogador.getSpeed();
 				listaDePlataformas = colisao.getListaDeEntidades();
+				ArrayList<EntidadePlataforma> listaEsquerda = (ArrayList<EntidadePlataforma>) colisao.getListaVerticalEsquerda();
+				ArrayList<EntidadePlataforma> listaDireita = (ArrayList<EntidadePlataforma>) colisao.getListaVerticalEsquerda();
+				ArrayList<EntidadePlataforma> listaDesenhos = (ArrayList<EntidadePlataforma>) desenharPlataformas.getListaDePlataformas();
+				
 				for (EntidadePlataforma i : listaDePlataformas) {
+					i.setX(i.getX() + (int) jogador.getSpeed());
+				}
+				for (EntidadePlataforma i : listaEsquerda) {
+					i.setX(i.getX() + (int) jogador.getSpeed());
+				}
+				for (EntidadePlataforma i : listaDireita) {
+					i.setX(i.getX() + (int) jogador.getSpeed());
+				}
+				for (EntidadePlataforma i : listaDesenhos) {
 					i.setX(i.getX() + (int) jogador.getSpeed());
 				}
 				this.arma.setX(arma.getX() + (int) jogador.getSpeed());
@@ -243,23 +261,27 @@ public class TestStage extends Game {
 			}
 		}
 	}
-
 	/*
 	 * Inicializa todas as plataformas
 	 */
 	private void inicializarPlataformas() {
-		plataforma1 = new EntidadePlataforma(0, this.getHeight() - 50, 7500, 10);
-		plataforma2 = new EntidadePlataforma(150, this.getHeight() - 100, 100,
-				10);
-		plataforma3 = new EntidadePlataforma(300, this.getHeight() - 150, 100,
-				10);
+		plataforma0 = new EntidadePlataforma(0, this.getHeight() - 50, 143, 10);
+		plataforma1 = new EntidadePlataforma(172, this.getHeight() - 100, 100,10);
+		plataforma2 = new EntidadePlataforma(300, this.getHeight() - 150, 100,10);
+		plataforma3 = new EntidadePlataforma(428, this.getHeight() - 220, 200, 10);
+		plataforma4 = new EntidadePlataforma(568, this.getHeight() - 50, 142, 10);
+		plataforma5 = new EntidadePlataforma(740, this.getHeight() - 120, 7500, 10);
 
+		
 		arma = new Entidade(1200, getHeight() - 100);
 		arma2 = new Entidade(5000, getHeight() - 65);
 
+		plataforma0.init();
 		plataforma1.init();
 		plataforma2.init();
 		plataforma3.init();
+		plataforma4.init();
+		plataforma5.init();
 
 	}
 	
@@ -346,11 +368,11 @@ public class TestStage extends Game {
 		jogador.setY(jogador.getY() + (int) jogador.getSpeed());
 	}
 	private void runEstadoMovendoDireita() {
-		if(jogador.getX()<710)
+		if(jogador.getX()<710 && !colisao.colisaoPlataformaVerticalEsquerda(jogador))
 			jogador.setX(jogador.getX() + ((int) jogador.getSpeed()));
 	}
 	private void runEstadoMovendoEsquerda() {
-		if(jogador.getX()>0)
+		if(jogador.getX()>0 && !colisao.colisaoPlataformaVerticalDireira(jogador))
 			jogador.setX(jogador.getX() - ((int) jogador.getSpeed()));
 	}
 
@@ -506,6 +528,7 @@ public class TestStage extends Game {
 		g.drawImage(this.mestre.getImagem(1), this.mestre.getPulo().getX(), this.mestre.getPulo().getY(),80,80, null);
 		renderProjeteis(g);
 		}
+		//colisao.desenharVertical(g);
 	}
 
 	public static void main(String[] args) {
