@@ -22,7 +22,6 @@ public class IaChefe implements Runnable{
 			runModeCaoNosCoro();
 		}
 	}
-	
 	private void runModeArretado(){
 		int x = new Aleatorio(5, 10).sorteio();
 		int y = new Aleatorio(5, 10).sorteio();
@@ -49,16 +48,17 @@ public class IaChefe implements Runnable{
 	private void runModeNormal(){
 		int x = new Aleatorio(0, 5).sorteio();
 		int y = new Aleatorio(0, 5).sorteio();
+
 		Random rnd = new Random();
-		if(rnd.nextBoolean()){
+		if (rnd.nextBoolean()) {
 			this.mestre.andar(x);
-		try {
-			Thread.sleep(500);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		}else{
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
 			this.mestre.jump(x, y);
 			try {
 				Thread.sleep(1000);
@@ -66,6 +66,10 @@ public class IaChefe implements Runnable{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		}
+
+		if (rnd.nextBoolean()) {
+			this.mestre.jogarFacas();
 		}
 		
 	}

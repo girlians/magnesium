@@ -135,7 +135,7 @@ public class TestStage extends Game {
 		this.inimigos = new ArrayList<Inimigo>();
 		this.corvos = new ArrayList<Corvo>();
 		try {
-			this.mestre = new MestreStage1(700, getHeight() - 140, ImageManager.getInstance().
+			this.mestre = new MestreStage1(6000, getHeight() - 140, ImageManager.getInstance().
 					loadImage("br/com/lol/imagens/chefe1_invertido.png"), -1, this.jogador);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -169,9 +169,19 @@ public class TestStage extends Game {
 			if(aindaRolandoDireita){
 			rolagem.x += (int) jogador.getSpeed();
 			listaDePlataformas = colisao.getListaDeEntidades();
+			ArrayList<EntidadePlataforma> listaEsquerda = (ArrayList<EntidadePlataforma>) colisao.getListaVerticalEsquerda();
+			ArrayList<EntidadePlataforma> listaDireita = (ArrayList<EntidadePlataforma>) colisao.getListaVerticalDireita();
+			
 			for (EntidadePlataforma i : listaDePlataformas) {
 				i.setX(i.getX() - (int) jogador.getSpeed());
 			}
+			for (EntidadePlataforma i : listaEsquerda) {
+				i.setX(i.getX() - (int) jogador.getSpeed());
+			}
+			for (EntidadePlataforma i : listaDireita) {
+				i.setX(i.getX() - (int) jogador.getSpeed());
+			}
+			
 			this.arma.setX(this.arma.getX() - (int) jogador.getSpeed());
 			this.arma2.setX(this.arma2.getX() - (int) jogador.getSpeed());
 			this.mestre.setX(this.mestre.getX() - (int) jogador.getSpeed());
@@ -210,20 +220,19 @@ public class TestStage extends Game {
 				rolagem.x -= (int) jogador.getSpeed();
 				listaDePlataformas = colisao.getListaDeEntidades();
 				ArrayList<EntidadePlataforma> listaEsquerda = (ArrayList<EntidadePlataforma>) colisao.getListaVerticalEsquerda();
-				ArrayList<EntidadePlataforma> listaDireita = (ArrayList<EntidadePlataforma>) colisao.getListaVerticalEsquerda();
-				ArrayList<EntidadePlataforma> listaDesenhos = (ArrayList<EntidadePlataforma>) desenharPlataformas.getListaDePlataformas();
+				ArrayList<EntidadePlataforma> listaDireita = (ArrayList<EntidadePlataforma>) colisao.getListaVerticalDireita();
 				
 				for (EntidadePlataforma i : listaDePlataformas) {
 					i.setX(i.getX() + (int) jogador.getSpeed());
+					System.out.println("Plataformas "+i.getX());
 				}
 				for (EntidadePlataforma i : listaEsquerda) {
-					i.setX(i.getX() + (int) jogador.getSpeed());
+					i.setX(i.getX() + (int) (jogador.getSpeed()));
+					System.out.println("Esquerda "+i.getX());
 				}
 				for (EntidadePlataforma i : listaDireita) {
-					i.setX(i.getX() + (int) jogador.getSpeed());
-				}
-				for (EntidadePlataforma i : listaDesenhos) {
-					i.setX(i.getX() + (int) jogador.getSpeed());
+					i.setX(i.getX() + (int) (jogador.getSpeed()));
+					System.out.println("Direita "+i.getX());
 				}
 				this.arma.setX(arma.getX() + (int) jogador.getSpeed());
 				this.arma2.setX(arma2.getX() + (int) jogador.getSpeed());
@@ -266,11 +275,11 @@ public class TestStage extends Game {
 	 */
 	private void inicializarPlataformas() {
 		plataforma0 = new EntidadePlataforma(0, this.getHeight() - 50, 143, 10);
-		plataforma1 = new EntidadePlataforma(172, this.getHeight() - 100, 100,10);
-		plataforma2 = new EntidadePlataforma(300, this.getHeight() - 150, 100,10);
-		plataforma3 = new EntidadePlataforma(428, this.getHeight() - 220, 200, 10);
-		plataforma4 = new EntidadePlataforma(568, this.getHeight() - 50, 142, 10);
-		plataforma5 = new EntidadePlataforma(740, this.getHeight() - 120, 7500, 10);
+		plataforma1 = new EntidadePlataforma(162, this.getHeight() - 100, 100,10);
+		plataforma2 = new EntidadePlataforma(280, this.getHeight() - 150, 100,10);
+		plataforma3 = new EntidadePlataforma(399, this.getHeight() - 220, 200, 10);
+		plataforma4 = new EntidadePlataforma(528, this.getHeight() - 50, 142, 10);
+		plataforma5 = new EntidadePlataforma(690, this.getHeight() - 120, 7500, 10);
 
 		
 		arma = new Entidade(1200, getHeight() - 100);
@@ -286,7 +295,7 @@ public class TestStage extends Game {
 	}
 	
 	private void verificaLocalChefe(){
-		if(this.rolagem.x >= 1){
+		if(this.rolagem.x >= 6000){
 			pararAqui();
 			this.noChefe = true;
 		}
@@ -523,6 +532,7 @@ public class TestStage extends Game {
 		// Desenhando as plataformas
 		renderPlataformas(g);
 		desenharPlataformas.desenhar(g);
+		
 		g.drawImage(jogador.getImagem(), jogador.getX(), jogador.getY(), jogador.getLargura(),
 				jogador.getAltura(), null);
 		g.drawImage(this.mestre.getImagem(1), this.mestre.getPulo().getX(), this.mestre.getPulo().getY(),80,80, null);

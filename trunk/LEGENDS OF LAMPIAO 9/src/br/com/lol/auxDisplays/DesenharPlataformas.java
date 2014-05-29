@@ -42,10 +42,10 @@ public class DesenharPlataformas {
 		for (EntidadePlataforma plataforma : getListaDePlataformas()) {
 			Color c = new Color(51, 23, 11);
 			g.setColor(c);
-			g.fillRect(plataforma.getX(), plataforma.getY()+10, plataforma.getLargura()+30,600-plataforma.getY());
-			g.drawImage(plataformaMeio, plataforma.getX()+10, plataforma.getY()-12, plataforma.getLargura()-10, plataforma.getAltura()+12, null);
+			g.fillRect(plataforma.getX(), plataforma.getY()+10, plataforma.getLargura()+20,600-plataforma.getY());
+			g.drawImage(plataformaMeio, plataforma.getX()+10, plataforma.getY()-12, plataforma.getLargura()-20, plataforma.getAltura()+12, null);
 			g.drawImage(plataformaEsquerda, plataforma.getX()-20, plataforma.getY()-11, 35,plataforma.getAltura()+14, null);
-			g.drawImage(plataformaDireita, plataforma.getX()+plataforma.getLargura(), plataforma.getY()-11, 30,plataforma.getAltura()+12, null);
+			g.drawImage(plataformaDireita, plataforma.getX()+plataforma.getLargura()-10, plataforma.getY()-11, 30,plataforma.getAltura()+12, null);
 			g.drawImage(plataformaLado, plataforma.getX()-24, plataforma.getY()+10, 25, 600-plataforma.getY(),null);
 			g.drawImage(plataformaPontaLado, plataforma.getX()-24, plataforma.getY()-9, 27, 30,null);
 		}
