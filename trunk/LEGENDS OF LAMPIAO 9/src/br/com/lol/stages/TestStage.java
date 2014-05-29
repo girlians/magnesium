@@ -14,6 +14,7 @@ import java.util.List;
 import br.com.lol.IA.BasicIA;
 import br.com.lol.IA.IaChefe;
 import br.com.lol.armas.Arma;
+import br.com.lol.auxDisplays.DesenharPlataformas;
 import br.com.lol.auxDisplays.Inventario;
 import br.com.lol.core.Game;
 import br.com.lol.entidade.Corvo;
@@ -55,6 +56,7 @@ public class TestStage extends Game {
 	private BufferedImage cenarioPlataforma;
 
 	List<EntidadePlataforma> listaDePlataformas;
+	DesenharPlataformas desenharPlataformas;
 	
 	private List<Corvo> corvos;
 	private List<Inimigo> inimigos;
@@ -141,9 +143,13 @@ public class TestStage extends Game {
 		this.armaAtual = this.jogador.getArma();
 		this.inventario = new Inventario(getWidth() / 2, getHeight()/2, this.jogador, this);
 		listaDePlataformas = new ArrayList<>();
-		listaDePlataformas.add(plataforma1);
-		listaDePlataformas.add(plataforma2);
 		listaDePlataformas.add(plataforma3);
+		listaDePlataformas.add(plataforma2);
+		listaDePlataformas.add(plataforma1);
+		
+		
+		
+		desenharPlataformas = new DesenharPlataformas(listaDePlataformas);
 
 		colisao = new CollisionDetector(listaDePlataformas);
 		inicializarDimension();
@@ -242,11 +248,11 @@ public class TestStage extends Game {
 	 * Inicializa todas as plataformas
 	 */
 	private void inicializarPlataformas() {
-		plataforma1 = new EntidadePlataforma(0, this.getHeight() - 50, 7500, 20);
+		plataforma1 = new EntidadePlataforma(0, this.getHeight() - 50, 7500, 10);
 		plataforma2 = new EntidadePlataforma(150, this.getHeight() - 100, 100,
-				20);
+				10);
 		plataforma3 = new EntidadePlataforma(300, this.getHeight() - 150, 100,
-				20);
+				10);
 
 		arma = new Entidade(1200, getHeight() - 100);
 		arma2 = new Entidade(5000, getHeight() - 65);
@@ -325,7 +331,7 @@ public class TestStage extends Game {
 				&& InputManager.getInstance().isPressed(KeyEvent.VK_UP)) {
 			jogador.setY(jogador.getY() - (int) jogador.getSpeed());
 		} else if (jogador.isModoVoador()
-				&& InputManager.getInstance().isPressed(KeyEvent.VK_UP)) {
+				&& InputManager.getInstance().isPressed(KeyEvent.VK_UP)&&jogador.getY()>0) {
 			jogador.setY(jogador.getY() - (int) jogador.getSpeed());
 		} else {
 			if (!jogador.isModoVoador())
@@ -370,9 +376,6 @@ public class TestStage extends Game {
 	 * Método que roda a cada tick.
 	 */
 	public void onUpdate(int currentTick) {
-		System.out.println("POSICAO DO MESTRE");
-		System.out.println(this.mestre.getPulo().getX());
-		System.out.println(this.mestre.getPulo().getY());
 		pararUpdate();
 		verificaLocalChefe();
 		if(noChefe){
@@ -473,6 +476,7 @@ public class TestStage extends Game {
 		
 		g.drawImage(cenarioPlataforma, -rolagem.x, -rolagem.y+300, null);
 		
+		
 		if(this.estado == PAUSANOJOGO){
 			try {
 				this.inventario.displayInventario(g, currentTick);
@@ -496,6 +500,7 @@ public class TestStage extends Game {
 		}
 		// Desenhando as plataformas
 		renderPlataformas(g);
+		desenharPlataformas.desenhar(g);
 		g.drawImage(jogador.getImagem(), jogador.getX(), jogador.getY(), jogador.getLargura(),
 				jogador.getAltura(), null);
 		g.drawImage(this.mestre.getImagem(1), this.mestre.getPulo().getX(), this.mestre.getPulo().getY(),80,80, null);
