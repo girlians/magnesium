@@ -24,7 +24,7 @@ public class CollisionDetector {
 		listaVerticalEsquerda = new ArrayList<>();
 		for (EntidadePlataforma entidadePlataforma : listaDePlataformas) {
 			getListaVerticalEsquerda().add(new EntidadePlataforma(entidadePlataforma.getX(), entidadePlataforma.getY()+10, 10, 600-entidadePlataforma.getY()));
-			getListaVerticalDireita().add(new EntidadePlataforma(entidadePlataforma.getX()+entidadePlataforma.getLargura()+10, entidadePlataforma.getY()+10, 10, 600-entidadePlataforma.getY()));
+			getListaVerticalDireita().add(new EntidadePlataforma(entidadePlataforma.getX()+entidadePlataforma.getLargura()-10, entidadePlataforma.getY()+10, 10, 600-entidadePlataforma.getY()));
 		}
 		for (EntidadePlataforma entidadePlataforma : getListaVerticalDireita()) {
 			entidadePlataforma.init();
