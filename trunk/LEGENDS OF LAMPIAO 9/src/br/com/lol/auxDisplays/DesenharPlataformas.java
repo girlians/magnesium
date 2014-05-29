@@ -24,44 +24,38 @@ public class DesenharPlataformas {
 	private BufferedImage plataformaDireita;
 	private BufferedImage plataformaLado;
 	private BufferedImage plataformaPontaLado;
-	private BufferedImage rachaoGrande;
-	private BufferedImage rachaoVertical;
-	private BufferedImage rachaoCima;
-	private List<Integer> valoresRandomicos;
 	
 	public DesenharPlataformas(List<EntidadePlataforma> listaDePlataformas) {
-		this.listaDePlataformas = listaDePlataformas;
+		this.setListaDePlataformas(listaDePlataformas);
 		try {
-			this.rachaoCima = ImageManager.getInstance().loadImage("br/com/lol/imagens/rachãoCima.png");
-			this.rachaoGrande = ImageManager.getInstance().loadImage("br/com/lol/imagens/rachãoGrande.png");
-			this.rachaoVertical = ImageManager.getInstance().loadImage("br/com/lol/imagens/rachãoVertical.png");
 			this.plataformaPontaLado = ImageManager.getInstance().loadImage("br/com/lol/imagens/plataformaPontaLado.png");
 			this.plataformaLado = ImageManager.getInstance().loadImage("br/com/lol/imagens/plataformaLado.png");		
 			this.plataformaMeio = ImageManager.getInstance().loadImage("br/com/lol/imagens/plataformaMeio.png");
 			this.plataformaEsquerda = ImageManager.getInstance().loadImage("br/com/lol/imagens/pontaEsquerda.png");
 			this.plataformaDireita = ImageManager.getInstance().loadImage("br/com/lol/imagens/pontaDireita.png");
-			
-			valoresRandomicos = new ArrayList<>();
-			for(EntidadePlataforma p : listaDePlataformas){
-				valoresRandomicos.add(new Random().nextInt(p.getLargura()-10));
-			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	public void desenhar(Graphics2D g){
-		int i = 0;
-		for (EntidadePlataforma plataforma : listaDePlataformas) {
+		for (EntidadePlataforma plataforma : getListaDePlataformas()) {
 			Color c = new Color(51, 23, 11);
 			g.setColor(c);
-			g.fillRect(plataforma.getX(), plataforma.getY()+10, plataforma.getLargura()+28,600-plataforma.getY());
-			g.drawImage(plataformaEsquerda, plataforma.getX()-20, plataforma.getY()-12, 30,plataforma.getAltura()+12, null);
-			g.drawImage(plataformaDireita, plataforma.getX()+plataforma.getLargura(), plataforma.getY()-12, 30,plataforma.getAltura()+12, null);
+			g.fillRect(plataforma.getX(), plataforma.getY()+10, plataforma.getLargura()+30,600-plataforma.getY());
 			g.drawImage(plataformaMeio, plataforma.getX()+10, plataforma.getY()-12, plataforma.getLargura()-10, plataforma.getAltura()+12, null);
-			g.drawImage(plataformaLado, plataforma.getX()-20, plataforma.getY()+10, 22, 600-plataforma.getY(),null);
-			g.drawImage(plataformaPontaLado, plataforma.getX()-20, plataforma.getY()-14, 21, 58,null);
-			i++;
+			g.drawImage(plataformaEsquerda, plataforma.getX()-20, plataforma.getY()-11, 35,plataforma.getAltura()+14, null);
+			g.drawImage(plataformaDireita, plataforma.getX()+plataforma.getLargura(), plataforma.getY()-11, 30,plataforma.getAltura()+12, null);
+			g.drawImage(plataformaLado, plataforma.getX()-24, plataforma.getY()+10, 25, 600-plataforma.getY(),null);
+			g.drawImage(plataformaPontaLado, plataforma.getX()-24, plataforma.getY()-9, 27, 30,null);
 		}
+	}
+
+	public List<EntidadePlataforma> getListaDePlataformas() {
+		return listaDePlataformas;
+	}
+
+	public void setListaDePlataformas(List<EntidadePlataforma> listaDePlataformas) {
+		this.listaDePlataformas = listaDePlataformas;
 	}
 }
