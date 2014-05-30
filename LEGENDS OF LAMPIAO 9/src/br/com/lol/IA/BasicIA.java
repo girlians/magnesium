@@ -2,6 +2,7 @@ package br.com.lol.IA;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -12,7 +13,7 @@ import br.com.lol.entidade.InimigoForte;
 import br.com.lol.entidade.InimigoFraco;
 import br.com.lol.gerenciadores.ImageManager;
 
-public class BasicIA {
+public class BasicIA{
 	
 	private Game stage;
 	private int telaX;
@@ -68,6 +69,7 @@ public class BasicIA {
 			contador++;
 		}
 	}
+
 	
 	public void adicionarCorvos(List<Corvo> corvos){
 		Random rnd = new Random();
