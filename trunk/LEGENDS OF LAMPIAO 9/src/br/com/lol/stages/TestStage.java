@@ -7,12 +7,12 @@ import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.lang.Thread.State;
 import java.util.ArrayList;
 import java.util.List;
 
 import br.com.lol.IA.BasicIA;
 import br.com.lol.IA.IaChefe;
+import br.com.lol.IA.Temporizador;
 import br.com.lol.armas.Arma;
 import br.com.lol.auxDisplays.DesenharPlataformas;
 import br.com.lol.auxDisplays.Inventario;
@@ -49,7 +49,11 @@ public class TestStage extends Game {
 	
 	private int estadoAnterior;
 	
+
+	private Temporizador timer;
+	
 	Thread threadDoChefe;
+	Thread threadTimer;
 	/*
 	 * Todas as imagens antes de serem inciadas
 	 */
@@ -76,6 +80,7 @@ public class TestStage extends Game {
 	private IaChefe iaChefe;
 
 	private Arma armaAtual;
+	
 
 	// Jogador
 	private Jogador jogador;
@@ -119,10 +124,12 @@ public class TestStage extends Game {
 	public void onLoad() {
 		this.colisaoArma = false;
 		controleUpdate = true;
-
+		
 		this.aindaRolandoEsquerda = true;
 		this.aindaRolandoDireita = true;
 		this.noChefe = false;
+		
+		this.timer = new Temporizador(5000);
 		
 		this.ia = new BasicIA(0, 0);
 		
@@ -143,6 +150,7 @@ public class TestStage extends Game {
 		}
 		this.iaChefe = new IaChefe(this.mestre);
 		this.threadDoChefe = new Thread(iaChefe);
+		this.threadTimer = new Thread(timer);
 		this.armaAtual = this.jogador.getArma();
 		this.inventario = new Inventario(getWidth() / 2, getHeight()/2, this.jogador, this);
 		listaDePlataformas = new ArrayList<>();
@@ -415,9 +423,17 @@ public class TestStage extends Game {
 			if(this.threadDoChefe.getState() == Thread.State.TERMINATED)
 				this.threadDoChefe = new Thread(this.iaChefe);
 		}
-		if(currentTick % 50 == 0){
+		
+		if(this.threadTimer.getState() == Thread.State.NEW){
+			this.threadTimer.start();
 			this.ia.adicionarCorvos(corvos);
 		}
+		if(this.threadTimer.getState() == Thread.State.TERMINATED){
+			this.threadTimer = new Thread(timer);
+			this.threadTimer.start();
+			this.ia.adicionarCorvos(corvos);
+		}
+
 		jogador.updateFly();
 		this.armaAtual.update(jogador.getX(), jogador.getY());
 		verificaRolagem();
@@ -484,10 +500,10 @@ public class TestStage extends Game {
 	}
 	
 	public void renderInimigos(Graphics2D g){
-		for(Corvo c: this.corvos){
-			if(c.isVisible()){
-				c.seMexer();
-				g.drawImage(c.getImagem(), c.getX(), c.getY(), null);
+		for(int i = 0; i < this.corvos.size(); i++){
+			if(this.corvos.get(i).isVisible()){
+				this.corvos.get(i).seMexer();
+				g.drawImage(this.corvos.get(i).getImagem(), this.corvos.get(i).getX(), this.corvos.get(i).getY(), null);
 			}
 		}
 	}
