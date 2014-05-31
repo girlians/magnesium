@@ -1,10 +1,12 @@
 package br.com.lol.stages;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -49,11 +51,16 @@ public class TestStage extends Game {
 	
 	private int estadoAnterior;
 	
-
+	private boolean lapadaNoJogador = false;
+	
 	private Temporizador timer;
+	private Temporizador timerCalibre12;
+	private Temporizador timerLapada;
 	
 	Thread threadDoChefe;
 	Thread threadTimer;
+	Thread threadTimerCalibre12;
+	Thread threadTimerLapada;
 	/*
 	 * Todas as imagens antes de serem inciadas
 	 */
@@ -130,6 +137,8 @@ public class TestStage extends Game {
 		this.noChefe = false;
 		
 		this.timer = new Temporizador(5000);
+		this.timerCalibre12 = new Temporizador(500);
+		this.timerLapada = new Temporizador(3000);
 		
 		this.ia = new BasicIA(0, 0);
 		
@@ -142,7 +151,7 @@ public class TestStage extends Game {
 		this.inimigos = new ArrayList<Inimigo>();
 		this.corvos = new ArrayList<Corvo>();
 		try {
-			this.mestre = new MestreStage1(6000, getHeight() - 140, ImageManager.getInstance().
+			this.mestre = new MestreStage1(1200, getHeight() - 140, ImageManager.getInstance().
 					loadImage("br/com/lol/imagens/chefe1_invertido.png"), -1, this.jogador);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -151,6 +160,9 @@ public class TestStage extends Game {
 		this.iaChefe = new IaChefe(this.mestre);
 		this.threadDoChefe = new Thread(iaChefe);
 		this.threadTimer = new Thread(timer);
+		this.threadTimerCalibre12 = new Thread(this.timerCalibre12);
+		this.threadTimerLapada = new Thread(this.timerLapada);
+		
 		this.armaAtual = this.jogador.getArma();
 		this.inventario = new Inventario(getWidth() / 2, getHeight()/2, this.jogador, this);
 		listaDePlataformas = new ArrayList<>();
@@ -188,6 +200,9 @@ public class TestStage extends Game {
 			}
 			for (EntidadePlataforma i : listaDireita) {
 				i.setX(i.getX() - (int) jogador.getSpeed());
+			}
+			for (Corvo c: this.corvos){
+				c.setX(c.getX() - (int) jogador.getSpeed());
 			}
 			
 			this.arma.setX(this.arma.getX() - (int) jogador.getSpeed());
@@ -241,6 +256,9 @@ public class TestStage extends Game {
 				for (EntidadePlataforma i : listaDireita) {
 					i.setX(i.getX() + (int) (jogador.getSpeed()));
 					System.out.println("Direita "+i.getX());
+				}
+				for (Corvo c: this.corvos){
+					c.setX(c.getX() + (int) jogador.getSpeed());
 				}
 				this.arma.setX(arma.getX() + (int) jogador.getSpeed());
 				this.arma2.setX(arma2.getX() + (int) jogador.getSpeed());
@@ -303,7 +321,7 @@ public class TestStage extends Game {
 	}
 	
 	private void verificaLocalChefe(){
-		if(this.rolagem.x >= 6000){
+		if(this.rolagem.x >= 1600){
 			pararAqui();
 			this.noChefe = true;
 		}
@@ -411,10 +429,21 @@ public class TestStage extends Game {
 			}
 		}
 	}
+	
+	private void lapada(){
+		for(Corvo c: corvos){
+			if(c.isVisible()){
+				if(c.getBounds().intersects(this.jogador.getBounds())){
+					this.lapadaNoJogador = true;
+				}
+			}
+		}
+	}
 	/*
 	 * Método que roda a cada tick.
 	 */
 	public void onUpdate(int currentTick) {
+		lapada();
 		pararUpdate();
 		verificaLocalChefe();
 		if(noChefe){
@@ -437,6 +466,8 @@ public class TestStage extends Game {
 		jogador.updateFly();
 		this.armaAtual.update(jogador.getX(), jogador.getY());
 		verificaRolagem();
+		mestre.getSpriteDireita().update(currentTick);
+		mestre.getSpriteEsquerda().update(currentTick);
 		jogador.getSpritesDireita().update(currentTick);
 		jogador.getSpritesEsquerda().update(currentTick);
 		jogador.getSpritesVoandoDireita().update(currentTick);
@@ -487,14 +518,57 @@ public class TestStage extends Game {
 	public void renderProjeteis(Graphics2D g){
 		for(Projetil tiro: this.armaAtual.getBalas()){
 			if(tiro.isVisible()){
+			if(this.armaAtual.getCodigo() == 2){
+				int x = tiro.getX();
+				int y = tiro.getY();
+				System.out.println("DIRECAO DO TIRO:");
+				System.out.println(tiro.getDirecao());
+				if(tiro.getDirecao() > 0){
+			    if(this.threadTimerCalibre12.getState() == Thread.State.NEW){
+			    	this.threadTimerCalibre12.start();
+			    	for(int i = 0; i < 6; i ++){
+			    		g.drawImage(this.armaAtual.getImagem(), x, y - 50, 70, 100, null);
+						x += 40;
+			    	}
+			    }else if(this.threadTimerCalibre12.getState() == Thread.State.TERMINATED){
+			    	this.threadTimerCalibre12 = new Thread(this.timerCalibre12);
+			    	this.threadTimerCalibre12.start();
+			    	for(int i = 0; i < 6; i ++){
+			    		g.drawImage(this.armaAtual.getImagem(), x, y - 50, 70, 100, null);
+						x += 40;
+			    	}
+			    }
+				}else{
+					if(this.threadTimerCalibre12.getState() == Thread.State.NEW){
+				    	this.threadTimerCalibre12.start();
+				    	for(int i = 0; i < 6; i ++){
+				    		g.drawImage(this.armaAtual.getImagem(), x - 60, y - 50, 70, 100, null);
+							x -= 40;
+				    	}
+				    }else if(this.threadTimerCalibre12.getState() == Thread.State.TERMINATED){
+				    	this.threadTimerCalibre12 = new Thread(this.timerCalibre12);
+				    	this.threadTimerCalibre12.start();
+				    	for(int i = 0; i < 6; i ++){
+				    		g.drawImage(this.armaAtual.getImagem(), x - 60, y - 50, 70, 100, null);
+							x -= 40;
+				    	}
+				}
+			}
+				tiro.setVisible(false);
+			}
+			}else{
+			if(tiro.isVisible()){
 				tiro.mover();
 				g.drawImage(tiro.getImagem(), tiro.getX(), tiro.getY(), null);
 			}
 		}
-		for(Projetil faca: this.mestre.getArma().getBalas()){
-			if(faca.isVisible()){
-				faca.mover();
-				g.drawImage(faca.getImagem(), faca.getX(), faca.getY(), 30, 10, null);
+		}
+		for(int i = 0; i < this.mestre.getArma().getBalas().size(); i++){
+			if(this.mestre.getArma().getBalas().get(i).isVisible()){
+				this.mestre.getArma().getBalas().get(i).mover();
+				g.drawImage(this.mestre.getArma().getBalas().get(i).getImagem(), 
+						this.mestre.getArma().getBalas().get(i).getX(),
+						this.mestre.getArma().getBalas().get(i).getY() - 50, 30, 10, null);
 			}
 		}
 	}
@@ -510,6 +584,29 @@ public class TestStage extends Game {
 
 	public void onUnLoad() {
 
+	}
+	
+	private void renderLapada(Graphics2D g){
+		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+		g.setTransform(AffineTransform.getScaleInstance(1, 1));
+		g.drawImage(jogador.getImagem(), jogador.getX(), jogador.getY(), jogador.getLargura(),
+				jogador.getAltura(), null);
+		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_IN));
+		g.setTransform(AffineTransform.getScaleInstance(1, 1));
+		g.drawImage(jogador.getImagem(), jogador.getX(), jogador.getY(), jogador.getLargura(),
+				jogador.getAltura(), null);
+		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OUT));
+		g.setTransform(AffineTransform.getScaleInstance(1, 1));
+		g.drawImage(jogador.getImagem(), jogador.getX(), jogador.getY(), jogador.getLargura(),
+				jogador.getAltura(), null);
+		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+		g.setTransform(AffineTransform.getScaleInstance(1, 1));
+		g.drawImage(jogador.getImagem(), jogador.getX(), jogador.getY(), jogador.getLargura(),
+				jogador.getAltura(), null);
+		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_IN));
+		g.setTransform(AffineTransform.getScaleInstance(1, 1));
+		g.drawImage(jogador.getImagem(), jogador.getX(), jogador.getY(), jogador.getLargura(),
+				jogador.getAltura(), null);
 	}
 
 	private void renderPlataformas(Graphics2D g) {
@@ -548,10 +645,25 @@ public class TestStage extends Game {
 		// Desenhando as plataformas
 		renderPlataformas(g);
 		desenharPlataformas.desenhar(g);
-		
+		if(this.lapadaNoJogador){
+			if(this.threadTimerLapada.getState() == Thread.State.NEW){
+				this.threadTimerLapada.start();
+				while(this.threadTimerLapada.getState()== Thread.State.TIMED_WAITING){
+			renderLapada(g);
+				}
+			}else if(this.threadTimerLapada.getState() == Thread.State.TERMINATED){
+				this.threadTimerLapada = new Thread(this.timerLapada);
+				this.threadTimerLapada.start();
+				while(this.threadTimerLapada.getState() == Thread.State.TIMED_WAITING){
+					renderLapada(g);
+				}
+			}
+			this.lapadaNoJogador = false;
+		}else{
 		g.drawImage(jogador.getImagem(), jogador.getX(), jogador.getY(), jogador.getLargura(),
 				jogador.getAltura(), null);
-		g.drawImage(this.mestre.getImagem(1), this.mestre.getPulo().getX(), this.mestre.getPulo().getY(),80,80, null);
+		}
+		g.drawImage(this.mestre.getImagem(), this.mestre.getPulo().getX(), this.mestre.getPulo().getY() - 100, 100, 120, null);
 		renderProjeteis(g);
 		}
 		//colisao.desenharVertical(g);

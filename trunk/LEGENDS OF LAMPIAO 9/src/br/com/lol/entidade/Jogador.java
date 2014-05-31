@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.com.lol.armas.Arma;
+import br.com.lol.armas.Calibre12;
 import br.com.lol.armas.Espingarda;
 import br.com.lol.armas.UsaArma;
 import br.com.lol.gerenciadores.ImageManager;
@@ -63,7 +64,7 @@ public class Jogador extends Personagem{
 		altura = 80;
 		largura = 90;
 
-		this.arma = new Espingarda(this);
+		this.arma = new Calibre12(this);
 
 		this.tiros = new ArrayList<Projetil>();
 		this.spritesDireita = new SpriteAnimation();

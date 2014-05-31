@@ -10,6 +10,7 @@ import br.com.lol.IA.PuloIA;
 import br.com.lol.armas.Arma;
 import br.com.lol.armas.Faca;
 import br.com.lol.gerenciadores.ImageManager;
+import br.com.lol.gerenciadores.SpriteAnimation;
 
 public class MestreStage1 extends Mestre {
 
@@ -18,6 +19,8 @@ public class MestreStage1 extends Mestre {
 	private BufferedImage invertido;
 	private boolean executando;
 	private PuloIA pulo;
+	private SpriteAnimation spriteDireita;
+	private SpriteAnimation spriteEsquerda;
 	
 	public MestreStage1(int x, int y, BufferedImage imagem, int direcao,
 			Jogador j) {
@@ -31,14 +34,18 @@ public class MestreStage1 extends Mestre {
 		this.pulo.setX(x);
 		this.pulo.setMestre(this);
 		this.arma = new Faca(500, j, this.pulo.getX(), this.pulo.getY());
-		try{
-		this.normal =  ImageManager.getInstance().loadImage("br/com/lol/imagens/chefe1.png");
-		this.invertido =  ImageManager.getInstance().loadImage("br/com/lol/imagens/chefe1_invertido.png");
-		}catch(IOException e){
-			e.getMessage();
+		
+		try {
+			this.spriteDireita = ImageManager.getInstance().loadSpriteAnimation(
+					"br/com/lol/imagens/sprite_chefao_direita.png", 8);
+			this.spriteEsquerda = ImageManager.getInstance().loadSpriteAnimation(
+					"br/com/lol/imagens/sprite_chefao_esquerda.png", 8);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
-	
+
 	private void atualizarImagem(){
 		if(this.direcao >0){
 			this.imagem = normal;
@@ -103,8 +110,6 @@ public class MestreStage1 extends Mestre {
 		//}
 		
 	}
-	
-	
 
 	private void runModeArretado() {
 		int x = new Aleatorio(5, 10).sorteio();
@@ -184,11 +189,24 @@ public class MestreStage1 extends Mestre {
 	public void setPulo(PuloIA pulo) {
 		this.pulo = pulo;
 	}
-	
-	
-	
-	
-	
+	public SpriteAnimation getSpriteDireita() {
+		return spriteDireita;
+	}
+
+	public void setSpriteDireita(SpriteAnimation spriteDireita) {
+		this.spriteDireita = spriteDireita;
+	}
+
+	public SpriteAnimation getSpriteEsquerda() {
+		return spriteEsquerda;
+	}
+
+	public void setSpriteEsquerda(SpriteAnimation spriteEsquerda) {
+		this.spriteEsquerda = spriteEsquerda;
+	}
+	public void setImagem(BufferedImage imagem){
+		this.imagem = imagem;
+	}
 }
 
 class Aleatorio {

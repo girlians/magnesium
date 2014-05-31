@@ -22,6 +22,7 @@ public class PuloIA implements Runnable {
 			for (int i = 0; i < 10; i++) {
 				this.setY(this.getY() - this.speedY);
 				this.setX(this.getX() + this.speedX);
+				//this.mestre.getSpriteDireita().setLoop(true);
 				try {
 					Thread.sleep(1000/30);
 				} catch (InterruptedException e) {
@@ -36,6 +37,7 @@ public class PuloIA implements Runnable {
 			for (int i = 0; i < 10; i++) {
 				this.setY(this.getY() + this.speedY);
 				this.setX(this.getX() + this.speedX);
+				//this.mestre.getSpriteDireita().setLoop(true);
 				try {
 					Thread.sleep(1000 / 30);
 				} catch (InterruptedException e) {
@@ -49,6 +51,7 @@ public class PuloIA implements Runnable {
 			for (int i = 0; i < 10; i++) {
 				this.setY(this.getY() - this.speedY);
 				this.setX(this.getX() - this.speedX);
+				//this.mestre.getSpriteEsquerda().setLoop(true);
 				try {
 					Thread.sleep(1000 / 30);
 				} catch (InterruptedException e) {
@@ -63,6 +66,7 @@ public class PuloIA implements Runnable {
 			for (int i = 0; i < 10; i++) {
 				this.setY(this.getY() + this.speedY);
 				this.setX(this.getX() - this.speedX);
+				//this.mestre.getSpriteEsquerda().setLoop(true);
 				try {
 					Thread.sleep(1000 / 30);
 				} catch (InterruptedException e) {
@@ -79,6 +83,8 @@ public class PuloIA implements Runnable {
 			if(this.mestre.getDirecao() > 0){
 				for(int i = 0; i < 10; i++){
 				this.setX(getX() + this.speedX);
+				this.mestre.getSpriteDireita().setLoop(true);
+				this.mestre.setImagem(this.mestre.getSpriteDireita().getImage());
 				try {
 					Thread.sleep(1000/30);
 				} catch (InterruptedException e) {
@@ -95,6 +101,8 @@ public class PuloIA implements Runnable {
 			}else{
 				for(int i = 0; i < 10; i ++){
 				this.setX(getX() - this.speedX);
+				this.mestre.getSpriteEsquerda().setLoop(true);
+				this.mestre.setImagem(this.mestre.getSpriteEsquerda().getImage());
 				try {
 					Thread.sleep(1000/30);
 				} catch (InterruptedException e) {

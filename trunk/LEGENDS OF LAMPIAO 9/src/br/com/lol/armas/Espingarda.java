@@ -1,4 +1,4 @@
-package br.com.lol.armas;
+	package br.com.lol.armas;
 
 import java.io.IOException;
 import java.util.List;
