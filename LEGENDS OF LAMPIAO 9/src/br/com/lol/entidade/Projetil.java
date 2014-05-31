@@ -19,6 +19,10 @@ public class Projetil extends Entidade{
 		this.direcao = direcao;
 	}
 	
+	public int getDirecao(){
+		return this.direcao;
+	}
+	
 	public void setImagem(BufferedImage img){
 		this.imagem = img;
 	}
@@ -30,6 +34,18 @@ public class Projetil extends Entidade{
 	@Override
 	public Rectangle getBounds(){
 		return new Rectangle(x, y, 9, 5);
+	}
+	
+	public void posicao(){
+		if(direcao>0){
+			if(this.x>795)
+				this.setVisible(false);
+		}
+		else{
+			if(this.x <5){
+				this.setVisible(false);				
+			}
+		}
 	}
 	
 	public void mover(){

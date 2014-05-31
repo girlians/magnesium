@@ -1,5 +1,6 @@
 package br.com.lol.armas;
 
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,7 @@ public class Arma extends Entidade implements Runnable{
 
 	protected int codigo;
 	protected int tempo;
+	protected int direcao;
 	private boolean acesso;
 	BufferedImage imagemTiro;
 	protected List<Projetil> balas;
@@ -22,15 +24,34 @@ public class Arma extends Entidade implements Runnable{
 		this.balas = new ArrayList<Projetil>();
 		acesso = true;
 		this.tempo = tempo;
+		this.direcao = j.getDirecao();
 	}
 	
 	public int getCodigo(){
 		return this.codigo;
 	}
+	
+	public BufferedImage getImagem(){
+		return null;
+	}
+	
+	public void loopImagem(int direcao, Graphics2D g, int x, int y){
+		
+	}
 
 	@Override
 	public void run() {
-		if(isAcesso()){
+		if(this.getCodigo() == 2){
+			if(isAcesso()){
+				setAcesso(false);
+				try {
+					Thread.sleep(tempo);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				setAcesso(true);
+			}
+		}else if(isAcesso()){
 			setAcesso(false);
 			try {
 				Thread.sleep(tempo);
