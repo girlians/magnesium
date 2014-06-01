@@ -1,14 +1,17 @@
 package br.com.lol.entidade;
 
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sun.org.apache.xalan.internal.xsltc.compiler.Template;
+
+import br.com.lol.IA.Temporizador;
 import br.com.lol.armas.Arma;
 import br.com.lol.armas.Calibre12;
-import br.com.lol.armas.Espingarda;
 import br.com.lol.armas.UsaArma;
 import br.com.lol.gerenciadores.ImageManager;
 import br.com.lol.gerenciadores.SpriteAnimation;
@@ -24,11 +27,19 @@ public class Jogador extends Personagem{
 	protected BufferedImage paradoEsquerda;
 	protected BufferedImage pulandoDireita;
 	protected BufferedImage pulandoEsquerda;
-	protected BufferedImage abaixado;
+	protected BufferedImage abaixadoDireita;
+	protected BufferedImage abaixadoEsquerda;
 	private SpriteAnimation spritesVoandoDireita;
 	private SpriteAnimation spritesVoandoEsquerda;
 	private BufferedImage imgVoando;
+	private SpriteAnimation fumaçaSprite;
 	private boolean modoVoador;
+	private boolean estaAbaixado;
+	private int yAbaixado;
+	private int alturaAbaixado;
+	private int larguraAbaixado;
+	private Thread threadDaFumaça;
+	private Temporizador timeFumaça;
 	
 	
 	public boolean isModoVoador() {
@@ -59,18 +70,22 @@ public class Jogador extends Personagem{
 
 		this.estado = 4;
 		this.estadoDoSalto = 0;
+		this.setEstaAbaixado(false);
 		this.direcao = 1;
 		this.modoVoador = false;
 		altura = 80;
 		largura = 90;
-
+		
 		this.arma = new Calibre12(this);
-
+		timeFumaça = new Temporizador(600);
+		threadDaFumaça = new Thread(timeFumaça);
+		
 		this.tiros = new ArrayList<Projetil>();
 		this.spritesDireita = new SpriteAnimation();
 		this.spritesEsquerda = new SpriteAnimation();
 		this.spritesVoandoDireita = new SpriteAnimation();
 		this.spritesVoandoEsquerda = new SpriteAnimation();
+		this.fumaçaSprite = new SpriteAnimation();
 		try {
 			this.spritesDireita = ImageManager.getInstance()
 					.loadSpriteAnimation(
@@ -96,6 +111,9 @@ public class Jogador extends Personagem{
 					.loadSpriteAnimation(
 							"br/com/lol/imagens/spriteCompletoCarcaraDireita1.png",
 							8);
+			this.fumaçaSprite = ImageManager.getInstance().loadSpriteAnimation("br/com/lol/imagens/fumaçaSpriteOK1.png", 6);
+			this.abaixadoDireita = ImageManager.getInstance().loadImage("br/com/lol/imagens/lampião_abaixado_normal1.png");
+			this.abaixadoEsquerda = ImageManager.getInstance().loadImage("br/com/lol/imagens/lampião_abaixado_invertido1.png");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -131,10 +149,16 @@ public class Jogador extends Personagem{
 			if(this.estado == 3)
 				return this.imagem;
 			else
-				if(direcao == 1)
-					return this.paradoDireita;
-				else
-					return this.paradoEsquerda;
+				if(isEstaAbaixado()){
+					if(direcao == 1)
+						return abaixadoDireita;
+					else
+						return abaixadoEsquerda;
+				}else
+					if(direcao == 1)
+						return this.paradoDireita;
+					else
+						return this.paradoEsquerda;
 	}
 	
 	public void andar(int direcao){
@@ -149,6 +173,14 @@ public class Jogador extends Personagem{
 	}
 	
 	public void updateFly() {
+		if(threadDaFumaça.getState() == Thread.State.TERMINATED)
+			threadDaFumaça = new Thread(timeFumaça);
+		if(isModoVoador() && threadDaFumaça.getState() == Thread.State.TIMED_WAITING){
+			System.out.println("                             Entrou!!");
+			fumaçaSprite.setLoop(true);
+			this.imgVoando = fumaçaSprite.getImage();
+			return;
+		}
 		if (isModoVoador()) {
 			if(direcao > 0){
 				spritesVoandoDireita.setLoop(true);
@@ -198,19 +230,46 @@ public class Jogador extends Personagem{
 	}
 
 	public void ativarModoVoador() {
-		y = y - 35;
-		this.altura = 125;
-		this.largura = 135;
-		this.modoVoador = true;
+		if(threadDaFumaça.getState() == Thread.State.NEW){
+			threadDaFumaça.start();
+			y = y - 35;
+			this.altura = 125;
+			this.largura = 135;
+			this.modoVoador = true;
+		} else if(threadDaFumaça.getState() == Thread.State.TERMINATED){
+			threadDaFumaça = new Thread(threadDaFumaça);
+		}
 	}
 	public void desativarModoVoador(){
-		
-		this.altura = 80;
-		this.largura = 90;
-		this.modoVoador = false;
+			this.altura = 80;
+			this.largura = 90;
+			this.modoVoador = false;
 	}
 	
 	public Rectangle getBounds() {
-		return new Rectangle(this.x , this.y, this.largura, this.largura);
+		if(estaAbaixado && !modoVoador){
+			return new Rectangle(this.x , this.yAbaixado, this.larguraAbaixado, this.alturaAbaixado);
+		}else{
+			return new Rectangle(this.x , this.y, this.largura, this.altura);
+		}
+	}
+
+	public boolean isEstaAbaixado() {
+		return estaAbaixado;
+	}
+
+	public void setEstaAbaixado(boolean estaAbaixado) {
+		this.estaAbaixado = estaAbaixado;
+		yAbaixado = this.y+35;
+		alturaAbaixado = this.altura-35;
+		larguraAbaixado = this.largura-20;
+	}
+
+	public void render(Graphics2D g) {
+		if(estaAbaixado && !modoVoador){
+			g.drawImage( getImagem(), getX(), this.yAbaixado, this.larguraAbaixado, this.alturaAbaixado, null);
+		} else{
+			g.drawImage( getImagem(), getX(), getY(), getLargura(), getAltura(), null);
+		}
 	}
 }
