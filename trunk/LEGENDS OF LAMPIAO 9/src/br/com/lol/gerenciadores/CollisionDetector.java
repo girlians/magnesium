@@ -2,12 +2,14 @@ package br.com.lol.gerenciadores;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import br.com.lol.entidade.Bau;
 import br.com.lol.entidade.EntidadePlataforma;
 import br.com.lol.entidade.Jogador;
 
@@ -38,8 +40,7 @@ public class CollisionDetector {
 		boolean colisao = false;
 		for (int i = 0; i < listaDeEntidades.size(); i++) {
 			colisao = listaDeEntidades.get(i).getBounds()
-					.intersects(personagem.getBounds())
-					&& ((personagem.getY()+personagem.getAltura()) == listaDeEntidades.get(i).getY());
+					.intersects(personagem.getBounds());
 			if (colisao) {
 				return true;
 			}
@@ -50,9 +51,10 @@ public class CollisionDetector {
 	public boolean colisaoPlataformaVerticalDireira(Jogador personagem){
 		boolean colisao = false;
 		for(EntidadePlataforma plataforma : listaVerticalDireita){
-			colisao = plataforma.getBounds().intersects(personagem.getBounds());
-			if(colisao)
+			colisao = plataforma.getBounds().intersects(personagem.getBounds());			
+			if(colisao){
 				return colisao;
+			}
 		}
 		return colisao;
 	}
@@ -61,8 +63,9 @@ public class CollisionDetector {
 		boolean colisao = false;
 		for(EntidadePlataforma plataforma : listaVerticalEsquerda){
 			colisao = plataforma.getBounds().intersects(personagem.getBounds());
-			if(colisao)
+			if(colisao){				
 				return colisao;
+			}
 		}
 		return colisao;
 	}
@@ -74,6 +77,23 @@ public class CollisionDetector {
 		}
 		for (EntidadePlataforma vertical : getListaVerticalEsquerda()) {
 			g.drawImage(vertical.getSprite(), vertical.getX(), vertical.getY(), null);
+		}
+	}
+	
+	public void colisaoBaus(Jogador jogador, List<Bau> baus){
+		for (Bau bau : baus) {
+			for (EntidadePlataforma entidade : listaDeEntidades) {
+				if(!bau.getBounds().intersects(entidade.getBounds())){
+					bau.caindo();
+				} else {
+					bau.setEstadoNoAr(2);
+				}
+			}
+		}
+		for (Bau bau : baus) {
+			if(jogador.getBounds().intersects(bau.getBounds())){
+				bau.alterarEstado();
+			}
 		}
 	}
 

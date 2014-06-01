@@ -19,6 +19,7 @@ import br.com.lol.armas.Arma;
 import br.com.lol.auxDisplays.DesenharPlataformas;
 import br.com.lol.auxDisplays.Inventario;
 import br.com.lol.core.Game;
+import br.com.lol.entidade.Bau;
 import br.com.lol.entidade.Corvo;
 import br.com.lol.entidade.Entidade;
 import br.com.lol.entidade.EntidadePlataforma;
@@ -99,6 +100,8 @@ public class TestStage extends Game {
 	private EntidadePlataforma plataforma3;
 	private EntidadePlataforma plataforma4;
 	private EntidadePlataforma plataforma5;
+	
+	private List<Bau> bausDoGame;
 
 	// ESSAS AQUI SÃO DE TESTE
 	
@@ -114,6 +117,8 @@ public class TestStage extends Game {
 	private boolean pararDimensioEsquerda;
 	private boolean pararDimensionDireita;
 	private boolean controleUpdate;
+	private Thread threadTransformacao;
+	private Temporizador timeModoVoador;
 
 	/*
 	 * Método que inicializa todas as imagens do jogo.
@@ -154,7 +159,6 @@ public class TestStage extends Game {
 			this.mestre = new MestreStage1(1200, getHeight() - 140, ImageManager.getInstance().
 					loadImage("br/com/lol/imagens/chefe1_invertido.png"), -1, this.jogador);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		this.iaChefe = new IaChefe(this.mestre);
@@ -174,10 +178,17 @@ public class TestStage extends Game {
 		listaDePlataformas.add(plataforma1);
 		listaDePlataformas.add(plataforma0);
 		
+		bausDoGame = new ArrayList<>();
+		bausDoGame.add(new Bau(500));
+		
+		
 		desenharPlataformas = new DesenharPlataformas(listaDePlataformas);
 
 		colisao = new CollisionDetector(listaDePlataformas);
 		inicializarDimension();
+		
+		timeModoVoador = new Temporizador(1000);
+		threadTransformacao = new Thread(timeModoVoador);
 	}
 
 	/*
@@ -204,7 +215,9 @@ public class TestStage extends Game {
 			for (Corvo c: this.corvos){
 				c.setX(c.getX() - (int) jogador.getSpeed());
 			}
-			
+			for (Bau bau : bausDoGame){
+				bau.setX(bau.getX() - (int) (jogador.getSpeed()));
+			}
 			this.arma.setX(this.arma.getX() - (int) jogador.getSpeed());
 			this.arma2.setX(this.arma2.getX() - (int) jogador.getSpeed());
 			this.mestre.setX(this.mestre.getX() - (int) jogador.getSpeed());
@@ -233,8 +246,6 @@ public class TestStage extends Game {
 			pararDimensioEsquerda = false;
 			pararDimensionDireita = false;
 		}
-		
-		System.out.println("Esquerda: "+pararDimensioEsquerda+"            Direita: "+pararDimensionDireita);
 	}
 
 	private void updateDimensionEsquerda() {
@@ -247,18 +258,18 @@ public class TestStage extends Game {
 				
 				for (EntidadePlataforma i : listaDePlataformas) {
 					i.setX(i.getX() + (int) jogador.getSpeed());
-					System.out.println("Plataformas "+i.getX());
 				}
 				for (EntidadePlataforma i : listaEsquerda) {
 					i.setX(i.getX() + (int) (jogador.getSpeed()));
-					System.out.println("Esquerda "+i.getX());
 				}
 				for (EntidadePlataforma i : listaDireita) {
 					i.setX(i.getX() + (int) (jogador.getSpeed()));
-					System.out.println("Direita "+i.getX());
 				}
 				for (Corvo c: this.corvos){
 					c.setX(c.getX() + (int) jogador.getSpeed());
+				}
+				for (Bau bau : bausDoGame){
+					bau.setX(bau.getX() + (int) (jogador.getSpeed()));
 				}
 				this.arma.setX(arma.getX() + (int) jogador.getSpeed());
 				this.arma2.setX(arma2.getX() + (int) jogador.getSpeed());
@@ -357,7 +368,7 @@ public class TestStage extends Game {
 			jogador.andar(jogador.getDirecao());
 		}
 		if (InputManager.getInstance().isPressed(KeyEvent.VK_DOWN)) {
-			
+			jogador.setEstaAbaixado(true);
 		}
 		if (InputManager.getInstance().isPressed(KeyEvent.VK_ESCAPE)) {
 			if(currentTick % 10 == 0){
@@ -368,15 +379,24 @@ public class TestStage extends Game {
 			this.jogador.atirarTest();
 		}
 		if(InputManager.getInstance().isPressed(KeyEvent.VK_V)){
-			if(jogador.isModoVoador()){
-				jogador.desativarModoVoador();
-			} else {
-				jogador.ativarModoVoador();
+			if (threadTransformacao.getState() == Thread.State.NEW) {
+				threadTransformacao = new Thread(timeModoVoador);
+				threadTransformacao.start();
+				if (jogador.isModoVoador()) {
+					jogador.desativarModoVoador();
+				} else {
+					jogador.ativarModoVoador();
+				}
+			} else if(threadTransformacao.getState() == Thread.State.TERMINATED) {
+				threadTransformacao = new Thread(timeModoVoador);
 			}
 		}
 		if(InputManager.getInstance().isPressed(KeyEvent.VK_P)){
 			controleUpdate = false;
 			pararAqui();
+		}
+		if(InputManager.getInstance().isReleased(KeyEvent.VK_DOWN)){
+			jogador.setEstaAbaixado(false);
 		}
 	}
 	
@@ -446,6 +466,7 @@ public class TestStage extends Game {
 		lapada();
 		pararUpdate();
 		verificaLocalChefe();
+		colisao.colisaoBaus(jogador, bausDoGame);
 		if(noChefe){
 			if(this.threadDoChefe.getState() == Thread.State.NEW)
 				this.threadDoChefe.start();
@@ -488,7 +509,7 @@ public class TestStage extends Game {
 				if (jogador.getDirecao() == DIREITA) {
 					if (jogador.getX() < getWidth() * 0.60) {
 						runEstadoMovendoDireita();
-					} else if(!pararDimensionDireita)
+					} else if(!pararDimensionDireita && !colisao.colisaoPlataformaVerticalEsquerda(jogador))
 						updateDimensionDireita();
 					else
 						runEstadoMovendoDireita();
@@ -499,7 +520,7 @@ public class TestStage extends Game {
 				} else {
 					if (jogador.getX() > getWidth() * 0.40) {
 						runEstadoMovendoEsquerda();
-					} else if(!pararDimensioEsquerda)
+					} else if(!pararDimensioEsquerda && !colisao.colisaoPlataformaVerticalDireira(jogador))
 						updateDimensionEsquerda();
 					else
 						runEstadoMovendoEsquerda();
@@ -625,7 +646,6 @@ public class TestStage extends Game {
 			try {
 				this.inventario.displayInventario(g, currentTick);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}else{
@@ -645,6 +665,9 @@ public class TestStage extends Game {
 		// Desenhando as plataformas
 		renderPlataformas(g);
 		desenharPlataformas.desenhar(g);
+		for (Bau bau : this.bausDoGame) {
+			bau.desenharEventos(g);
+		}
 		if(this.lapadaNoJogador){
 			if(this.threadTimerLapada.getState() == Thread.State.NEW){
 				this.threadTimerLapada.start();
@@ -660,8 +683,9 @@ public class TestStage extends Game {
 			}
 			this.lapadaNoJogador = false;
 		}else{
-		g.drawImage(jogador.getImagem(), jogador.getX(), jogador.getY(), jogador.getLargura(),
-				jogador.getAltura(), null);
+		//g.drawImage(jogador.getImagem(), jogador.getX(), jogador.getY(), jogador.getLargura(),
+		//		jogador.getAltura(), null);
+		jogador.render(g);
 		}
 		g.drawImage(this.mestre.getImagem(), this.mestre.getPulo().getX(), this.mestre.getPulo().getY() - 100, 100, 120, null);
 		renderProjeteis(g);
