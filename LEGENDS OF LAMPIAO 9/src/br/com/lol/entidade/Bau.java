@@ -7,8 +7,6 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import com.sun.org.apache.xalan.internal.xsltc.compiler.Template;
-
 import br.com.lol.IA.Temporizador;
 import br.com.lol.gerenciadores.FontManager;
 import br.com.lol.gerenciadores.ImageManager;
@@ -24,11 +22,11 @@ public class Bau extends Entidade {
 	private static int CHEIO = 2;
 	private static int VAZIO = 3;
 	private static int CAINDO = 1;
-	private static int REPOUSO = 2;
 	private Temporizador temporizador, tempoDesenho;
 	private Thread threadDoTempo, threadStringDesenhos;
 	private String[] itens;
 	private boolean mostarItensPegos;
+	Font fntItens;
 	
 	public Bau(int x){
 		try {
@@ -50,6 +48,7 @@ public class Bau extends Entidade {
 		threadStringDesenhos = new Thread(tempoDesenho);
 		itens = new String[]{"iten 1","iten 2", "iten 3"};
 		mostarItensPegos = true;
+		this.fntItens = FontManager.getInstance().loadFont("br/com/lol/fonts/comicz.ttf", FontManager.BOLD, 30);
 		
 	}
 	
@@ -65,7 +64,7 @@ public class Bau extends Entidade {
 				threadStringDesenhos.start();
 			
 			g.setColor(Color.YELLOW);
-			g.setFont(new Font("", Font.ITALIC, 12));
+			
 			if(mostarItensPegos && threadStringDesenhos.getState() != Thread.State.TERMINATED){
 				for (int i = 0; i<itens.length;i++) {
 					g.drawString(itens[i], 680, (i*15)+15);

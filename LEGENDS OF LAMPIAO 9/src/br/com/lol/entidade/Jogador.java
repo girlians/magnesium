@@ -16,8 +16,8 @@ import br.com.lol.armas.UsaArma;
 import br.com.lol.gerenciadores.ImageManager;
 import br.com.lol.gerenciadores.SpriteAnimation;
 
-public class Jogador extends Personagem{
-	
+public class Jogador extends Personagem {
+
 	private List<Projetil> tiros;
 	private BufferedImage imagem;
 	private Pulo pulo;
@@ -29,6 +29,8 @@ public class Jogador extends Personagem{
 	protected BufferedImage pulandoEsquerda;
 	protected BufferedImage abaixadoDireita;
 	protected BufferedImage abaixadoEsquerda;
+	protected BufferedImage[] cabaças;
+	protected BufferedImage[] lampiaoMorto;
 	private SpriteAnimation spritesVoandoDireita;
 	private SpriteAnimation spritesVoandoEsquerda;
 	private BufferedImage imgVoando;
@@ -40,8 +42,9 @@ public class Jogador extends Personagem{
 	private int larguraAbaixado;
 	private Thread threadDaFumaça;
 	private Temporizador timeFumaça;
-	
-	
+	private int alturaMorto;
+	private int larguraMorto;
+
 	public boolean isModoVoador() {
 		return modoVoador;
 	}
@@ -63,7 +66,7 @@ public class Jogador extends Personagem{
 	}
 
 	public Jogador(int x, int y) {
-		this.energia = 5;
+		this.energia = 3;
 		this.x = x;
 		this.y = y;
 		this.speed = 5;
@@ -75,17 +78,19 @@ public class Jogador extends Personagem{
 		this.modoVoador = false;
 		altura = 80;
 		largura = 90;
-		
+		alturaMorto = 40;
+		larguraMorto = 80;
+
 		this.arma = new Calibre12(this);
 		timeFumaça = new Temporizador(600);
 		threadDaFumaça = new Thread(timeFumaça);
-		
+
 		this.tiros = new ArrayList<Projetil>();
 		this.spritesDireita = new SpriteAnimation();
 		this.spritesEsquerda = new SpriteAnimation();
 		this.spritesVoandoDireita = new SpriteAnimation();
 		this.spritesVoandoEsquerda = new SpriteAnimation();
-		this.fumaçaSprite = new SpriteAnimation();
+		this.setFumaçaSprite(new SpriteAnimation());
 		try {
 			this.spritesDireita = ImageManager.getInstance()
 					.loadSpriteAnimation(
@@ -101,88 +106,99 @@ public class Jogador extends Personagem{
 					"br/com/lol/imagens/lampiao_invertida.png");
 			this.paradoDireita = ImageManager.getInstance().loadImage(
 					"br/com/lol/imagens/lampiao_normal.png");
-			this.spritesVoandoEsquerda = ImageManager
-					.getInstance()
+			this.spritesVoandoEsquerda = ImageManager.getInstance()
 					.loadSpriteAnimation(
-							"br/com/lol/imagens/spriteCarcaraAtt.png",
-							8);
+							"br/com/lol/imagens/spriteCarcaraAtt.png", 8);
 			this.spritesVoandoDireita = ImageManager
 					.getInstance()
 					.loadSpriteAnimation(
 							"br/com/lol/imagens/spriteCompletoCarcaraDireita1.png",
 							8);
-			this.fumaçaSprite = ImageManager.getInstance().loadSpriteAnimation("br/com/lol/imagens/fumaçaSpriteOK1.png", 6);
-			this.abaixadoDireita = ImageManager.getInstance().loadImage("br/com/lol/imagens/lampião_abaixado_normal1.png");
-			this.abaixadoEsquerda = ImageManager.getInstance().loadImage("br/com/lol/imagens/lampião_abaixado_invertido1.png");
+			this.setFumaçaSprite(ImageManager.getInstance()
+					.loadSpriteAnimation(
+							"br/com/lol/imagens/fumaçaSpriteOK1.png", 6));
+			this.abaixadoDireita = ImageManager.getInstance().loadImage(
+					"br/com/lol/imagens/lampião_abaixado_normal1.png");
+			this.abaixadoEsquerda = ImageManager.getInstance().loadImage(
+					"br/com/lol/imagens/lampião_abaixado_invertido1.png");
+			this.cabaças = new BufferedImage[4];
+			this.lampiaoMorto = new BufferedImage[2];
+			for (int i = 0; i < 4; i++) {
+				cabaças[i] = ImageManager.getInstance().loadImage(
+						"br/com/lol/imagens/cabaça" + i + ".png");
+			}
+			lampiaoMorto[0] = ImageManager.getInstance().loadImage(
+					"br/com/lol/imagens/lampiaoMortoEsquerda.png");
+			lampiaoMorto[1] = ImageManager.getInstance().loadImage(
+					"br/com/lol/imagens/lampiaoMortoDireito.png");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	/*public void atirar(int dir, int currentTick, AudioClip somTiro) {
-		if (currentTick % 12 == 0) {
-			somTiro.play();
-			if (dir > 0) {
-				tiros.add(new Tiro(this.x + 78, this.y + 28, dir));
-			} else {
-				tiros.add(new Tiro(this.x - 6, this.y + 28, dir));
-			}
-		}
-	}*/
 
-	public void pular(int chao){
-		if(this.y > chao - Pulo.getAlturaMax()){
+	/*
+	 * public void atirar(int dir, int currentTick, AudioClip somTiro) { if
+	 * (currentTick % 12 == 0) { somTiro.play(); if (dir > 0) { tiros.add(new
+	 * Tiro(this.x + 78, this.y + 28, dir)); } else { tiros.add(new Tiro(this.x
+	 * - 6, this.y + 28, dir)); } } }
+	 */
+
+	public void pular(int chao) {
+		if (this.y > chao - Pulo.getAlturaMax()) {
 			pulo.start(y);
-		}else
+		} else
 			pulo.decrementar(y);
 	}
-	
-	public BufferedImage getImagem(){
-		if(modoVoador==true)
+
+	public BufferedImage getImagem() {
+		if (energia == 0) {
+			if (direcao > 0)
+				return this.lampiaoMorto[1];
+			else
+				return this.lampiaoMorto[0];
+		}
+		if (modoVoador == true)
 			return this.imgVoando;
-		if((this.estadoDoSalto==1)||this.estadoDoSalto==2)
-			if(this.direcao == 1)
+		if ((this.estadoDoSalto == 1) || this.estadoDoSalto == 2)
+			if (this.direcao == 1)
 				return this.pulandoDireita;
 			else
 				return this.pulandoEsquerda;
-		 else
-			if(this.estado == 3)
-				return this.imagem;
+		else if (this.estado == 3)
+			return this.imagem;
+		else if (isEstaAbaixado()) {
+			if (direcao == 1)
+				return abaixadoDireita;
 			else
-				if(isEstaAbaixado()){
-					if(direcao == 1)
-						return abaixadoDireita;
-					else
-						return abaixadoEsquerda;
-				}else
-					if(direcao == 1)
-						return this.paradoDireita;
-					else
-						return this.paradoEsquerda;
+				return abaixadoEsquerda;
+		} else if (direcao == 1)
+			return this.paradoDireita;
+		else
+			return this.paradoEsquerda;
 	}
-	
-	public void andar(int direcao){
-		if(direcao > 0){
+
+	public void andar(int direcao) {
+		if (direcao > 0) {
 			spritesDireita.setLoop(true);
 			this.imagem = spritesDireita.getImage();
 		} else {
 			spritesEsquerda.setLoop(true);
 			this.imagem = spritesEsquerda.getImage();
-			
+
 		}
 	}
-	
+
 	public void updateFly() {
-		if(threadDaFumaça.getState() == Thread.State.TERMINATED)
+		if (threadDaFumaça.getState() == Thread.State.TERMINATED)
 			threadDaFumaça = new Thread(timeFumaça);
-		if(isModoVoador() && threadDaFumaça.getState() == Thread.State.TIMED_WAITING){
-			System.out.println("                             Entrou!!");
-			fumaçaSprite.setLoop(true);
-			this.imgVoando = fumaçaSprite.getImage();
+		if (isModoVoador()
+				&& threadDaFumaça.getState() == Thread.State.TIMED_WAITING) {
+			getFumaçaSprite().setLoop(true);
+			this.imgVoando = getFumaçaSprite().getImage();
 			return;
 		}
 		if (isModoVoador()) {
-			if(direcao > 0){
+			if (direcao > 0) {
 				spritesVoandoDireita.setLoop(true);
 				this.imgVoando = spritesVoandoDireita.getImage();
 			} else {
@@ -191,20 +207,20 @@ public class Jogador extends Personagem{
 			}
 		}
 	}
-	
-	public void atirarTest(){
+
+	public void atirarTest() {
 		arma.usar(this.direcao);
 		new Thread(arma).start();
 	}
-	
-	public void setArma(UsaArma arma){
+
+	public void setArma(UsaArma arma) {
 		this.arma = arma;
 	}
 
-	public Arma getArma(){
-		return (Arma)this.arma;
+	public Arma getArma() {
+		return (Arma) this.arma;
 	}
-	
+
 	public List<Projetil> getTiros() {
 		return tiros;
 	}
@@ -212,7 +228,7 @@ public class Jogador extends Personagem{
 	public void setTiros(List<Projetil> tiros) {
 		this.tiros = tiros;
 	}
-	
+
 	public SpriteAnimation getSpritesEsquerda() {
 		return spritesEsquerda;
 	}
@@ -230,27 +246,32 @@ public class Jogador extends Personagem{
 	}
 
 	public void ativarModoVoador() {
-		if(threadDaFumaça.getState() == Thread.State.NEW){
+		if (threadDaFumaça.getState() == Thread.State.NEW) {
 			threadDaFumaça.start();
 			y = y - 35;
 			this.altura = 125;
 			this.largura = 135;
 			this.modoVoador = true;
-		} else if(threadDaFumaça.getState() == Thread.State.TERMINATED){
-			threadDaFumaça = new Thread(threadDaFumaça);
+		} else if (threadDaFumaça.getState() == Thread.State.TERMINATED) {
+			threadDaFumaça = new Thread(timeFumaça);
 		}
 	}
-	public void desativarModoVoador(){
-			this.altura = 80;
-			this.largura = 90;
-			this.modoVoador = false;
+
+	public void desativarModoVoador() {
+		this.altura = 80;
+		this.largura = 90;
+		this.modoVoador = false;
 	}
-	
+
 	public Rectangle getBounds() {
-		if(estaAbaixado && !modoVoador){
-			return new Rectangle(this.x , this.yAbaixado, this.larguraAbaixado, this.alturaAbaixado);
-		}else{
-			return new Rectangle(this.x , this.y, this.largura, this.altura);
+		if (this.energia == 0)
+			return new Rectangle(this.x, this.y, this.larguraMorto,
+					this.alturaMorto);
+		if (estaAbaixado && !modoVoador) {
+			return new Rectangle(this.x, this.yAbaixado, this.larguraAbaixado,
+					this.alturaAbaixado);
+		} else {
+			return new Rectangle(this.x, this.y, this.largura, this.altura);
 		}
 	}
 
@@ -260,16 +281,35 @@ public class Jogador extends Personagem{
 
 	public void setEstaAbaixado(boolean estaAbaixado) {
 		this.estaAbaixado = estaAbaixado;
-		yAbaixado = this.y+35;
-		alturaAbaixado = this.altura-35;
-		larguraAbaixado = this.largura-20;
+		yAbaixado = this.y + 35;
+		alturaAbaixado = this.altura - 35;
+		larguraAbaixado = this.largura - 20;
 	}
 
 	public void render(Graphics2D g) {
-		if(estaAbaixado && !modoVoador){
-			g.drawImage( getImagem(), getX(), this.yAbaixado, this.larguraAbaixado, this.alturaAbaixado, null);
-		} else{
-			g.drawImage( getImagem(), getX(), getY(), getLargura(), getAltura(), null);
+		g.drawImage(cabaças[energia], 10, 50, 110, 100, null);
+		if (this.energia == 0)
+			g.drawImage(getImagem(), this.x, this.y, this.larguraMorto,
+					this.alturaMorto + 10, null);
+		else if (estaAbaixado && !modoVoador) {
+			g.drawImage(getImagem(), getX(), this.yAbaixado,
+					this.larguraAbaixado, this.alturaAbaixado, null);
+		} else {
+			g.drawImage(getImagem(), getX(), getY(), getLargura(), getAltura(),
+					null);
 		}
+	}
+
+	public SpriteAnimation getFumaçaSprite() {
+		return fumaçaSprite;
+	}
+
+	public void setFumaçaSprite(SpriteAnimation fumaçaSprite) {
+		this.fumaçaSprite = fumaçaSprite;
+	}
+
+	public void decramentarEnergia() {
+		if (this.energia > 0)
+			this.energia--;
 	}
 }
