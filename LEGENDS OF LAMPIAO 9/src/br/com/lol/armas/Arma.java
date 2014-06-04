@@ -9,6 +9,7 @@ import java.util.List;
 import br.com.lol.entidade.Entidade;
 import br.com.lol.entidade.Jogador;
 import br.com.lol.entidade.Projetil;
+import br.com.lol.sounds.SoundBilbe;
 
 public class Arma extends Entidade implements Runnable{
 
@@ -45,6 +46,7 @@ public class Arma extends Entidade implements Runnable{
 		if(this.getCodigo() == 2){
 			if(isAcesso()){
 				setAcesso(false);
+				new SoundBilbe().playTiro();
 				try {
 					Thread.sleep(tempo);
 				} catch (InterruptedException e) {

@@ -14,6 +14,8 @@ public class SoundBilbe {
 	private AudioClip musica_tema;
 	private AudioClip corvos;
 	private AudioClip jogar_facas;
+	private AudioClip dorZumbi;
+	private AudioClip passos;
 	
 	private Thread threadCorvo;
 	private Thread threadDor;
@@ -42,6 +44,9 @@ public class SoundBilbe {
 			this.musica_tema = AudioManager.getInstance().loadAudio("br/com/lol/sounds/musica_tema.wav");
 			this.jogar_facas = AudioManager.getInstance().loadAudio("br/com/lol/sounds/jogar_facas.wav");
 			this.corvos = AudioManager.getInstance().loadAudio("br/com/lol/sounds/corvos.wav");
+			this.dorZumbi = AudioManager.getInstance().loadAudio("br/com/lol/sounds/zombiePain.wav");
+			this.passos = AudioManager.getInstance().loadAudio("br/com/lol/sounds/step.wav");
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -89,6 +94,14 @@ public class SoundBilbe {
 		}
 	}
 	
+	public void playPassos(){
+		this.passos.play();
+	}
+	
+	public void playDorZumbi(){
+		this.dorZumbi.play();
+	}
+	
 	public void exit(){
 		stopCarcara();
 		stopCorvo();
@@ -117,5 +130,11 @@ public class SoundBilbe {
 	}
 	public void stopDor(){
 		this.dor_lampiao.stop();
+	}
+	public void stopDorZumbi(){
+		this.dorZumbi.stop();
+	}
+	public void stopPassos(){
+		this.passos.stop();
 	}
 }

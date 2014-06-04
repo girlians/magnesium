@@ -45,7 +45,7 @@ public class CollisionDetector {
 		}
 		time = new Temporizador(3000);
 		threadTime = new Thread(time);
-		tiros = new Temporizador(500);
+		tiros = new Temporizador(200);
 		threadTiro = new Thread(tiros);
 	}
 
@@ -180,11 +180,10 @@ public class CollisionDetector {
 				inimigo = inimigos.get(i);
 				for (int j = 0; j < tiro.getBalas().size(); j++) {
 					Projetil projetil = tiro.getBalas().get(j);
-					colisao = inimigo.getBounds().intersects(projetil.getBounds1());
+					colisao = inimigo.getBounds().intersects(projetil.getBounds());
 					if (colisao) {
 						inimigo.decrementarEnergia();
-						System.out
-								.println("                  Energia decrementada");
+						new SoundBilbe().playDorZumbi();
 						threadTiro.start();
 						break;
 					}

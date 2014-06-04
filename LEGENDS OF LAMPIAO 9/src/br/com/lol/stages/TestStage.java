@@ -65,7 +65,10 @@ public class TestStage extends Game {
 	private Thread threadTimerCalibre12;
 	private Thread threadTimerLapadaChefe;
 	private Thread threadTransformacao;
-	private Thread threadPancada;
+	private Thread threadPancadaCorvo;
+	private Thread threadPancadaInimigo;
+	private Thread threadPancadaNoInimigo;
+	private Thread threadPancadaNoChefe;
 	/*
 	 * Todas as imagens antes de serem inciadas
 	 */
@@ -159,13 +162,15 @@ public class TestStage extends Game {
 		this.ia = new BasicIA(this.jogador);
 		this.inimigos = new ArrayList<Inimigo>();
 		this.corvos = new ArrayList<Corvo>();
-		this.mestre = new MestreStage1(1200, getHeight() - 140, -1, this.jogador);
+		this.mestre = new MestreStage1(5000, getHeight() - 140, -1, this.jogador);
 		this.iaChefe = new IaChefe(this.mestre);
 		this.threadDoChefe = new Thread(iaChefe);
 		this.threadTimer = new Thread(timer);
 		this.threadTimerCalibre12 = new Thread(this.timerCalibre12);
-		new Thread(this.timerLapada);
 		this.threadTimerLapadaChefe = new Thread(this.timePancada);
+		this.threadPancadaInimigo = new Thread(this.timePancada);
+		this.threadPancadaNoInimigo = new Thread(timePancada);
+		this.threadPancadaNoChefe = new Thread(timePancada);
 
 		this.armaAtual = this.jogador.getArma();
 		this.inventario = new Inventario(getWidth() / 2, getHeight() / 2,
@@ -189,7 +194,7 @@ public class TestStage extends Game {
 
 		timeModoVoador = new Temporizador(1000);
 		threadTransformacao = new Thread(timeModoVoador);
-		threadPancada = new Thread(timePancada);
+		threadPancadaCorvo = new Thread(timePancada);
 		adicionarInimigos();
 		this.sb = new SoundBilbe();
 		this.sb.playTema();
@@ -230,7 +235,7 @@ public class TestStage extends Game {
 				}
 				this.arma.setX(this.arma.getX() - (int) jogador.getSpeed());
 				this.arma2.setX(this.arma2.getX() - (int) jogador.getSpeed());
-				this.mestre.setX(this.mestre.getX() - (int) jogador.getSpeed());
+				this.mestre.getPulo().setX(this.mestre.getPulo().getX() - (int) jogador.getSpeed());
 			}
 		}
 	}
@@ -296,7 +301,7 @@ public class TestStage extends Game {
 			}
 			this.arma.setX(arma.getX() + (int) jogador.getSpeed());
 			this.arma2.setX(arma2.getX() + (int) jogador.getSpeed());
-			this.mestre.setX(this.mestre.getX() + (int) jogador.getSpeed());
+			this.mestre.getPulo().setX(this.mestre.getPulo().getX() + (int) jogador.getSpeed());
 		} else {
 
 		}
@@ -366,7 +371,7 @@ public class TestStage extends Game {
 	}
 
 	private void verificaLocalChefe() {
-		if (this.rolagem.x >= 1600) {
+		if (this.rolagem.x >= 6000) {
 			pararAqui();
 			this.noChefe = true;
 		}
@@ -389,18 +394,19 @@ public class TestStage extends Game {
 			if (InputManager.getInstance().isPressed(KeyEvent.VK_RIGHT)) {
 				jogador.setEstado(ESTADOANDANDO);
 				jogador.setDirecao(DIREITA);
+				//this.sb.playPassos();
 				jogador.andar(jogador.getDirecao());
 			}
 			if (InputManager.getInstance().isPressed(KeyEvent.VK_LEFT)) {
 				jogador.setEstado(ESTADOANDANDO);
 				jogador.setDirecao(ESQUERDA);
+				//this.sb.playPassos();
 				jogador.andar(jogador.getDirecao());
 			}
 			if (InputManager.getInstance().isPressed(KeyEvent.VK_DOWN)) {
 				jogador.setEstaAbaixado(true);
 			}
 			if (InputManager.getInstance().isPressed(KeyEvent.VK_SPACE)) {
-				this.sb.playTiro();
 				this.jogador.atirar();
 			}
 			if (InputManager.getInstance().isPressed(KeyEvent.VK_V)) {
@@ -496,11 +502,16 @@ public class TestStage extends Game {
 	}
 
 	public void onUpdate(int currentTick) {
+		colisao.colisaoProjetil(this.armaAtual, inimigos);
 		pararUpdate();
 		verificaLocalChefe();
 		updateInimigos(currentTick);
+		this.ia.ativarRadar(inimigos);
 		colisao.colisaoBaus(jogador, bausDoGame);
 		colisaoComOJogador();
+		colisaoComOInimigo();
+		verificarInimigos();
+		verificaBalas();
 		colisao.colisaoInimigos(inimigos);
 		colisao.colisaoInimigosContraJogador(jogador, inimigos);
 		
@@ -577,11 +588,23 @@ public class TestStage extends Game {
 			}
 		}
 	}
+	
+	private void verificarInimigos(){
+		for(int i =0; i < this.inimigos.size(); i++){
+			if(this.inimigos.get(i).getEnergia() == 0){
+				this.inimigos.remove(i);
+			}
+		}
+		for(int i = 0; i < this.corvos.size(); i++){
+			if(!this.corvos.get(i).isVisible()){
+				this.corvos.remove(i);
+			}
+		}
+	}
 
 	public void renderProjeteis(Graphics2D g) {
 		for (Projetil tiro : this.armaAtual.getBalas()) {
 			if (tiro.isVisible()) {
-				colisao.colisaoProjetil(this.armaAtual, inimigos);
 				if (this.armaAtual.getCodigo() == 2) {
 					int x = tiro.getX();
 					int y = tiro.getY();
@@ -623,14 +646,14 @@ public class TestStage extends Game {
 						}
 					}
 					tiro.setVisible(false);
-				}
-			} else {
+				}else {
 				if (tiro.isVisible()) {
 					tiro.mover();
 					g.drawImage(tiro.getImagem(), tiro.getX(), tiro.getY(),
 							null);
 				}
 			}
+		}
 		}
 		for (int i = 0; i < this.mestre.getArma().getBalas().size(); i++) {
 			if (this.mestre.getArma().getBalas().get(i).isVisible()) {
@@ -655,11 +678,21 @@ public class TestStage extends Game {
 		}
 		for(int i = 0; i < this.inimigos.size(); i++){
 				inimigos.get(i).renderInimigo(g);
+
 		}
-	}
+		}
+	
 
 	public void onUnLoad() {
 
+	}
+	
+	private void verificaBalas(){
+		for(int i =0; i < this.armaAtual.getBalas().size(); i++){
+			if(!this.armaAtual.getBalas().get(i).isVisible()){
+				this.armaAtual.getBalas().remove(i);
+			}
+		}
 	}
 
 	/*private void renderLapada(Graphics2D g) {
@@ -693,9 +726,9 @@ public class TestStage extends Game {
 
 	private void colisaoComOJogador() {
 			for (Corvo c : corvos) {
-				if (threadPancada.getState() == Thread.State.NEW) {
+				if (threadPancadaCorvo.getState() == Thread.State.NEW) {
 				if (c.getBounds().intersects(jogador.getBounds())) {
-					threadPancada.start();
+					threadPancadaCorvo.start();
 					this.jogador.decramentarEnergia();
 					if(this.jogador.getEnergia() > 0){
 					this.sb.playDor();
@@ -703,12 +736,12 @@ public class TestStage extends Game {
 				}
 			}
 			}
-		if (threadPancada.getState() == Thread.State.TERMINATED) {
-			threadPancada = new Thread(timePancada);
+		if (threadPancadaCorvo.getState() == Thread.State.TERMINATED) {
+			threadPancadaCorvo = new Thread(timePancada);
 		}
-			for(Projetil p: this.mestre.getArma().getBalas()){
+			for(int i = 0; i < this.mestre.getArma().getBalas().size(); i++){
 				if(threadTimerLapadaChefe.getState() == Thread.State.NEW){
-				if(p.getBounds().intersects(this.jogador.getBounds())){
+				if(this.mestre.getArma().getBalas().get(i).getBounds().intersects(this.jogador.getBounds())){
 					this.threadTimerLapadaChefe.start();
 					this.jogador.decramentarEnergia();
 					if(this.jogador.getEnergia() > 0){
@@ -719,7 +752,50 @@ public class TestStage extends Game {
 			this.threadTimerLapadaChefe = new Thread(timePancada);
 		}
 		}
+			for(Inimigo i: this.inimigos){
+				if(this.threadPancadaInimigo.getState() == Thread.State.NEW){
+					if(i.getBounds().intersects(this.jogador.getBounds())){
+						this.threadPancadaInimigo.start();
+						this.jogador.decramentarEnergia();
+						if(this.jogador.getEnergia() > 0){
+							this.sb.playDor();
+						}
+					}
+				}else if(this.threadPancadaInimigo.getState() == Thread.State.TERMINATED){
+					this.threadPancadaInimigo = new Thread(timePancada);
+				}
+			}
 	}
+	
+	private void colisaoComOInimigo(){
+	/*	for(int i = 0; i< this.armaAtual.getBalas().size(); i++){
+			for(Inimigo inimigo: this.inimigos){
+				if(this.threadPancadaNoInimigo.getState() == Thread.State.NEW){
+				if(this.armaAtual.getBalas().get(i).getBounds().intersects(inimigo.getBounds())){
+					this.sb.playDorZumbi();
+					inimigo.setEnergia(inimigo.getEnergia() + this.armaAtual.getEnergia());
+				}
+				}else if(this.threadPancadaNoInimigo.getState() == Thread.State.TERMINATED){
+					this.threadPancadaNoInimigo = new Thread(timePancada);
+				}
+			}*/
+			
+		for(int i = 0; i < this.armaAtual.getBalas().size(); i++){
+			for(int j = 0; j < this.corvos.size(); j++){
+				if(this.armaAtual.getBalas().get(i).getBounds().intersects(this.corvos.get(j).getBounds())){
+					this.corvos.get(j).setVisible(false);
+				}
+			}
+			if(this.threadPancadaNoChefe.getState() == Thread.State.NEW){
+				if(this.armaAtual.getBalas().get(i).getBounds().intersects(this.mestre.getBounds())){
+					this.mestre.setEnergia(this.mestre.getEnergia() + this.armaAtual.getEnergia());
+					this.threadPancadaNoChefe.start();
+				}
+				}else if(this.threadPancadaNoChefe.getState() == Thread.State.TERMINATED){
+					this.threadPancadaNoChefe = new Thread(timePancada);
+				}
+		}
+		}
 		
 
 	public void onRender(Graphics2D g, int currentTick) {

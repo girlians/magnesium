@@ -10,14 +10,21 @@ import br.com.lol.gerenciadores.ImageManager;
 public class Espingarda extends Arma implements UsaArma {
 
 	//private boolean acesso;
+	
+
+	public Espingarda(Jogador j) {
+		super(1000, j);
+		this.codigo = 0;
+		this.energia = -1;
+	}
 
 	public void usar(int direcao) {
 		if(isAcesso()){
 			verificaImagemBala(direcao);
 			if(direcao > 0){
-			this.balas.add(new Projetil(this.x + 65, this.y - 95, direcao, this.imagemTiro));
+			this.balas.add(new Projetil(this.x + 65, this.y - 95, direcao, 10, 5, this.imagemTiro, this.codigo));
 			}else{
-				this.balas.add(new Projetil(this.x - 6, this.y - 95, direcao, this.imagemTiro));
+				this.balas.add(new Projetil(this.x - 6, this.y - 95, direcao, 10, 5, this.imagemTiro, this.codigo));
 			}
 		}
 			
@@ -39,9 +46,5 @@ public class Espingarda extends Arma implements UsaArma {
 		return this.balas;
 	}
 
-	public Espingarda(Jogador j) {
-		super(1000, j);
-		this.codigo = 0;
-	}
 
 }
