@@ -13,6 +13,7 @@ import br.com.lol.armas.Calibre12;
 import br.com.lol.armas.UsaArma;
 import br.com.lol.gerenciadores.ImageManager;
 import br.com.lol.gerenciadores.SpriteAnimation;
+import br.com.lol.sounds.SoundBilbe;
 
 public class Jogador extends Personagem {
 
@@ -204,7 +205,7 @@ public class Jogador extends Personagem {
 		}
 	}
 
-	public void atirarTest() {
+	public void atirar() {
 		arma.usar(this.direcao);
 		new Thread(arma).start();
 	}

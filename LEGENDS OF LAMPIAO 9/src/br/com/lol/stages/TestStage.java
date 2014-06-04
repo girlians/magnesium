@@ -404,7 +404,8 @@ public class TestStage extends Game {
 				jogador.setEstaAbaixado(true);
 			}
 			if (InputManager.getInstance().isPressed(KeyEvent.VK_SPACE)) {
-				this.jogador.atirarTest();
+				this.sb.playTiro();
+				this.jogador.atirar();
 			}
 			if (InputManager.getInstance().isPressed(KeyEvent.VK_V)) {
 				if (threadTransformacao.getState() == Thread.State.NEW) {
@@ -430,6 +431,7 @@ public class TestStage extends Game {
 		}
 		if (InputManager.getInstance().isPressed(KeyEvent.VK_ESCAPE)) {
 			if (currentTick % 10 == 0) {
+				this.sb.exit();
 				terminate();
 			}
 		}
@@ -650,6 +652,7 @@ public class TestStage extends Game {
 		for (int i = 0; i < this.corvos.size(); i++) {
 			if (this.corvos.get(i).isVisible()) {
 				this.corvos.get(i).seMexer();
+				this.sb.playCorvo();
 				g.drawImage(this.corvos.get(i).getImagem(), this.corvos.get(i)
 						.getX(), this.corvos.get(i).getY(), null);
 			}
@@ -699,6 +702,9 @@ public class TestStage extends Game {
 				if (c.getBounds().intersects(jogador.getBounds())) {
 					threadPancada.start();
 					this.jogador.decramentarEnergia();
+					if(this.jogador.getEnergia() > 0){
+					this.sb.playDor();
+					}
 				}
 			}
 			}
@@ -710,6 +716,9 @@ public class TestStage extends Game {
 				if(p.getBounds().intersects(this.jogador.getBounds())){
 					this.threadTimerLapadaChefe.start();
 					this.jogador.decramentarEnergia();
+					if(this.jogador.getEnergia() > 0){
+					this.sb.playDor();
+					}
 				}
 			}else if(this.threadTimerLapadaChefe.getState() == Thread.State.TERMINATED){
 			this.threadTimerLapadaChefe = new Thread(timePancada);
