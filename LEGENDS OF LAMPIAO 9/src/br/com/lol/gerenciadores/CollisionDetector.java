@@ -2,11 +2,7 @@ package br.com.lol.gerenciadores;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import br.com.lol.IA.Temporizador;
@@ -15,6 +11,7 @@ import br.com.lol.entidade.Bau;
 import br.com.lol.entidade.EntidadePlataforma;
 import br.com.lol.entidade.Inimigo;
 import br.com.lol.entidade.Jogador;
+import br.com.lol.entidade.MestreStage1;
 import br.com.lol.entidade.Projetil;
 import br.com.lol.sounds.SoundBilbe;
 
@@ -27,6 +24,8 @@ public class CollisionDetector {
 	private Temporizador time;
 	private Thread threadTiro;
 	private Temporizador tiros;
+	private Thread threadChefe;
+	private Temporizador chefe;
 
 	public CollisionDetector(List<EntidadePlataforma> listaDePlataformas) {
 		listaDeEntidades = listaDePlataformas;
@@ -45,8 +44,10 @@ public class CollisionDetector {
 		}
 		time = new Temporizador(3000);
 		threadTime = new Thread(time);
-		tiros = new Temporizador(200);
+		tiros = new Temporizador(1000);
 		threadTiro = new Thread(tiros);
+		chefe = new Temporizador(1000);
+		threadChefe = new Thread(chefe);
 	}
 
 	public boolean colisaoPlataforma(Jogador personagem) {
@@ -201,5 +202,17 @@ public class CollisionDetector {
 		} else if (threadTiro.getState() == Thread.State.TERMINATED) {
 			threadTiro = new Thread(tiros);
 		}
+	}
+
+	public void colisaoComOChefao(Jogador jogador, MestreStage1 mestre) {
+		if (threadChefe.getState() == Thread.State.NEW) {
+			threadChefe.start();
+			if (jogador.getBounds().intersects(mestre.getBounds())) {
+				jogador.decramentarEnergia();
+			}
+		} else if (threadChefe.getState() == Thread.State.TERMINATED) {
+			threadChefe = new Thread(chefe);
+		}
+
 	}
 }

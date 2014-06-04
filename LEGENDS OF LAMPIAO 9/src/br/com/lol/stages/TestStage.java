@@ -514,6 +514,8 @@ public class TestStage extends Game {
 		verificaBalas();
 		colisao.colisaoInimigos(inimigos);
 		colisao.colisaoInimigosContraJogador(jogador, inimigos);
+		colisao.colisaoComOChefao(jogador,mestre);
+		jogador.updateMana();
 		
 		if (noChefe) {
 			if (this.threadDoChefe.getState() == Thread.State.NEW)
@@ -615,6 +617,7 @@ public class TestStage extends Game {
 								g.drawImage(this.armaAtual.getImagem(), x,
 										y - 50, 70, 100, null);
 								x += 40;
+								colisao.colisaoProjetil(this.armaAtual, inimigos);
 							}
 						} else if (this.threadTimerCalibre12.getState() == Thread.State.TERMINATED) {
 							this.threadTimerCalibre12 = new Thread(
@@ -624,6 +627,7 @@ public class TestStage extends Game {
 								g.drawImage(this.armaAtual.getImagem(), x,
 										y - 50, 70, 100, null);
 								x += 40;
+								colisao.colisaoProjetil(this.armaAtual, inimigos);
 							}
 						}
 					} else {
@@ -694,29 +698,6 @@ public class TestStage extends Game {
 			}
 		}
 	}
-
-	/*private void renderLapada(Graphics2D g) {
-		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
-		g.setTransform(AffineTransform.getScaleInstance(1, 1));
-		g.drawImage(jogador.getImagem(), jogador.getX(), jogador.getY(),
-				jogador.getLargura(), jogador.getAltura(), null);
-		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_IN));
-		g.setTransform(AffineTransform.getScaleInstance(1, 1));
-		g.drawImage(jogador.getImagem(), jogador.getX(), jogador.getY(),
-				jogador.getLargura(), jogador.getAltura(), null);
-		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OUT));
-		g.setTransform(AffineTransform.getScaleInstance(1, 1));
-		g.drawImage(jogador.getImagem(), jogador.getX(), jogador.getY(),
-				jogador.getLargura(), jogador.getAltura(), null);
-		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
-		g.setTransform(AffineTransform.getScaleInstance(1, 1));
-		g.drawImage(jogador.getImagem(), jogador.getX(), jogador.getY(),
-				jogador.getLargura(), jogador.getAltura(), null);
-		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_IN));
-		g.setTransform(AffineTransform.getScaleInstance(1, 1));
-		g.drawImage(jogador.getImagem(), jogador.getX(), jogador.getY(),
-				jogador.getLargura(), jogador.getAltura(), null);
-	}*/
 
 	private void renderPlataformas(Graphics2D g) {
 		for (EntidadePlataforma e : listaDePlataformas) {

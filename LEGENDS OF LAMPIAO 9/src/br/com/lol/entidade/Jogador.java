@@ -1,5 +1,6 @@
 package br.com.lol.entidade;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -10,11 +11,9 @@ import java.util.List;
 import br.com.lol.IA.Temporizador;
 import br.com.lol.armas.Arma;
 import br.com.lol.armas.Calibre12;
-import br.com.lol.armas.Espingarda;
 import br.com.lol.armas.UsaArma;
 import br.com.lol.gerenciadores.ImageManager;
 import br.com.lol.gerenciadores.SpriteAnimation;
-import br.com.lol.sounds.SoundBilbe;
 
 public class Jogador extends Personagem {
 
@@ -41,7 +40,12 @@ public class Jogador extends Personagem {
 	private int alturaAbaixado;
 	private int larguraAbaixado;
 	private Thread threadDaFumaça;
+	private Thread threadDaMana;
+	private Thread threadRecuperacao;
 	private Temporizador timeFumaça;
+	private Temporizador timeMana;	
+	private Temporizador timeRecuperacao;
+	private int displayMana;
 
 	public boolean isModoVoador() {
 		return modoVoador;
@@ -78,10 +82,15 @@ public class Jogador extends Personagem {
 		largura = 90;
 		this.alturaAbaixado = 10;
 		this.larguraAbaixado = 10;
+		displayMana = 100;
 
 		this.arma = new Calibre12(this);
 		timeFumaça = new Temporizador(600);
 		threadDaFumaça = new Thread(timeFumaça);
+		timeMana = new Temporizador(1000);
+		threadDaMana = new Thread(timeMana);
+		timeRecuperacao = new Temporizador(1000);
+		threadRecuperacao = new Thread(timeRecuperacao);
 
 		this.tiros = new ArrayList<Projetil>();
 		this.spritesDireita = new SpriteAnimation();
@@ -237,14 +246,16 @@ public class Jogador extends Personagem {
 	}
 
 	public void ativarModoVoador() {
-		if (threadDaFumaça.getState() == Thread.State.NEW) {
-			threadDaFumaça.start();
-			this.y -= 45;
-			this.altura = 125;
-			this.largura = 135;
-			this.modoVoador = true;
-		} else if (threadDaFumaça.getState() == Thread.State.TERMINATED) {
-			threadDaFumaça = new Thread(timeFumaça);
+		if (displayMana > 0) {
+			if (threadDaFumaça.getState() == Thread.State.NEW) {
+				threadDaFumaça.start();
+				this.y -= 45;
+				this.altura = 125;
+				this.largura = 135;
+				this.modoVoador = true;
+			} else if (threadDaFumaça.getState() == Thread.State.TERMINATED) {
+				threadDaFumaça = new Thread(timeFumaça);
+			}
 		}
 	}
 
@@ -281,6 +292,10 @@ public class Jogador extends Personagem {
 	}
 
 	public void render(Graphics2D g) {
+		if(modoVoador){
+			g.setColor(Color.BLUE);
+			g.fillRect(this.x, this.y-10, displayMana, 5);
+		}
 		g.drawImage(cabaças[energia], 10, 50, 110, 100, null);
 		if (this.energia == 0){
 			desativarModoVoador();
@@ -307,5 +322,28 @@ public class Jogador extends Personagem {
 	public void decramentarEnergia() {
 		if (this.energia > 0)
 			this.energia--;
+	}
+	
+	public void updateMana() {
+		if (displayMana == 0) {
+			desativarModoVoador();
+		}
+		if (modoVoador) {
+			if (threadDaMana.getState() == Thread.State.NEW) {
+				threadDaMana.start();
+				displayMana -= 10;
+			} else if (threadDaMana.getState() == Thread.State.TERMINATED) {
+				threadDaMana = new Thread(timeMana);
+			}
+		}
+		if (!modoVoador && displayMana < 100) {
+			if (threadRecuperacao.getState() == Thread.State.NEW) {
+				threadRecuperacao.start();
+			} else if (threadRecuperacao.getState() == Thread.State.TERMINATED) {
+				threadRecuperacao = new Thread(timeRecuperacao);
+				displayMana += 10;
+				;
+			}
+		}
 	}
 }
