@@ -3,6 +3,7 @@ package br.com.lol.sounds;
 import java.applet.AudioClip;
 import java.io.IOException;
 
+import br.com.lol.IA.Temporizador;
 import br.com.lol.gerenciadores.AudioManager;
 
 public class SoundBilbe {
@@ -14,10 +15,28 @@ public class SoundBilbe {
 	private AudioClip corvos;
 	private AudioClip jogar_facas;
 	
+	private Thread threadCorvo;
+	private Thread threadDor;
+	private Thread threadTiro;
+	private Thread threadFacas;
+	
+	private Temporizador timerDor;
+	private Temporizador timerTiro;
+	private Temporizador timerFacas;
+	private Temporizador timerCorvo;
+	
 	public SoundBilbe(){
-		AudioManager am = new AudioManager();
+		this.timerCorvo = new Temporizador(3000);
+		this.timerDor = new Temporizador(1000);
+		this.timerFacas = new Temporizador(500);
+		this.timerTiro = new Temporizador(1500);
+		
+		this.threadDor = new Thread(timerDor);
+		this.threadFacas = new Thread(timerFacas);
+		this.threadTiro = new Thread(timerTiro);
+		this.threadCorvo = new Thread(timerCorvo);
 		try {
-			this.tiro_doze = AudioManager.getInstance().loadAudio("br/com/lol/sounds/tiro_doze.wav");
+			this.tiro_doze = AudioManager.getInstance().loadAudio("br/com/lol/sounds/FireGun.wav");
 			this.dor_lampiao = AudioManager.getInstance().loadAudio("br/com/lol/sounds/dor_lampiao.wav");
 			this.carcara_ativar = AudioManager.getInstance().loadAudio("br/com/lol/sounds/carcara_ativar.wav");
 			this.musica_tema = AudioManager.getInstance().loadAudio("br/com/lol/sounds/musica_tema.wav");
@@ -30,25 +49,53 @@ public class SoundBilbe {
 	}
 	
 	public void playCorvo(){
+		if(this.threadCorvo.getState() == Thread.State.NEW){
 		this.corvos.play();
+		this.threadCorvo.start();
+		}else if(this.threadCorvo.getState() == Thread.State.TERMINATED){
+			this.threadCorvo = new Thread(timerCorvo);
+		}
 	}
 	
 	public void playTiro(){
+		if(this.threadTiro.getState() == Thread.State.NEW){
 		this.tiro_doze.play();
+		this.threadTiro.start();
+		}else if(this.threadTiro.getState() == Thread.State.TERMINATED){
+			this.threadTiro = new Thread(timerTiro);
+		}
 	}
 	
 	public void playTema(){
-		this.musica_tema.play();
+		this.musica_tema.loop();
 	}
 	public void playJogarFacas(){
+		if(this.threadFacas.getState() == Thread.State.NEW){
 		this.jogar_facas.play();
+		this.threadFacas.start();
+		}else if(this.threadFacas.getState() == Thread.State.TERMINATED){
+			this.threadFacas = new Thread(timerFacas);
+		}
 	}
 	public void playCarcara(){
 		this.carcara_ativar.play();
 	}
 	
 	public void playDor(){
+		if(this.threadDor.getState() == Thread.State.NEW){
 		this.dor_lampiao.play();
+		}else if(this.threadDor.getState() == Thread.State.TERMINATED){
+			this.threadDor = new Thread(timerDor);
+		}
+	}
+	
+	public void exit(){
+		stopCarcara();
+		stopCorvo();
+		stopDor();
+		stopJogarFacas();
+		stopTema();
+		stopTiro();
 	}
 	
 	public void stopCorvo(){
