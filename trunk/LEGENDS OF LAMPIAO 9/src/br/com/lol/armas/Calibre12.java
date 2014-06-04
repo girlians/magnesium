@@ -22,6 +22,7 @@ public class Calibre12 extends Arma implements UsaArma{
 		super(1500, j);
 		this.contadorDireita = 0;
 		this.contadorEsquerda = 5;
+		this.energia = -1;
 		this.codigo = 2;
 		try {
 			this.tiroDireita = ImageManager.getInstance().loadSpriteAnimation("br/com/lol/imagens/shotgun_direita.png", 6);
@@ -63,9 +64,9 @@ public class Calibre12 extends Arma implements UsaArma{
 		this.direcao = direcao;
 		if(isAcesso()){
 			if(direcao > 0){
-			this.balas.add(new Projetil(this.x + 65, this.y - 95, direcao, this.imagemTiro));
+			this.balas.add(new Projetil(this.x + 65, this.y - 95, direcao, 400, 80,  this.imagemTiro, this.codigo));
 			}else{
-				this.balas.add(new Projetil(this.x - 6, this.y - 95, direcao, this.imagemTiro));
+				this.balas.add(new Projetil(this.x - 6, this.y - 95, direcao, 400, 80, this.imagemTiro, this.codigo));
 			}
 		}
 	}

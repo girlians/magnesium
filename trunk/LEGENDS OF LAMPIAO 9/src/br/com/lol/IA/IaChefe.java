@@ -13,7 +13,6 @@ public class IaChefe implements Runnable{
 	}
 	
 	public void runIA(){
-		this.mestre.setEnergia(6);
 		if(this.mestre.getEnergia() > 5){
 			runModeNormal();
 		}else if(this.mestre.getEnergia() > 2){
@@ -26,6 +25,7 @@ public class IaChefe implements Runnable{
 		int x = new Aleatorio(5, 10).sorteio();
 		int y = new Aleatorio(5, 10).sorteio();
 		Random rnd = new Random();
+		System.out.println("MODO ARRETADO");
 		if (rnd.nextBoolean()) {
 			this.mestre.andar(x);
 			try {
@@ -48,7 +48,7 @@ public class IaChefe implements Runnable{
 	private void runModeNormal(){
 		int x = new Aleatorio(0, 5).sorteio();
 		int y = new Aleatorio(0, 5).sorteio();
-
+		System.out.println("MODO NORMAL");
 		Random rnd = new Random();
 		if (rnd.nextBoolean()) {
 			this.mestre.andar(x);
@@ -67,10 +67,6 @@ public class IaChefe implements Runnable{
 				e.printStackTrace();
 			}
 		}
-
-		if (rnd.nextBoolean()) {
-			this.mestre.jogarFacas();
-		}
 		
 	}
 	
@@ -78,6 +74,7 @@ public class IaChefe implements Runnable{
 		int x = new Aleatorio(10, 15).sorteio();
 		int y = new Aleatorio(10, 15).sorteio();
 		Random rnd = new Random();
+		System.out.println("CAO NOS COURO");
 		if (rnd.nextBoolean()) {
 			this.mestre.andar(x);
 			try {

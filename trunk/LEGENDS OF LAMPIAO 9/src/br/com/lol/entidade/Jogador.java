@@ -10,6 +10,7 @@ import java.util.List;
 import br.com.lol.IA.Temporizador;
 import br.com.lol.armas.Arma;
 import br.com.lol.armas.Calibre12;
+import br.com.lol.armas.Espingarda;
 import br.com.lol.armas.UsaArma;
 import br.com.lol.gerenciadores.ImageManager;
 import br.com.lol.gerenciadores.SpriteAnimation;
@@ -132,13 +133,6 @@ public class Jogador extends Personagem {
 			e.printStackTrace();
 		}
 	}
-
-	/*
-	 * public void atirar(int dir, int currentTick, AudioClip somTiro) { if
-	 * (currentTick % 12 == 0) { somTiro.play(); if (dir > 0) { tiros.add(new
-	 * Tiro(this.x + 78, this.y + 28, dir)); } else { tiros.add(new Tiro(this.x
-	 * - 6, this.y + 28, dir)); } } }
-	 */
 
 	public void pular(int chao) {
 		if (this.y > chao - Pulo.getAlturaMax()) {

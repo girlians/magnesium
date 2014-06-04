@@ -8,8 +8,14 @@ public class Projetil extends Entidade{
 	private boolean visible;
 	private int direcao;
 	private BufferedImage imagem;
+	private int altura;
+	private int largura;
+	private int armaReferencia;
 	
-	public Projetil(int x, int y, int direcao, BufferedImage imagem){
+	public Projetil(int x, int y, int direcao,int largura, int altura, BufferedImage imagem, int cod){
+		this.armaReferencia = cod;
+		this.largura = largura;
+		this.altura = altura;
 		this.imagem = imagem;
 		this.x = x +10;
 		this.y = y + 125;
@@ -32,7 +38,15 @@ public class Projetil extends Entidade{
 	}
 	
 	public Rectangle getBounds(){
-		return new Rectangle(x, y, 9, 5);
+		if(this.armaReferencia == 2){
+		if(this.direcao > 0){
+		return new Rectangle(x, y, this.largura, this.altura);
+		}else{
+			return new Rectangle(x - 200, y - 60, this.largura, this.altura);
+		}
+		}else{
+			return new Rectangle(x, y, this.largura, this.altura);
+		}
 	}
 	
 	public void posicao(){

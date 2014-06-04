@@ -17,9 +17,9 @@ public class Faca extends Arma{
 		if(isAcesso()){
 			verificaImagemBala(direcao);
 			if(direcao > 0){
-			this.balas.add(new Projetil(this.x + 65, this.y - 120, direcao, this.imagemTiro));
+			this.balas.add(new Projetil(this.x + 65, this.y - 120, direcao, 10, 5, this.imagemTiro, this.codigo));
 			}else{
-				this.balas.add(new Projetil(this.x - 6, this.y - 120, direcao, this.imagemTiro));
+				this.balas.add(new Projetil(this.x - 6, this.y - 120, direcao, 10, 5, this.imagemTiro, this.codigo));
 			}
 		}
 			

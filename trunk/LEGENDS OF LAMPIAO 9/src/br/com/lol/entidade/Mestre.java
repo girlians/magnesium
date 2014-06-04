@@ -7,7 +7,7 @@ public class Mestre extends InimigoForte {
 	protected Jogador jogador;
 
 	public Mestre(int x, int y,int direcao, Jogador j) {
-		super(x, y, direcao);
+		super(x, y, direcao, j);
 		this.jogador = j;
 	}
 	

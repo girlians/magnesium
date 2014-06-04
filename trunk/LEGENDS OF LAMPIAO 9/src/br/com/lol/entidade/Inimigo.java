@@ -8,6 +8,8 @@ import br.com.lol.gerenciadores.SpriteAnimation;
 
 public class Inimigo extends Personagem{
 	
+	protected Jogador jogador;
+	
 	protected String identificador;
 	
 	protected int marco0X;
@@ -24,7 +26,8 @@ public class Inimigo extends Personagem{
 	protected static int REPOUSO = 0;
 	private int estadoNoAr;
 	
-	public Inimigo(int x, int y, int direcao){
+	public Inimigo(int x, int y, int direcao, Jogador j){
+		this.jogador = j;
 		this.setVisible(true);
 		this.radarLampiao = false;
 		this.x = x;
@@ -36,6 +39,10 @@ public class Inimigo extends Personagem{
 	
 	public void seMexer(){
 		
+	}
+	
+	public void desativarRadar(){
+		this.radarLampiao = false;
 	}
 	
 	public void ativarRadar(){

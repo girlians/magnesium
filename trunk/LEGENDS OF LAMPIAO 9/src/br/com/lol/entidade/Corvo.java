@@ -17,8 +17,8 @@ public class Corvo extends Inimigo{
 	private boolean estaDescendo;
 	private boolean visible;
 	
-	public Corvo(int x, int y, int direcao) {
-		super(x, y, direcao);
+	public Corvo(int x, int y, int direcao, Jogador j) {
+		super(x, y, direcao,j);
 		this.speed = 3;
 		this.direcao = direcao;
 		this.estaDescendo = true;
@@ -120,7 +120,7 @@ public class Corvo extends Inimigo{
 	}
 	
 	public Rectangle getBounds(){
-		return new Rectangle(this.x, this.y,25, 25 );
+		return new Rectangle(this.x, this.y, 45, 45 );
 	}
 
 }
