@@ -1,75 +1,95 @@
 package br.com.lol.IA;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import br.com.lol.core.Game;
 import br.com.lol.entidade.Corvo;
 import br.com.lol.entidade.Inimigo;
 import br.com.lol.entidade.InimigoForte;
 import br.com.lol.entidade.InimigoFraco;
 import br.com.lol.gerenciadores.ImageManager;
+import br.com.lol.gerenciadores.SpriteAnimation;
 
 public class BasicIA{
 	
-	private Game stage;
-	private int telaX;
-	private int telaY;
+	private SpriteAnimation spriteCareca;
+	private SpriteAnimation spriteCarecaInvertido;
+	private SpriteAnimation spriteVelha;
+	private SpriteAnimation spriteVelhaInvertido;
+	private SpriteAnimation spriteGordo;
+	private SpriteAnimation spriteGordoInvertido;
+	private SpriteAnimation spriteCarecaTerno;
+	private SpriteAnimation spriteCarecaTernoInvertido;
 	
-	private BufferedImage zumbi_forte_normal;
-	private BufferedImage zumbi_forte_invertido;
-	private BufferedImage zumbi_fraco_normal;
-	private BufferedImage zumbi_fraco_invertido;
-	
-	public BasicIA(int x, int y){
-		this.telaX = x;
-		this.telaY = y;
+	public BasicIA(){
 		inicializarImagensInimigos();
 	}
 	
 	private void inicializarImagensInimigos(){
-		try{
-		this.zumbi_forte_normal = ImageManager.getInstance()
-				.loadImage("br/com/lol/imagens/zumbis/sprite_zumbi_verde_normal1.png");
-		this.zumbi_forte_invertido = ImageManager.getInstance()
-				.loadImage("br/com/lol/imagens/zumbis/sprite_zumbi_verde_invertido1.png");
-		this.zumbi_fraco_normal = ImageManager.getInstance()
-				.loadImage("br/com/lol/imagens/zumbis/sprite_zumbi_roxo_normal1.png");
-		this.zumbi_fraco_invertido = ImageManager.getInstance()
-				.loadImage("br/com/lol/imagens/zumbis/sprite_zumbi_roxo_invertido1.png");
-		}catch(IOException e){
-			e.getMessage();
+		try {
+			this.spriteCareca = ImageManager.getInstance().loadSpriteAnimation(
+					"br/com/lol/imagens/zombi_careca.png", 4);
+			this.spriteCarecaInvertido = ImageManager.getInstance().loadSpriteAnimation(
+					"br/com/lol/imagens/zombi_careca_invertido.png", 4);
+			this.spriteVelha = ImageManager.getInstance().loadSpriteAnimation(
+					"br/com/lol/imagens/zombi_arrastado.png", 4);
+			this.spriteVelhaInvertido = ImageManager.getInstance().loadSpriteAnimation(
+					"br/com/lol/imagens/zombi_arrastado_invertido.png", 4);
+			this.spriteGordo = ImageManager.getInstance().loadSpriteAnimation(
+					"br/com/lol/imagens/zombi_gordo.png", 4);
+			this.spriteGordoInvertido = ImageManager.getInstance().loadSpriteAnimation(
+					"br/com/lol/imagens/zombi_gordo_invertido.png", 4);
+			this.spriteCarecaTerno = ImageManager.getInstance().loadSpriteAnimation(
+					"br/com/lol/imagens/zombi_careca_terno.png", 4);
+			this.spriteCarecaTernoInvertido = ImageManager.getInstance().loadSpriteAnimation(
+					"br/com/lol/imagens/zombi_careca_terno_invertido.png", 4);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
-	public void adicionarInimigosLimit(List<Inimigo> inimigos){
-		int contador = 0;
+	public void adicionarInimigosLimit(List<Inimigo> inimigos, int x, int y){
+		Inimigo i ;
 		Random rnd = new Random();
-		while(contador != 25){
-			if(rnd.nextBoolean()){
-				if(rnd.nextBoolean()){
-					inimigos.add(new InimigoForte(720, this.telaY - 100,
-							zumbi_forte_invertido, -1));
-				}else{
-					inimigos.add(new InimigoForte(10 , this.telaY - 100,
-							zumbi_forte_normal, 1));
-				}
-			}else{
-				if(rnd.nextBoolean()){
-					inimigos.add(new InimigoFraco(720, this.telaY - 100, 
-							zumbi_fraco_invertido, -1));
-				}else{
-					inimigos.add(new InimigoFraco(10, this.telaY - 100,
-							zumbi_fraco_normal, 1));
-				}
-			}
-			contador++;
+		int choice = rnd.nextInt(4);
+		while(choice < 0){
+			choice = rnd.nextInt(3);
+		}
+		switch(choice){
+		case 0: 
+			i = new InimigoFraco(x, y, 1);
+			i.setSpriteDireita(this.spriteCareca);
+			i.setSpriteEsquerda(this.spriteCarecaInvertido);
+			inimigos.add(i);
+			break;
+		case 1:
+			i = new InimigoForte(x, y, 1);
+			i.setSpriteDireita(this.spriteGordo);
+			i.setSpriteEsquerda(this.spriteGordoInvertido);
+			inimigos.add(i);
+			break;
+		case 2:
+			i = new InimigoFraco(x, y, 1);
+			i.setSpriteDireita(this.spriteCarecaTerno);
+			i.setSpriteEsquerda(this.spriteCarecaTernoInvertido);
+			inimigos.add(i);
+			break;
+		case 3:
+			i = new InimigoForte(x, y, 1);
+			i.setSpriteDireita(this.spriteVelha);
+			i.setSpriteEsquerda(this.spriteVelhaInvertido);
+			inimigos.add(i);
+			break;
 		}
 	}
-
+	
+	public void runIa(List<Inimigo> inimigos){
+		for(int i =0; i < inimigos.size(); i++){
+			inimigos.get(i).seMexer();
+		}
+	}
 	
 	public void adicionarCorvos(List<Corvo> corvos){
 		Random rnd = new Random();
@@ -78,10 +98,6 @@ public class BasicIA{
 		}else{
 			corvos.add(new Corvo(800, 0, -1));
 		}
-	}
-	
-	public void rodar(Inimigo i, int currentTick){
-		i.seMexer(currentTick);
 	}
 
 }
