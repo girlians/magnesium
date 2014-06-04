@@ -1,5 +1,6 @@
 package br.com.lol.entidade;
 
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
@@ -52,5 +53,9 @@ public class InimigoForte extends Inimigo{
 				this.direcao = 1;
 			}
 		}
+	}
+	
+	public Rectangle getBounds() {
+		return new Rectangle(this.x , this.y+20, 60, 60);
 	}
 }

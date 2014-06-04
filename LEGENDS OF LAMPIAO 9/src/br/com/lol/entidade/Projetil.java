@@ -68,5 +68,12 @@ public class Projetil extends Entidade{
 	public void setVisible(boolean visible) {
 		this.visible = visible;
 	}
+	
+	public Rectangle getBounds1() {
+		if(direcao>0)
+			return new Rectangle(this.x,this.y-10,400, 100);
+		else
+			return new Rectangle(this.x-400,this.y-10,400, 100);
+	}
 
 }
