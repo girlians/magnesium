@@ -336,10 +336,6 @@ public class TestStage extends Game {
 			this.ia.adicionarInimigosLimit(this.inimigos, 400 * i, 0);
 		}
 	}
-
-	private void ativarRadar(){
-		
-	}
 	
 	/*
 	 * Inicializa todas as plataformas
@@ -506,6 +502,7 @@ public class TestStage extends Game {
 		colisao.colisaoBaus(jogador, bausDoGame);
 		colisaoComOJogador();
 		colisao.colisaoInimigos(inimigos);
+		colisao.colisaoInimigosContraJogador(jogador, inimigos);
 		
 		if (noChefe) {
 			if (this.threadDoChefe.getState() == Thread.State.NEW)
@@ -584,11 +581,10 @@ public class TestStage extends Game {
 	public void renderProjeteis(Graphics2D g) {
 		for (Projetil tiro : this.armaAtual.getBalas()) {
 			if (tiro.isVisible()) {
+				colisao.colisaoProjetil(this.armaAtual, inimigos);
 				if (this.armaAtual.getCodigo() == 2) {
 					int x = tiro.getX();
 					int y = tiro.getY();
-					System.out.println("DIRECAO DO TIRO:");
-					System.out.println(tiro.getDirecao());
 					if (tiro.getDirecao() > 0) {
 						if (this.threadTimerCalibre12.getState() == Thread.State.NEW) {
 							this.threadTimerCalibre12.start();
@@ -658,8 +654,7 @@ public class TestStage extends Game {
 			}
 		}
 		for(int i = 0; i < this.inimigos.size(); i++){
-				this.inimigos.get(i).seMexer();
-				g.drawImage(this.inimigos.get(i).getImagem(), this.inimigos.get(i).getX(), this.inimigos.get(i).getY(), 80, 80, null);
+				inimigos.get(i).renderInimigo(g);
 		}
 	}
 
@@ -667,7 +662,7 @@ public class TestStage extends Game {
 
 	}
 
-	private void renderLapada(Graphics2D g) {
+	/*private void renderLapada(Graphics2D g) {
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
 		g.setTransform(AffineTransform.getScaleInstance(1, 1));
 		g.drawImage(jogador.getImagem(), jogador.getX(), jogador.getY(),
@@ -688,7 +683,7 @@ public class TestStage extends Game {
 		g.setTransform(AffineTransform.getScaleInstance(1, 1));
 		g.drawImage(jogador.getImagem(), jogador.getX(), jogador.getY(),
 				jogador.getLargura(), jogador.getAltura(), null);
-	}
+	}*/
 
 	private void renderPlataformas(Graphics2D g) {
 		for (EntidadePlataforma e : listaDePlataformas) {

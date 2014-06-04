@@ -1,6 +1,7 @@
 package br.com.lol.armas;
 
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +73,5 @@ public class Arma extends Entidade implements Runnable{
 	
 	public List<Projetil> getBalas(){
 		return this.balas;
-	}
-
-	
+	}	
 }

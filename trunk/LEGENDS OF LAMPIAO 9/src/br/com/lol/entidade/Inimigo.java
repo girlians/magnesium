@@ -1,5 +1,7 @@
 package br.com.lol.entidade;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import br.com.lol.gerenciadores.SpriteAnimation;
@@ -13,7 +15,7 @@ public class Inimigo extends Personagem{
 	protected SpriteAnimation spriteDireita;
 	protected SpriteAnimation spriteEsquerda;
 	
-	protected boolean visible;
+	private boolean visible;
 	
 	protected BufferedImage imagem;
 	
@@ -23,7 +25,7 @@ public class Inimigo extends Personagem{
 	private int estadoNoAr;
 	
 	public Inimigo(int x, int y, int direcao){
-		this.visible = true;
+		this.setVisible(true);
 		this.radarLampiao = false;
 		this.x = x;
 		this.y = y;
@@ -92,5 +94,24 @@ public class Inimigo extends Personagem{
 
 	public void setEstadoNoAr(int estadoNoAr) {
 		this.estadoNoAr = estadoNoAr;
+	}
+	
+	public void renderInimigo(Graphics2D g){
+		seMexer();
+		g.drawImage(getImagem(), getX(), getY(), 80, 80, null);
+		g.setColor(Color.RED);
+		g.fillRect(getX(), getY()-10, this.energia*20, 5);
+	}
+	
+	public void decrementarEnergia() {
+		if (this.energia > 0)
+			this.energia--;
+		if (this.energia == 0) {
+			setVisible(false);
+		}
+	}
+
+	public void setVisible(boolean visible) {
+		this.visible = visible;
 	}
 }

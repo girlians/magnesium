@@ -1,6 +1,7 @@
 package br.com.lol.armas;
 
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -92,6 +93,13 @@ public class Calibre12 extends Arma implements UsaArma{
 	public BufferedImage getImagem(){
 		verificarImagem();
 		return this.imagemTiro;
+	}
+	
+	public Rectangle getBounds() {
+		if(direcao>0)
+			return new Rectangle(this.x,this.y-10,400, 100);
+		else
+			return new Rectangle(this.x-400,this.y-10,400, 100);
 	}
 	
 }

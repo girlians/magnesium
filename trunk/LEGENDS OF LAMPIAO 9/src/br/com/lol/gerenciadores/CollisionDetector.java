@@ -9,16 +9,24 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import br.com.lol.IA.Temporizador;
+import br.com.lol.armas.Arma;
 import br.com.lol.entidade.Bau;
 import br.com.lol.entidade.EntidadePlataforma;
 import br.com.lol.entidade.Inimigo;
 import br.com.lol.entidade.Jogador;
+import br.com.lol.entidade.Projetil;
+import br.com.lol.sounds.SoundBilbe;
 
 public class CollisionDetector {
 	
 	private List<EntidadePlataforma> listaDeEntidades;
 	private List<EntidadePlataforma> listaVerticalDireita;
 	private List<EntidadePlataforma> listaVerticalEsquerda;
+	private Thread threadTime;
+	private Temporizador time;
+	private Thread threadTiro;
+	private Temporizador tiros;
 
 	public CollisionDetector(List<EntidadePlataforma> listaDePlataformas) {
 		listaDeEntidades = listaDePlataformas;
@@ -35,6 +43,10 @@ public class CollisionDetector {
 		for (EntidadePlataforma entidadePlataforma : getListaVerticalEsquerda()) {
 			entidadePlataforma.init();
 		}
+		time = new Temporizador(3000);
+		threadTime = new Thread(time);
+		tiros = new Temporizador(500);
+		threadTiro = new Thread(tiros);
 	}
 
 	public boolean colisaoPlataforma(Jogador personagem) {
@@ -121,6 +133,20 @@ public class CollisionDetector {
 			}
 		}
 	}
+	
+	public void colisaoInimigosContraJogador(Jogador jogador, List<Inimigo> inimigos){
+		if(threadTime.getState() == Thread.State.NEW){
+		for (Inimigo inimigo : inimigos) {		
+			if(inimigo.getBounds().intersects(jogador.getBounds()) && jogador.getEnergia()>0){
+				new SoundBilbe().playDor();
+				jogador.decramentarEnergia();
+				threadTime.start();
+			}
+		}
+		} else if(threadTime.getState() == Thread.State.TERMINATED) {
+			threadTime = new Thread(time);
+		}
+	}
 
 	public List<EntidadePlataforma> getListaDeEntidades() {
 		return listaDeEntidades;
@@ -144,5 +170,37 @@ public class CollisionDetector {
 
 	public void setListaVerticalEsquerda(List<EntidadePlataforma> listaVerticalEsquerda) {
 		this.listaVerticalEsquerda = listaVerticalEsquerda;
+	}
+
+	public void colisaoProjetil(Arma tiro, List<Inimigo> inimigos) {
+		if (threadTiro.getState() == Thread.State.NEW) {
+			Inimigo inimigo;
+			boolean colisao = false;
+			for (int i = 0; i < inimigos.size(); i++) {
+				inimigo = inimigos.get(i);
+				for (int j = 0; j < tiro.getBalas().size(); j++) {
+					Projetil projetil = tiro.getBalas().get(j);
+					colisao = inimigo.getBounds().intersects(projetil.getBounds1());
+					if (colisao) {
+						inimigo.decrementarEnergia();
+						System.out
+								.println("                  Energia decrementada");
+						threadTiro.start();
+						break;
+					}
+				}
+				if (colisao) {
+					break;
+				}
+			}
+			for (int i = 0; i < inimigos.size(); i++) {
+				inimigo = inimigos.get(i);
+				if (!inimigo.isVisible()) {
+					inimigos.remove(inimigo);
+				}
+			}
+		} else if (threadTiro.getState() == Thread.State.TERMINATED) {
+			threadTiro = new Thread(tiros);
+		}
 	}
 }
