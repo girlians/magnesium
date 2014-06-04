@@ -74,6 +74,8 @@ public class Jogador extends Personagem {
 		this.modoVoador = false;
 		altura = 80;
 		largura = 90;
+		this.alturaAbaixado = 10;
+		this.larguraAbaixado = 10;
 
 		this.arma = new Calibre12(this);
 		timeFumaça = new Temporizador(600);
@@ -259,12 +261,11 @@ public class Jogador extends Personagem {
 
 	public Rectangle getBounds() {
 		if (this.energia == 0){
-			System.out.println("                      Retornou Morto");
 			return new Rectangle(this.x, this.y, this.largura,
 					this.altura+10);
 		}
 		if (estaAbaixado && !modoVoador) {
-			return new Rectangle(this.x, this.yAbaixado+10, this.larguraAbaixado,
+			return new Rectangle(this.x, this.y + 80, this.larguraAbaixado,
 					this.alturaAbaixado);
 		} else if(modoVoador) {
 			return new Rectangle(this.x, this.y, this.largura, this.altura+10);

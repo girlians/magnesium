@@ -31,6 +31,7 @@ import br.com.lol.gerenciadores.CollisionDetector;
 import br.com.lol.gerenciadores.ImageManager;
 import br.com.lol.gerenciadores.InputManager;
 import br.com.lol.gerenciadores.SpriteAnimation;
+import br.com.lol.sounds.SoundBilbe;
 
 public class TestStage extends Game {
 	// Constantes do jogo.
@@ -53,16 +54,18 @@ public class TestStage extends Game {
 
 	private int estadoAnterior;
 
-	private boolean lapadaNoJogador = false;
-
 	private Temporizador timer;
 	private Temporizador timerCalibre12;
 	private Temporizador timerLapada;
+	private Temporizador timeModoVoador;
+	private Temporizador timePancada;
 
-	Thread threadDoChefe;
-	Thread threadTimer;
-	Thread threadTimerCalibre12;
-	Thread threadTimerLapada;
+	private Thread threadDoChefe;
+	private Thread threadTimer;
+	private Thread threadTimerCalibre12;
+	private Thread threadTimerLapadaChefe;
+	private Thread threadTransformacao;
+	private Thread threadPancada;
 	/*
 	 * Todas as imagens antes de serem inciadas
 	 */
@@ -80,6 +83,8 @@ public class TestStage extends Game {
 	private int chao;
 	private Dimension dim;
 	private Point rolagem;
+	
+	private SoundBilbe sb;
 
 	private boolean aindaRolandoEsquerda;
 	private boolean aindaRolandoDireita;
@@ -117,10 +122,7 @@ public class TestStage extends Game {
 	private boolean pararDimensioEsquerda;
 	private boolean pararDimensionDireita;
 	private boolean controleUpdate;
-	private Thread threadTransformacao;
-	private Thread threadPancada;
-	private Temporizador timeModoVoador;
-	private Temporizador timePancada;
+	
 
 	/*
 	 * Método que inicializa todas as imagens do jogo.
@@ -162,7 +164,8 @@ public class TestStage extends Game {
 		this.threadDoChefe = new Thread(iaChefe);
 		this.threadTimer = new Thread(timer);
 		this.threadTimerCalibre12 = new Thread(this.timerCalibre12);
-		this.threadTimerLapada = new Thread(this.timerLapada);
+		new Thread(this.timerLapada);
+		this.threadTimerLapadaChefe = new Thread(this.timePancada);
 
 		this.armaAtual = this.jogador.getArma();
 		this.inventario = new Inventario(getWidth() / 2, getHeight() / 2,
@@ -188,6 +191,8 @@ public class TestStage extends Game {
 		threadTransformacao = new Thread(timeModoVoador);
 		threadPancada = new Thread(timePancada);
 		adicionarInimigos();
+		this.sb = new SoundBilbe();
+		this.sb.playTema();
 	}
 
 	/*
@@ -489,29 +494,17 @@ public class TestStage extends Game {
 				this.colisaoArma2 = true;
 			}
 		}
+		
 	}
 
-	private void lapada() {
-		for (Corvo c : corvos) {
-			if (c.isVisible()) {
-				if (c.getBounds().intersects(this.jogador.getBounds())) {
-					this.lapadaNoJogador = true;
-				}
-			}
-		}
-	}
-
-	/*
-	 * Método que roda a cada tick.
-	 */
 	public void onUpdate(int currentTick) {
-		lapada();
 		pararUpdate();
 		verificaLocalChefe();
 		updateInimigos(currentTick);
 		colisao.colisaoBaus(jogador, bausDoGame);
+		colisaoComOJogador();
 		colisao.colisaoInimigos(inimigos);
-		colisaoCorvo();
+		
 		if (noChefe) {
 			if (this.threadDoChefe.getState() == Thread.State.NEW)
 				this.threadDoChefe.start();
@@ -700,18 +693,30 @@ public class TestStage extends Game {
 		}
 	}
 
-	private void colisaoCorvo() {
-		if (threadPancada.getState() == Thread.State.NEW) {
+	private void colisaoComOJogador() {
 			for (Corvo c : corvos) {
+				if (threadPancada.getState() == Thread.State.NEW) {
 				if (c.getBounds().intersects(jogador.getBounds())) {
 					threadPancada.start();
 					this.jogador.decramentarEnergia();
 				}
 			}
-		} else if (threadPancada.getState() == Thread.State.TERMINATED) {
+			}
+		if (threadPancada.getState() == Thread.State.TERMINATED) {
 			threadPancada = new Thread(timePancada);
 		}
+			for(Projetil p: this.mestre.getArma().getBalas()){
+				if(threadTimerLapadaChefe.getState() == Thread.State.NEW){
+				if(p.getBounds().intersects(this.jogador.getBounds())){
+					this.threadTimerLapadaChefe.start();
+					this.jogador.decramentarEnergia();
+				}
+			}else if(this.threadTimerLapadaChefe.getState() == Thread.State.TERMINATED){
+			this.threadTimerLapadaChefe = new Thread(timePancada);
+		}
+		}
 	}
+		
 
 	public void onRender(Graphics2D g, int currentTick) {
 		// Desenhando o cenario
@@ -745,24 +750,7 @@ public class TestStage extends Game {
 			for (Bau bau : this.bausDoGame) {
 				bau.desenharEventos(g);
 			}
-			
-			if (this.lapadaNoJogador) {
-				if (this.threadTimerLapada.getState() == Thread.State.NEW) {
-					this.threadTimerLapada.start();
-					while (this.threadTimerLapada.getState() == Thread.State.TIMED_WAITING) {
-						renderLapada(g);
-					}
-				} else if (this.threadTimerLapada.getState() == Thread.State.TERMINATED) {
-					this.threadTimerLapada = new Thread(this.timerLapada);
-					this.threadTimerLapada.start();
-					while (this.threadTimerLapada.getState() == Thread.State.TIMED_WAITING) {
-						renderLapada(g);
-					}
-				}
-				this.lapadaNoJogador = false;
-			} else {
-				jogador.render(g);
-			}
+			jogador.render(g);
 			g.drawImage(this.mestre.getImagem(), this.mestre.getPulo().getX(),
 					this.mestre.getPulo().getY() - 100, 100, 120, null);
 			renderProjeteis(g);
