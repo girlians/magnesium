@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sun.org.apache.xalan.internal.xsltc.compiler.Template;
-
 import br.com.lol.IA.Temporizador;
 import br.com.lol.armas.Arma;
 import br.com.lol.armas.Calibre12;
@@ -42,8 +40,6 @@ public class Jogador extends Personagem {
 	private int larguraAbaixado;
 	private Thread threadDaFumaça;
 	private Temporizador timeFumaça;
-	private int alturaMorto;
-	private int larguraMorto;
 
 	public boolean isModoVoador() {
 		return modoVoador;
@@ -78,8 +74,6 @@ public class Jogador extends Personagem {
 		this.modoVoador = false;
 		altura = 80;
 		largura = 90;
-		alturaMorto = 40;
-		larguraMorto = 80;
 
 		this.arma = new Calibre12(this);
 		timeFumaça = new Temporizador(600);
@@ -248,7 +242,7 @@ public class Jogador extends Personagem {
 	public void ativarModoVoador() {
 		if (threadDaFumaça.getState() == Thread.State.NEW) {
 			threadDaFumaça.start();
-			y = y - 35;
+			this.y -= 45;
 			this.altura = 125;
 			this.largura = 135;
 			this.modoVoador = true;
@@ -264,14 +258,18 @@ public class Jogador extends Personagem {
 	}
 
 	public Rectangle getBounds() {
-		if (this.energia == 0)
-			return new Rectangle(this.x, this.y, this.larguraMorto,
-					this.alturaMorto);
+		if (this.energia == 0){
+			System.out.println("                      Retornou Morto");
+			return new Rectangle(this.x, this.y, this.largura,
+					this.altura+10);
+		}
 		if (estaAbaixado && !modoVoador) {
-			return new Rectangle(this.x, this.yAbaixado, this.larguraAbaixado,
+			return new Rectangle(this.x, this.yAbaixado+10, this.larguraAbaixado,
 					this.alturaAbaixado);
+		} else if(modoVoador) {
+			return new Rectangle(this.x, this.y, this.largura, this.altura+10);
 		} else {
-			return new Rectangle(this.x, this.y, this.largura, this.altura);
+			return new Rectangle(this.x, this.y, this.largura, this.altura+10);
 		}
 	}
 
@@ -288,9 +286,11 @@ public class Jogador extends Personagem {
 
 	public void render(Graphics2D g) {
 		g.drawImage(cabaças[energia], 10, 50, 110, 100, null);
-		if (this.energia == 0)
-			g.drawImage(getImagem(), this.x, this.y, this.larguraMorto,
-					this.alturaMorto + 10, null);
+		if (this.energia == 0){
+			desativarModoVoador();
+			g.drawImage(getImagem(), this.x, this.y+40, this.largura+10,
+					this.altura-30, null);
+		}
 		else if (estaAbaixado && !modoVoador) {
 			g.drawImage(getImagem(), getX(), this.yAbaixado,
 					this.larguraAbaixado, this.alturaAbaixado, null);

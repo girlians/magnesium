@@ -510,6 +510,7 @@ public class TestStage extends Game {
 		verificaLocalChefe();
 		updateInimigos(currentTick);
 		colisao.colisaoBaus(jogador, bausDoGame);
+		colisao.colisaoInimigos(inimigos);
 		colisaoCorvo();
 		if (noChefe) {
 			if (this.threadDoChefe.getState() == Thread.State.NEW)
@@ -730,7 +731,6 @@ public class TestStage extends Game {
 				g.setColor(Color.RED);
 				g.drawString("GUN", this.arma.getX(), this.arma.getY());
 			}
-			renderInimigos(g);
 			if (!colisaoArma2) {
 				g.setColor(Color.WHITE);
 				g.fillRect(this.arma2.getX() - 10, this.arma2.getY() - 30, 40,
@@ -741,9 +741,11 @@ public class TestStage extends Game {
 			// Desenhando as plataformas
 			renderPlataformas(g);
 			desenharPlataformas.desenhar(g);
+			renderInimigos(g);
 			for (Bau bau : this.bausDoGame) {
 				bau.desenharEventos(g);
 			}
+			
 			if (this.lapadaNoJogador) {
 				if (this.threadTimerLapada.getState() == Thread.State.NEW) {
 					this.threadTimerLapada.start();

@@ -18,7 +18,7 @@ public class Corvo extends Inimigo{
 	
 	public Corvo(int x, int y, int direcao) {
 		super(x, y, direcao);
-		this.speed = 10;
+		this.speed = 3;
 		this.direcao = direcao;
 		this.estaDescendo = true;
 		this.estaSubindo = false;

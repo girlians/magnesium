@@ -18,6 +18,9 @@ public class Inimigo extends Personagem{
 	protected BufferedImage imagem;
 	
 	protected boolean radarLampiao;
+	protected static int CAINDO = 1;
+	protected static int REPOUSO = 0;
+	private int estadoNoAr;
 	
 	public Inimigo(int x, int y, int direcao){
 		this.visible = true;
@@ -26,6 +29,7 @@ public class Inimigo extends Personagem{
 		this.y = y;
 		this.direcao = direcao;
 		this.speed = 3;
+		this.estadoNoAr = CAINDO;
 	}
 	
 	public void seMexer(){
@@ -76,6 +80,17 @@ public class Inimigo extends Personagem{
 		marco0X = marco0x;
 	}
 	
-	
-	
+	public void caindo(){
+		if(getEstadoNoAr() == CAINDO){
+			this.y += 5;
+		}
+	}
+
+	public int getEstadoNoAr() {
+		return estadoNoAr;
+	}
+
+	public void setEstadoNoAr(int estadoNoAr) {
+		this.estadoNoAr = estadoNoAr;
+	}
 }

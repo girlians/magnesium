@@ -14,7 +14,7 @@ public class Projetil extends Entidade{
 		this.x = x +10;
 		this.y = y + 125;
 		this.energia = -1;
-		this.speed = 15;
+		this.speed = 7;
 		this.setVisible(true);
 		this.direcao = direcao;
 	}
