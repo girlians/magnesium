@@ -13,10 +13,14 @@ public class Inimigo extends Personagem{
 	protected SpriteAnimation spriteDireita;
 	protected SpriteAnimation spriteEsquerda;
 	
+	protected boolean visible;
+	
+	protected BufferedImage imagem;
+	
 	protected boolean radarLampiao;
 	
 	public Inimigo(int x, int y, int direcao){
-		this.marco0X = x;
+		this.visible = true;
 		this.radarLampiao = false;
 		this.x = x;
 		this.y = y;
@@ -28,7 +32,9 @@ public class Inimigo extends Personagem{
 		
 	}
 	
-	protected BufferedImage imagem;
+	public void ativarRadar(){
+		this.radarLampiao = true;
+	}
 	
 	public BufferedImage getImagem(){
 		return this.imagem;
@@ -56,6 +62,18 @@ public class Inimigo extends Personagem{
 
 	public void setSpriteEsquerda(SpriteAnimation spriteEsquerda) {
 		this.spriteEsquerda = spriteEsquerda;
+	}
+	
+	public boolean isVisible(){
+		return this.visible;
+	}
+
+	public int getMarco0X() {
+		return marco0X;
+	}
+
+	public void setMarco0X(int marco0x) {
+		marco0X = marco0x;
 	}
 	
 	

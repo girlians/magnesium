@@ -15,6 +15,7 @@ public class InimigoFraco extends Inimigo{
 	
 	public InimigoFraco(int x, int y, int direcao){
 		super(x,y, direcao);
+		this.marco0X = x;
 		this.timer = new Temporizador(1000);
 		this.threadIa = new Thread(timer);
 		this.identificador = "fraco";
@@ -26,6 +27,7 @@ public class InimigoFraco extends Inimigo{
 		if(this.direcao > 0){
 			this.x += this.speed;
 			this.spriteDireita.setLoop(true);
+			this.imagem = this.spriteDireita.getImage();
 			if(this.threadIa.getState() == Thread.State.NEW){
 				this.threadIa.start();
 			}else if(this.threadIa.getState() == Thread.State.TERMINATED){
@@ -33,11 +35,12 @@ public class InimigoFraco extends Inimigo{
 				this.threadIa.start();
 			}
 			if(this.x > this.marco0X + 500){
-				this.direcao *= -1;
+				this.direcao = -1;
 			}
 		}else{
 			this.x -= this.speed;
 			this.spriteEsquerda.setLoop(true);
+			this.imagem = this.spriteEsquerda.getImage();
 			if(this.threadIa.getState() == Thread.State.NEW){
 				this.threadIa.start();
 			}else if(this.threadIa.getState() == Thread.State.TERMINATED){
@@ -45,7 +48,7 @@ public class InimigoFraco extends Inimigo{
 				this.threadIa.start();
 			}
 			if(this.x < this.marco0X + 10){
-				this.direcao *= -1;
+				this.direcao = 1;
 			}
 		}
 	}

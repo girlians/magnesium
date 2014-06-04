@@ -44,17 +44,8 @@ public class MestreStage1 extends Mestre {
 			e.printStackTrace();
 		}
 	}
-
-	private void atualizarImagem(){
-		if(this.direcao >0){
-			this.imagem = normal;
-		}else{
-			this.imagem = invertido;
-		}
-	}
 	
 	public BufferedImage getImagem(int dir){
-		atualizarImagem();
 		return this.imagem;
 	}
 
