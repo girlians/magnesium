@@ -1,5 +1,6 @@
 package br.com.lol.entidade;
 
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -118,6 +119,8 @@ public class Corvo extends Inimigo{
 		this.visible = visible;
 	}
 	
-	
+	public Rectangle getBounds(){
+		return new Rectangle(this.x, this.y,25, 25 );
+	}
 
 }

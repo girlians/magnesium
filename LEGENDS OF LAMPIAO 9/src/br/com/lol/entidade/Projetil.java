@@ -31,7 +31,6 @@ public class Projetil extends Entidade{
 		return this.imagem;
 	}
 	
-	@Override
 	public Rectangle getBounds(){
 		return new Rectangle(x, y, 9, 5);
 	}
