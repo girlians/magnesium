@@ -154,6 +154,7 @@ public class TestStage extends Game {
 		rolagem.x = 0;
 		rolagem.y = 300;
 		jogador = new Jogador(100, this.getHeight() - 300);
+		this.ia = new BasicIA(this.jogador);
 		this.inimigos = new ArrayList<Inimigo>();
 		this.corvos = new ArrayList<Corvo>();
 		this.mestre = new MestreStage1(1200, getHeight() - 140, -1, this.jogador);
@@ -186,6 +187,7 @@ public class TestStage extends Game {
 		timeModoVoador = new Temporizador(1000);
 		threadTransformacao = new Thread(timeModoVoador);
 		threadPancada = new Thread(timePancada);
+		adicionarInimigos();
 	}
 
 	/*
@@ -217,10 +219,21 @@ public class TestStage extends Game {
 				for (Bau bau : bausDoGame) {
 					bau.setX(bau.getX() - (int) (jogador.getSpeed()));
 				}
+				for(Inimigo i: this.inimigos){
+					i.setX(i.getX() - (int)this.jogador.getSpeed());
+					i.setMarco0X(i.getMarco0X() - (int)this.jogador.getSpeed());
+				}
 				this.arma.setX(this.arma.getX() - (int) jogador.getSpeed());
 				this.arma2.setX(this.arma2.getX() - (int) jogador.getSpeed());
 				this.mestre.setX(this.mestre.getX() - (int) jogador.getSpeed());
 			}
+		}
+	}
+	
+	private void updateInimigos(int currentTick){
+		for(Inimigo i: this.inimigos){
+			i.getSpriteDireita().update(currentTick);
+			i.getSpriteEsquerda().update(currentTick);
 		}
 	}
 
@@ -272,6 +285,10 @@ public class TestStage extends Game {
 			for (Bau bau : bausDoGame) {
 				bau.setX(bau.getX() + (int) (jogador.getSpeed()));
 			}
+			for(Inimigo i: this.inimigos){
+				i.setX(i.getX() + (int)this.jogador.getSpeed());
+				i.setMarco0X(i.getMarco0X() + (int)this.jogador.getSpeed());
+			}
 			this.arma.setX(arma.getX() + (int) jogador.getSpeed());
 			this.arma2.setX(arma2.getX() + (int) jogador.getSpeed());
 			this.mestre.setX(this.mestre.getX() + (int) jogador.getSpeed());
@@ -311,7 +328,7 @@ public class TestStage extends Game {
 	
 	private void adicionarInimigos(){
 		for(int i = 1; i < 15; i++){
-			this.ia.adicionarInimigosLimit(this.inimigos, 800 * i, this.getHeight() - 140);
+			this.ia.adicionarInimigosLimit(this.inimigos, 400 * i, 0);
 		}
 	}
 
@@ -491,6 +508,7 @@ public class TestStage extends Game {
 		lapada();
 		pararUpdate();
 		verificaLocalChefe();
+		updateInimigos(currentTick);
 		colisao.colisaoBaus(jogador, bausDoGame);
 		colisaoCorvo();
 		if (noChefe) {
@@ -641,6 +659,10 @@ public class TestStage extends Game {
 				g.drawImage(this.corvos.get(i).getImagem(), this.corvos.get(i)
 						.getX(), this.corvos.get(i).getY(), null);
 			}
+		}
+		for(int i = 0; i < this.inimigos.size(); i++){
+				this.inimigos.get(i).seMexer();
+				g.drawImage(this.inimigos.get(i).getImagem(), this.inimigos.get(i).getX(), this.inimigos.get(i).getY(), 80, 80, null);
 		}
 	}
 

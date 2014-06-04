@@ -8,6 +8,7 @@ import br.com.lol.entidade.Corvo;
 import br.com.lol.entidade.Inimigo;
 import br.com.lol.entidade.InimigoForte;
 import br.com.lol.entidade.InimigoFraco;
+import br.com.lol.entidade.Jogador;
 import br.com.lol.gerenciadores.ImageManager;
 import br.com.lol.gerenciadores.SpriteAnimation;
 
@@ -22,7 +23,10 @@ public class BasicIA{
 	private SpriteAnimation spriteCarecaTerno;
 	private SpriteAnimation spriteCarecaTernoInvertido;
 	
-	public BasicIA(){
+	private Jogador jogador;
+	
+	public BasicIA(Jogador j){
+		this.jogador = j;
 		inicializarImagensInimigos();
 	}
 	
@@ -53,7 +57,7 @@ public class BasicIA{
 	public void adicionarInimigosLimit(List<Inimigo> inimigos, int x, int y){
 		Inimigo i ;
 		Random rnd = new Random();
-		int choice = rnd.nextInt(4);
+		int choice = rnd.nextInt(3);
 		while(choice < 0){
 			choice = rnd.nextInt(3);
 		}
@@ -97,6 +101,18 @@ public class BasicIA{
 			corvos.add(new Corvo(0, 0, 1));
 		}else{
 			corvos.add(new Corvo(800, 0, -1));
+		}
+	}
+	
+	public void ativarRadar(List<Inimigo> inimigos){
+		for(int i =0; i< inimigos.size(); i++){
+			int distancia = this.jogador.getX() - inimigos.get(i).getX();
+			if(distancia < 0){
+				distancia *= -1;
+			}
+			if(distancia <= 300){
+				inimigos.get(i).ativarRadar();
+			}
 		}
 	}
 
