@@ -74,7 +74,7 @@ public class Entidade {
 	}
 
 	public Rectangle getBounds() {
-		return new Rectangle(this.x , this.y, 50, 50);
+		return new Rectangle(this.x , this.y+5, 80, 80);
 	}
 
 	public int getEstado() {

@@ -1,7 +1,6 @@
 package br.com.lol.stages;
 
 import java.applet.AudioClip;
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
@@ -16,8 +15,6 @@ import br.com.lol.core.Game;
 import br.com.lol.dao.DaoGame;
 import br.com.lol.entidade.EntidadePlataforma;
 import br.com.lol.entidade.Inimigo;
-import br.com.lol.entidade.InimigoForte;
-import br.com.lol.entidade.InimigoFraco;
 import br.com.lol.entidade.Jogador;
 import br.com.lol.entidade.Projetil;
 import br.com.lol.gerenciadores.AudioManager;
@@ -55,10 +52,7 @@ public class Stage1 extends Game{
 	private BufferedImage lampiao_pulando_invertido;
 	
 	//declaração das imagens dos inimigos
-	private BufferedImage zumbi_forte_normal;
-	private BufferedImage zumbi_forte_invertido;
-	private BufferedImage zumbi_fraco_normal;
-	private BufferedImage zumbi_fraco_invertido;
+	
 	private BufferedImage gameOver;
 	
 	private AudioClip somTiro;
@@ -114,16 +108,7 @@ public class Stage1 extends Game{
 			this.lampiao_abaixado_invertido = ImageManager.getInstance().
 					loadImage("br/com/lol/imagens/lampião_abaixado_invertido1.png");
 			this.direcao = 1;
-			
-			this.zumbi_forte_normal = ImageManager.getInstance()
-					.loadImage("br/com/lol/imagens/zumbis/sprite_zumbi_verde_normal1.png");
-			this.zumbi_forte_invertido = ImageManager.getInstance()
-					.loadImage("br/com/lol/imagens/zumbis/sprite_zumbi_verde_invertido1.png");
-			this.zumbi_fraco_normal = ImageManager.getInstance()
-					.loadImage("br/com/lol/imagens/zumbis/sprite_zumbi_roxo_normal1.png");
-			this.zumbi_fraco_invertido = ImageManager.getInstance()
-					.loadImage("br/com/lol/imagens/zumbis/sprite_zumbi_roxo_invertido1.png");
-			
+
 			}catch(IOException e){
 				System.err.println(e.getMessage());
 			}
@@ -147,7 +132,7 @@ public class Stage1 extends Game{
 		
 		this.score = 23300;
 		this.inimigos = new ArrayList<Inimigo>();
-		jogador = new Jogador(100,this.getHeight() - 100);
+		jogador = new Jogador(100,this.getHeight()-100);
 		p1 = new EntidadePlataforma(700, this.getHeight() - 100, 80, 80);
 		this.estado = EST_PARADO;
 		this.estadoSalto = EST_REPOUSO;

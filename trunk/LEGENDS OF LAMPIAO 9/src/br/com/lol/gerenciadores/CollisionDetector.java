@@ -11,6 +11,7 @@ import java.util.List;
 
 import br.com.lol.entidade.Bau;
 import br.com.lol.entidade.EntidadePlataforma;
+import br.com.lol.entidade.Inimigo;
 import br.com.lol.entidade.Jogador;
 
 public class CollisionDetector {
@@ -40,7 +41,7 @@ public class CollisionDetector {
 		boolean colisao = false;
 		for (int i = 0; i < listaDeEntidades.size(); i++) {
 			colisao = listaDeEntidades.get(i).getBounds()
-					.intersects(personagem.getBounds());
+					.intersects(personagem.getBounds())&&(listaDeEntidades.get(i).getY()==(personagem.getY()+personagem.getAltura()));
 			if (colisao) {
 				return true;
 			}
@@ -93,6 +94,30 @@ public class CollisionDetector {
 		for (Bau bau : baus) {
 			if(jogador.getBounds().intersects(bau.getBounds())){
 				bau.alterarEstado();
+			}
+		}
+	}
+	
+	public void colisaoInimigos(List<Inimigo> inimigos){
+		for (Inimigo inimigo : inimigos) {
+			inimigo.caindo();
+			for (EntidadePlataforma entidade : listaDeEntidades) {
+				if(entidade.getBounds().intersects(inimigo.getBounds())){
+					inimigo.setEstadoNoAr(0);
+					break;
+				} else {
+					inimigo.setEstadoNoAr(1);
+				}
+			}
+			for (EntidadePlataforma entidade : listaVerticalDireita) {
+				if(entidade.getBounds().intersects(inimigo.getBounds())){
+					inimigo.setDirecao(1);
+				}
+			}
+			for (EntidadePlataforma entidade : listaVerticalEsquerda) {
+				if(entidade.getBounds().intersects(inimigo.getBounds())){
+					inimigo.setDirecao(-1);
+				}
 			}
 		}
 	}
