@@ -11,13 +11,11 @@ public class Facao extends Arma implements UsaArma{
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void usar(int direcao) {
-		// TODO Auto-generated method stub
 		
 	}
 
