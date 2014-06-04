@@ -22,9 +22,8 @@ public class MestreStage1 extends Mestre {
 	private SpriteAnimation spriteDireita;
 	private SpriteAnimation spriteEsquerda;
 	
-	public MestreStage1(int x, int y, BufferedImage imagem, int direcao,
-			Jogador j) {
-		super(x, y, imagem, direcao, j);
+	public MestreStage1(int x, int y,int direcao,Jogador j) {
+		super(x, y,direcao, j);
 		this.executando = false;
 		this.energia = 8;
 		this.speed = 15;

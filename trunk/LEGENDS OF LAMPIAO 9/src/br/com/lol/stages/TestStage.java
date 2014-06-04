@@ -30,6 +30,7 @@ import br.com.lol.entidade.Projetil;
 import br.com.lol.gerenciadores.CollisionDetector;
 import br.com.lol.gerenciadores.ImageManager;
 import br.com.lol.gerenciadores.InputManager;
+import br.com.lol.gerenciadores.SpriteAnimation;
 
 public class TestStage extends Game {
 	// Constantes do jogo.
@@ -147,8 +148,6 @@ public class TestStage extends Game {
 		this.timerLapada = new Temporizador(3000);
 		this.timePancada = new Temporizador(1000);
 
-		this.ia = new BasicIA(0, 0);
-
 		inicializarImagens();
 		inicializarPlataformas();
 		rolagem = new Point(0, 300);
@@ -157,14 +156,7 @@ public class TestStage extends Game {
 		jogador = new Jogador(100, this.getHeight() - 300);
 		this.inimigos = new ArrayList<Inimigo>();
 		this.corvos = new ArrayList<Corvo>();
-		try {
-			this.mestre = new MestreStage1(1200, getHeight() - 140,
-					ImageManager.getInstance().loadImage(
-							"br/com/lol/imagens/chefe1_invertido.png"), -1,
-					this.jogador);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		this.mestre = new MestreStage1(1200, getHeight() - 140, -1, this.jogador);
 		this.iaChefe = new IaChefe(this.mestre);
 		this.threadDoChefe = new Thread(iaChefe);
 		this.threadTimer = new Thread(timer);
@@ -316,7 +308,17 @@ public class TestStage extends Game {
 			}
 		}
 	}
+	
+	private void adicionarInimigos(){
+		for(int i = 1; i < 15; i++){
+			this.ia.adicionarInimigosLimit(this.inimigos, 800 * i, this.getHeight() - 140);
+		}
+	}
 
+	private void ativarRadar(){
+		
+	}
+	
 	/*
 	 * Inicializa todas as plataformas
 	 */
